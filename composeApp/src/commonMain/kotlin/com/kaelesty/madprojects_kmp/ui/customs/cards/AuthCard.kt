@@ -1,17 +1,17 @@
 package com.kaelesty.madprojects_kmp.ui.customs.cards
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.Card
-import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
@@ -19,10 +19,13 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.DefaultShadowColor
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kaelesty.madprojects_kmp.ui.customs.buttons.CommonButton
 
 @Composable
 fun AuthCard(
-	modifier: Modifier = Modifier
+	modifier: Modifier = Modifier,
+	onEnter: () -> Unit,
+	onRegister: () -> Unit,
 ) {
 
 	val gradientColors = listOf(
@@ -33,7 +36,7 @@ fun AuthCard(
 	Card(
 		modifier = modifier
 			.shadow(
-				elevation = 4.dp,
+				elevation = 6.dp,
 				spotColor = DefaultShadowColor,
 				ambientColor = DefaultShadowColor
 			)
@@ -53,6 +56,18 @@ fun AuthCard(
 			Text("Привет!",
 				 fontSize = 30.sp)
 			Text("С чего начнем?", fontSize = 30.sp)
+			Spacer(Modifier.height(8.dp))
+			CommonButton(
+				Modifier.fillMaxWidth(0.8f),
+				text = "Вход",
+				onClick = { onEnter() }
+			)
+			Spacer(Modifier.height(8.dp))
+			CommonButton(
+				Modifier.fillMaxWidth(0.8f),
+				text = "Регистрация",
+				onClick = { onRegister() }
+			)
 		}
 	}
 }

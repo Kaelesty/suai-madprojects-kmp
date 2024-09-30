@@ -22,6 +22,10 @@ fun getCustomTypography(isDarkTheme: Boolean) = MaterialTheme.typography.copy(
 	caption = TextStyle(
 		fontFamily = justAnotherHandFamily(),
 		fontSize = 60.sp
+	),
+	button = TextStyle(
+		fontFamily = robotoFlex(),
+		fontSize = 24.sp
 	)
 )
 
@@ -29,7 +33,8 @@ fun getCustomTypography(isDarkTheme: Boolean) = MaterialTheme.typography.copy(
 fun getCustomColors(isDarkTheme: Boolean) = MaterialTheme.colors.copy(
 	secondary = hexToColor("005AAA"),
 	secondaryVariant = hexToColor("AB3A8D"),
-	onSecondary = hexToColor("E4003A")
+	onSecondary = hexToColor("E4003A"),
+	primary = hexToColor("005AAA")
 )
 
 fun hexToColor(hex: String): Color {
