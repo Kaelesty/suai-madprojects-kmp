@@ -1,14 +1,14 @@
 package com.kaelesty.madprojects_kmp.di
 
 import com.arkivanov.decompose.ComponentContext
-import com.kaelesty.madprojects_kmp.decompose.auth.AuthComponent
-import com.kaelesty.madprojects_kmp.decompose.auth.DefaultAuthComponent
-import com.kaelesty.madprojects_kmp.decompose.auth.login.DefaultLoginComponent
-import com.kaelesty.madprojects_kmp.decompose.auth.login.LoginComponent
-import com.kaelesty.madprojects_kmp.decompose.auth.welcome.DefaultWelcomeComponent
-import com.kaelesty.madprojects_kmp.decompose.auth.welcome.WelcomeComponent
-import com.kaelesty.madprojects_kmp.decompose.root.DefaultRootComponent
-import com.kaelesty.madprojects_kmp.decompose.root.RootComponent
+import com.kaelesty.madprojects_kmp.blocs.auth.AuthComponent
+import com.kaelesty.madprojects_kmp.blocs.auth.DefaultAuthComponent
+import com.kaelesty.madprojects_kmp.blocs.login.DefaultLoginComponent
+import com.kaelesty.madprojects_kmp.blocs.login.LoginComponent
+import com.kaelesty.madprojects_kmp.blocs.welcome.DefaultWelcomeComponent
+import com.kaelesty.madprojects_kmp.blocs.welcome.WelcomeComponent
+import com.kaelesty.madprojects_kmp.blocs.root.DefaultRootComponent
+import com.kaelesty.madprojects_kmp.blocs.root.RootComponent
 import org.koin.dsl.module
 
 val decomposeModule = module {

@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.arkivanov.decompose.defaultComponentContext
-import com.kaelesty.madprojects_kmp.decompose.root.RootComponent
+import com.kaelesty.madprojects_kmp.blocs.root.RootComponent
 import com.kaelesty.madprojects_kmp.ui.App
 import org.koin.core.parameter.parametersOf
 import org.koin.java.KoinJavaComponent.inject
