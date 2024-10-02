@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-fun CommonButton(
+fun StyledButton(
 	modifier: Modifier,
 	text: String,
 	onClick: () -> Unit,

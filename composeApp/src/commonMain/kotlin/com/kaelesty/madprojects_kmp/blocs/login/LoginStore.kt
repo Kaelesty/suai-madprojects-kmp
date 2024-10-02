@@ -5,9 +5,13 @@ import com.arkivanov.mvikotlin.core.store.Store
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineBootstrapper
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
+import com.kaelesty.domain.auth.login.LoginUseCase
 import com.kaelesty.madprojects_kmp.blocs.login.LoginStore.Intent
 import com.kaelesty.madprojects_kmp.blocs.login.LoginStore.Label
 import com.kaelesty.madprojects_kmp.blocs.login.LoginStore.State
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 interface LoginStore : Store<Intent, State, Label> {
 
@@ -30,7 +34,8 @@ interface LoginStore : Store<Intent, State, Label> {
 }
 
 class LoginStoreFactory(
-    private val storeFactory: StoreFactory
+    private val storeFactory: StoreFactory,
+    private val loginUseCase: LoginUseCase,
 ) {
 
     fun create(): LoginStore =
@@ -38,7 +43,7 @@ class LoginStoreFactory(
             name = "LoginStore",
             initialState = State(),
             bootstrapper = BootstrapperImpl(),
-            executorFactory = LoginStoreFactory::ExecutorImpl,
+            executorFactory = { ExecutorImpl(loginUseCase) },
             reducer = ReducerImpl
         ) {}
 
@@ -57,7 +62,10 @@ class LoginStoreFactory(
         }
     }
 
-    private class ExecutorImpl : CoroutineExecutor<Intent, Action, State, Msg, Label>() {
+    private class ExecutorImpl(
+        private val loginUseCase: LoginUseCase
+    ) : CoroutineExecutor<Intent, Action, State, Msg, Label>() {
+
         override fun executeIntent(intent: Intent) {
             when (intent) {
                 Intent.DropError -> {
@@ -66,7 +74,8 @@ class LoginStoreFactory(
                 is Intent.SetLogin -> dispatch(Msg.SetLogin(intent.newValue))
                 is Intent.SetPassword -> dispatch(Msg.SetPassword(intent.newValue))
                 Intent.Submit -> {
-                    publish(Label.SuccessfulAuth) // TODO
+                    scope.launch { loginUseCase.invoke(state().login, state().password) }
+                    //publish(Label.SuccessfulAuth)
                 }
             }
         }
@@ -75,9 +84,9 @@ class LoginStoreFactory(
     private object ReducerImpl : Reducer<State, Msg> {
         override fun State.reduce(msg: Msg): State =
             when (msg) {
-                Msg.DropError -> this.copy(errorMessage = "")
-                is Msg.SetLogin -> this.copy(login = msg.newValue)
-                is Msg.SetPassword -> this.copy(password = msg.newValue)
+                Msg.DropError -> copy(errorMessage = "")
+                is Msg.SetLogin -> copy(login = msg.newValue)
+                is Msg.SetPassword -> copy(password = msg.newValue)
             }
     }
 }

@@ -4,6 +4,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
 @Composable
@@ -26,6 +27,12 @@ fun getCustomTypography(isDarkTheme: Boolean) = MaterialTheme.typography.copy(
 	button = TextStyle(
 		fontFamily = robotoFlex(),
 		fontSize = 24.sp
+	),
+	body2 = TextStyle(
+		fontFamily = robotoFlex(),
+		fontSize = 20.sp,
+		fontWeight = FontWeight.Light,
+		color = Color.Black,
 	)
 )
 

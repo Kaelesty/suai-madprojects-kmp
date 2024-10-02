@@ -54,5 +54,3 @@ class DefaultLoginComponent(
 		store.accept(LoginStore.Intent.Submit)
 	}
 }
-
-class DefaultLoginComponentFactory

@@ -17,7 +17,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.kaelesty.madprojects_kmp.ui.uikit.cards.AuthCard
 import com.kaelesty.madprojects_kmp.ui.uikit.text.TypewriterText
 
 @Composable
@@ -34,7 +33,7 @@ fun WelcomeContent(
 	) {
 		AnimatedVisibility(
 			visible = cardVisible,
-			enter = expandVertically(animationSpec = tween(durationMillis = 200))
+			enter = expandVertically(animationSpec = tween(durationMillis = 400))
 		) {
 			AuthCard(
 				onEnter = { component.enter() },
