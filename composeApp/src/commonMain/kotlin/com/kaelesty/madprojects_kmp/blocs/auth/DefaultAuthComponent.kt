@@ -4,9 +4,11 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.pushToFront
 import com.arkivanov.decompose.value.Value
 import com.kaelesty.madprojects_kmp.blocs.login.LoginComponent
+import com.kaelesty.madprojects_kmp.blocs.register.RegisterComponent
 import com.kaelesty.madprojects_kmp.blocs.welcome.WelcomeComponent
 import kotlinx.serialization.Serializable
 import org.koin.core.parameter.parametersOf
@@ -36,7 +38,15 @@ class DefaultAuthComponent(
 					clazz = LoginComponent::class.java,
 					parameters = { parametersOf(
 						componentContext,
-						{}
+						object : LoginComponent.Navigator {
+							override fun onSuccessfulLogin() {
+								TODO("Not yet implemented")
+							}
+
+							override fun back() {
+								navigation.pop()
+							}
+						}
 					) }
 				),
 			)
@@ -55,9 +65,31 @@ class DefaultAuthComponent(
 								}
 
 								override fun toRegister() {
-									TODO()
+									navigation.pushToFront(Config.Register)
 								}
 							},
+						)
+					}
+				)
+			)
+		}
+
+		Config.Register -> {
+			AuthComponent.Child.Register(
+				component = get(
+					clazz = RegisterComponent::class.java,
+					parameters = {
+						parametersOf(
+							componentContext,
+							object : RegisterComponent.Navigator {
+								override fun onSuccessfulRegister() {
+									TODO("Not yet implemented")
+								}
+
+								override fun back() {
+									navigation.pop()
+								}
+							}
 						)
 					}
 				)
@@ -73,5 +105,8 @@ class DefaultAuthComponent(
 
 		@Serializable
 		data object Welcome: Config
+
+		@Serializable
+		data object Register: Config
 	}
 }

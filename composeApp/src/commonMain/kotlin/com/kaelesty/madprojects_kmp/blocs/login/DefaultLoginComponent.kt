@@ -13,10 +13,10 @@ import kotlinx.coroutines.launch
 class DefaultLoginComponent(
 	private val componentContext: ComponentContext,
 	private val storeFactory: LoginStoreFactory,
-	private val onSuccessfulAuth: () -> Unit,
+	private val navigator: LoginComponent.Navigator
 ): LoginComponent, ComponentContext  by componentContext {
 
-	val scope = CoroutineScope(Dispatchers.IO)
+	private val scope = CoroutineScope(Dispatchers.IO)
 
 	private val store = instanceKeeper.getStore {
 		storeFactory.create()
@@ -34,7 +34,7 @@ class DefaultLoginComponent(
 
 	private fun acceptLabel(label: LoginStore.Label) {
 		when (label) {
-			LoginStore.Label.SuccessfulAuth -> { onSuccessfulAuth() }
+			LoginStore.Label.SuccessfulAuth -> { navigator.onSuccessfulLogin() }
 		}
 	}
 
@@ -52,5 +52,9 @@ class DefaultLoginComponent(
 
 	override fun submit() {
 		store.accept(LoginStore.Intent.Submit)
+	}
+
+	override fun back() {
+		navigator.back()
 	}
 }

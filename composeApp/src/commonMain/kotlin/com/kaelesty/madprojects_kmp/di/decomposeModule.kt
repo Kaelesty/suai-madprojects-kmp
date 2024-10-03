@@ -5,6 +5,8 @@ import com.kaelesty.madprojects_kmp.blocs.auth.AuthComponent
 import com.kaelesty.madprojects_kmp.blocs.auth.DefaultAuthComponent
 import com.kaelesty.madprojects_kmp.blocs.login.DefaultLoginComponent
 import com.kaelesty.madprojects_kmp.blocs.login.LoginComponent
+import com.kaelesty.madprojects_kmp.blocs.register.DefaultRegisterComponent
+import com.kaelesty.madprojects_kmp.blocs.register.RegisterComponent
 import com.kaelesty.madprojects_kmp.blocs.welcome.DefaultWelcomeComponent
 import com.kaelesty.madprojects_kmp.blocs.welcome.WelcomeComponent
 import com.kaelesty.madprojects_kmp.blocs.root.DefaultRootComponent
@@ -28,11 +30,11 @@ val decomposeModule = module {
 	}
 
 	factory<LoginComponent> {
-		(componentContext: ComponentContext, func: () -> Unit) ->
+		(componentContext: ComponentContext, navigator: LoginComponent.Navigator) ->
 		DefaultLoginComponent(
 			componentContext = componentContext,
 			storeFactory = get(),
-			onSuccessfulAuth = func
+			navigator = navigator
 		)
 	}
 
@@ -47,5 +49,12 @@ val decomposeModule = module {
 			)
 	}
 
-
+	factory<RegisterComponent> {
+		(componentContext: ComponentContext, navigator: RegisterComponent.Navigator) ->
+		DefaultRegisterComponent(
+			componentContext = componentContext,
+			navigator = navigator,
+			storeFactory = get(),
+		)
+	}
 }

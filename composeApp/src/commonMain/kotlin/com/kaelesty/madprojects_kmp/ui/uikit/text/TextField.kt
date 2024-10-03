@@ -37,7 +37,7 @@ fun StyledTextField(
 				spotColor = DefaultShadowColor,
 				ambientColor = DefaultShadowColor
 			)
-			.height(40.dp)
+			.height(50.dp)
 		,
 		shape = MaterialTheme.shapes.medium.copy(
 			CornerSize(0), CornerSize(0), CornerSize(0), CornerSize(0),

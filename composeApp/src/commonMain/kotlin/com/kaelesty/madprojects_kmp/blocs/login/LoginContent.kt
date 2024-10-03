@@ -16,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.arkivanov.essenty.backhandler.BackHandler
 import com.kaelesty.madprojects_kmp.ui.uikit.buttons.StyledButton
 import com.kaelesty.madprojects_kmp.ui.uikit.cards.StyledCard
 import com.kaelesty.madprojects_kmp.ui.uikit.text.TitledTextField
@@ -64,9 +65,9 @@ fun LoginContent(
 					modifier = Modifier
 						.fillMaxWidth(0.8f)
 				)
-				Spacer(modifier = Modifier.height(24.dp))
+				Spacer(modifier = Modifier.height(48.dp))
 				StyledButton(
-					Modifier.fillMaxWidth(0.8f),
+					Modifier.fillMaxWidth(0.7f),
 					text = "Вход",
 					onClick = { component.submit() }
 				)

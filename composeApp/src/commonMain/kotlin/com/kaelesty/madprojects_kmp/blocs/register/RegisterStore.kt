@@ -12,19 +12,25 @@ import com.kaelesty.madprojects_kmp.blocs.register.RegisterStore.Label
 import com.kaelesty.madprojects_kmp.blocs.register.RegisterStore.State
 import kotlinx.coroutines.launch
 
-internal interface RegisterStore : Store<Intent, State, Label> {
+interface RegisterStore : Store<Intent, State, Label> {
 
 	sealed interface Intent {
 		class SetLogin(val newValue: String): Intent
 		class SetPassword(val newValue: String): Intent
+		class SetRepeatPassword(val newValue: String): Intent
 		class SetUserType(val newValue: UserType): Intent
+		class SetGithubLink(val newValue: String): Intent
+		class SetUsername(val newValue: String): Intent
 		data object Submit: Intent
 		data object DropError: Intent
 	}
 
 	data class State(
+		val username: String = "",
 		val login: String = "",
 		val password: String = "",
+		val repeatPassword: String = "",
+		val githubLink: String = "",
 		val errorMessage: String = "",
 		val userType: UserType = UserType.STUDENT
 	)
@@ -34,7 +40,7 @@ internal interface RegisterStore : Store<Intent, State, Label> {
 	}
 }
 
-internal class RegisterStoreFactory(
+class RegisterStoreFactory(
     private val storeFactory: StoreFactory,
 	private val registerUseCase: RegisterUseCase,
 ) {
@@ -54,7 +60,10 @@ internal class RegisterStoreFactory(
 	private sealed interface Msg {
 		class SetLogin(val newValue: String): Msg
 		class SetPassword(val newValue: String): Msg
+		class SetRepeatPassword(val newValue: String): Msg
 		class SetUserType(val newValue: UserType): Msg
+		class SetGithubLink(val newValue: String): Msg
+		class SetUsername(val newValue: String): Msg
 		data object DropError: Msg
 	}
 
@@ -81,6 +90,9 @@ internal class RegisterStoreFactory(
 				}
 
 				is Intent.SetUserType -> dispatch(Msg.SetUserType(intent.newValue))
+				is Intent.SetRepeatPassword -> dispatch(Msg.SetRepeatPassword(intent.newValue))
+				is Intent.SetGithubLink -> dispatch(Msg.SetGithubLink(intent.newValue))
+				is Intent.SetUsername -> dispatch(Msg.SetUsername(intent.newValue))
 			}
         }
     }
@@ -92,6 +104,9 @@ internal class RegisterStoreFactory(
 				is Msg.SetLogin -> copy(login = msg.newValue)
 				is Msg.SetPassword -> copy(password = msg.newValue)
 				is Msg.SetUserType -> copy(userType = msg.newValue)
+				is Msg.SetRepeatPassword -> copy(repeatPassword = msg.newValue)
+				is Msg.SetGithubLink -> copy(githubLink = msg.newValue)
+				is Msg.SetUsername -> copy(username = msg.newValue)
 			}
     }
 }

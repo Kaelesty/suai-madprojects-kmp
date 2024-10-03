@@ -13,4 +13,13 @@ interface LoginComponent {
 	fun dropError()
 
 	fun submit()
+
+	fun back()
+
+	interface Navigator {
+
+		fun onSuccessfulLogin()
+
+		fun back()
+	}
 }
