@@ -1,7 +1,5 @@
 package com.kaelesty.domain.common
 
-import kotlin.reflect.KClass
-
 sealed interface UseCaseResult<B, E> {
 
 	class Success<B, E>(val body: B): UseCaseResult<B, E>

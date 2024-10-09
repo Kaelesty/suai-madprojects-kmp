@@ -6,11 +6,13 @@ import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineBootstrapper
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.kaelesty.domain.auth.login.LoginUseCase
+import com.kaelesty.domain.common.UseCaseResult
+import com.kaelesty.domain.tools.validateEmail
+import com.kaelesty.domain.tools.validatePassword
 import com.kaelesty.madprojects_kmp.blocs.login.LoginStore.Intent
 import com.kaelesty.madprojects_kmp.blocs.login.LoginStore.Label
 import com.kaelesty.madprojects_kmp.blocs.login.LoginStore.State
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import com.kaelesty.madprojects_kmp.ui.lock.Lock
 import kotlinx.coroutines.launch
 
 interface LoginStore : Store<Intent, State, Label> {
@@ -36,6 +38,7 @@ interface LoginStore : Store<Intent, State, Label> {
 class LoginStoreFactory(
     private val storeFactory: StoreFactory,
     private val loginUseCase: LoginUseCase,
+    private val lock: Lock
 ) {
 
     fun create(): LoginStore =
@@ -43,7 +46,7 @@ class LoginStoreFactory(
             name = "LoginStore",
             initialState = State(),
             bootstrapper = BootstrapperImpl(),
-            executorFactory = { ExecutorImpl(loginUseCase) },
+            executorFactory = { ExecutorImpl(loginUseCase, lock = lock) },
             reducer = ReducerImpl
         ) {}
 
@@ -54,6 +57,7 @@ class LoginStoreFactory(
         class SetLogin(val newValue: String): Msg
         class SetPassword(val newValue: String): Msg
         data object DropError: Msg
+        class SetError(val newValue: String): Msg
     }
 
     private class BootstrapperImpl : CoroutineBootstrapper<Action>() {
@@ -63,7 +67,8 @@ class LoginStoreFactory(
     }
 
     private class ExecutorImpl(
-        private val loginUseCase: LoginUseCase
+        private val loginUseCase: LoginUseCase,
+        private val lock: Lock,
     ) : CoroutineExecutor<Intent, Action, State, Msg, Label>() {
 
         override fun executeIntent(intent: Intent) {
@@ -71,11 +76,33 @@ class LoginStoreFactory(
                 Intent.DropError -> {
                     dispatch(Msg.DropError)
                 }
-                is Intent.SetLogin -> dispatch(Msg.SetLogin(intent.newValue))
-                is Intent.SetPassword -> dispatch(Msg.SetPassword(intent.newValue))
+                is Intent.SetLogin -> dispatch(Msg.SetLogin(intent.newValue.trim()))
+                is Intent.SetPassword -> dispatch(Msg.SetPassword(intent.newValue.trim()))
                 Intent.Submit -> {
-                    scope.launch { loginUseCase.invoke(state().login, state().password) }
-                    //publish(Label.SuccessfulAuth)
+
+                    if (! validateEmail(state().login)) {
+                        dispatch(Msg.SetError("Неверный email"))
+                        return
+                    }
+
+                    if (! validatePassword(state().password)) {
+                        dispatch(Msg.SetError("Пароль должен содержать минимум 8 символов"))
+                        return
+                    }
+
+                    scope.launch {
+                        when (val result = lock.proceed { loginUseCase.invoke(state().login, state().password) }) {
+                            is UseCaseResult.BadRequest -> {
+                                dispatch(Msg.SetError(result.error.ui()))
+                            }
+                            is UseCaseResult.ExternalError -> {
+                                dispatch(Msg.SetError("Ошибка сервера. Повторите попытку позже."))
+                            }
+                            is UseCaseResult.Success -> {
+                                publish(Label.SuccessfulAuth)
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -87,6 +114,7 @@ class LoginStoreFactory(
                 Msg.DropError -> copy(errorMessage = "")
                 is Msg.SetLogin -> copy(login = msg.newValue)
                 is Msg.SetPassword -> copy(password = msg.newValue)
+                is Msg.SetError -> copy(errorMessage = msg.newValue)
             }
     }
 }

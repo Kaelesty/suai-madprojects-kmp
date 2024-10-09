@@ -9,6 +9,7 @@ import com.kaelesty.domain.auth.register.RegisterBody
 import com.kaelesty.domain.auth.register.RegisterUseCase
 import com.kaelesty.domain.common.UseCaseResult
 import com.kaelesty.domain.common.UserType
+import kotlinx.coroutines.delay
 import org.koin.dsl.module
 
 val authModule = module {
@@ -19,7 +20,11 @@ val authModule = module {
 				email: String,
 				password: String
 			): UseCaseResult<LoginBody, LoginBadRequestErrors> {
-				return UseCaseResult.BadRequest(LoginBadRequestErrors.USER_NOT_FOUND)
+				return UseCaseResult.Success(
+					body = LoginBody(
+						userType = UserType.STUDENT
+					)
+				)
 			}
 
 			override suspend fun register(
@@ -27,7 +32,8 @@ val authModule = module {
 				password: String,
 				userType: UserType
 			): UseCaseResult<RegisterBody, RegisterBadRequestErrors> {
-				return UseCaseResult.BadRequest(RegisterBadRequestErrors.BAD_EMAIL)
+				delay(5000)
+				return UseCaseResult.BadRequest(RegisterBadRequestErrors.USED_EMAIL)
 			}
 		}
 	}

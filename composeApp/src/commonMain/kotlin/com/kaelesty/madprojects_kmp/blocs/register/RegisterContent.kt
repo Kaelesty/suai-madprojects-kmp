@@ -10,18 +10,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.kaelesty.domain.common.UserType
-import com.kaelesty.madprojects_kmp.ui.converters.toUi
+import com.kaelesty.madprojects_kmp.ui.shared_converters.toUi
 import com.kaelesty.madprojects_kmp.ui.uikit.buttons.StyledButton
 import com.kaelesty.madprojects_kmp.ui.uikit.cards.StyledCard
 import com.kaelesty.madprojects_kmp.ui.uikit.dropdowns.TitledDropdown
@@ -55,28 +52,40 @@ fun RegisterContent(
 				TitledTextField(
 					text = state.username,
 					title = "Имя пользователя",
-					onValueChange = { component.setUsername(it) }
+					onValueChange = {
+						component.dropError()
+						component.setUsername(it)
+					}
 				)
 				Spacer(modifier = Modifier.height(12.dp))
 
 				TitledTextField(
 					text = state.login,
 					title = "Email",
-					onValueChange = { component.setLogin(it) }
+					onValueChange = {
+						component.dropError()
+						component.setLogin(it)
+					}
 				)
 				Spacer(modifier = Modifier.height(12.dp))
 
 				TitledTextField(
 					text = state.githubLink,
 					title = "Ссылка на профиль Github",
-					onValueChange = { component.setGithubLink(it) }
+					onValueChange = {
+						component.dropError()
+						component.setGithubLink(it)
+					}
 				)
 				Spacer(modifier = Modifier.height(12.dp))
 
 				TitledTextField(
 					text = state.password,
 					title = "Пароль",
-					onValueChange = { component.setPassword(it) },
+					onValueChange = {
+						component.dropError()
+						component.setPassword(it)
+					},
 					isPassword = true
 				)
 				Spacer(modifier = Modifier.height(12.dp))
@@ -84,13 +93,17 @@ fun RegisterContent(
 				TitledTextField(
 					text = state.repeatPassword,
 					title = "Подтверждение пароля",
-					onValueChange = { component.setRepeatPassword(it) }
+					onValueChange = {
+						component.dropError()
+						component.setRepeatPassword(it)
+					}
 				)
 				Spacer(modifier = Modifier.height(12.dp))
 
 				TitledDropdown(
 					title = "Тип аккаунта",
 					onItemSelection = {
+						component.dropError()
 						component.setUserType(userTypes[it])
 					},
 					values = userTypes.map {
@@ -100,6 +113,13 @@ fun RegisterContent(
 					modifier = Modifier
 						.fillMaxWidth(0.8f)
 				)
+				Spacer(modifier = Modifier.height(4.dp))
+				if (state.errorMessage != "") {
+					Text(
+						text = state.errorMessage,
+						style = MaterialTheme.typography.overline
+					)
+				}
 				Spacer(modifier = Modifier.height(48.dp))
 
 				StyledButton(
@@ -107,6 +127,7 @@ fun RegisterContent(
 						.fillMaxWidth(0.7f),
 					text = "Регистрация",
 					onClick = {
+						component.dropError()
 						component.submit()
 					}
 				)
@@ -116,7 +137,7 @@ fun RegisterContent(
 			text = "madprojects",
 			style = MaterialTheme.typography.caption,
 			onFinish = { },
-			modifier = Modifier.offset(y = (-385).dp),
+			modifier = Modifier.offset(y = (- 385).dp),
 			playAnimation = false
 		)
 	}

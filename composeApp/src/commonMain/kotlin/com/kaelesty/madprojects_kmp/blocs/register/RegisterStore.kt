@@ -6,10 +6,14 @@ import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineBootstrapper
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.kaelesty.domain.auth.register.RegisterUseCase
+import com.kaelesty.domain.common.UseCaseResult
 import com.kaelesty.domain.common.UserType
+import com.kaelesty.domain.tools.validateEmail
+import com.kaelesty.domain.tools.validatePassword
 import com.kaelesty.madprojects_kmp.blocs.register.RegisterStore.Intent
 import com.kaelesty.madprojects_kmp.blocs.register.RegisterStore.Label
 import com.kaelesty.madprojects_kmp.blocs.register.RegisterStore.State
+import com.kaelesty.madprojects_kmp.ui.lock.Lock
 import kotlinx.coroutines.launch
 
 interface RegisterStore : Store<Intent, State, Label> {
@@ -43,6 +47,7 @@ interface RegisterStore : Store<Intent, State, Label> {
 class RegisterStoreFactory(
     private val storeFactory: StoreFactory,
 	private val registerUseCase: RegisterUseCase,
+	private val lock: Lock,
 ) {
 
     fun create(): RegisterStore =
@@ -50,7 +55,7 @@ class RegisterStoreFactory(
             name = "RegisterStore",
             initialState = State(),
             bootstrapper = BootstrapperImpl(),
-            executorFactory = { ExecutorImpl(registerUseCase) },
+            executorFactory = { ExecutorImpl(registerUseCase, lock) },
             reducer = ReducerImpl
         ) {}
 
@@ -64,6 +69,7 @@ class RegisterStoreFactory(
 		class SetUserType(val newValue: UserType): Msg
 		class SetGithubLink(val newValue: String): Msg
 		class SetUsername(val newValue: String): Msg
+		class SetError(val newValue: String): Msg
 		data object DropError: Msg
 	}
 
@@ -74,19 +80,53 @@ class RegisterStoreFactory(
 
     private class ExecutorImpl(
 		private val registerUseCase: RegisterUseCase,
+		private val lock: Lock
 	) : CoroutineExecutor<Intent, Action, State, Msg, Label>() {
         override fun executeIntent(intent: Intent) {
 			when (intent) {
 				Intent.DropError -> {
 					dispatch(Msg.DropError)
 				}
-				is Intent.SetLogin -> dispatch(Msg.SetLogin(intent.newValue))
-				is Intent.SetPassword -> dispatch(Msg.SetPassword(intent.newValue))
+				is Intent.SetLogin -> dispatch(Msg.SetLogin(intent.newValue.trim()))
+				is Intent.SetPassword -> dispatch(Msg.SetPassword(intent.newValue.trim()))
 				Intent.Submit -> {
-					scope.launch {
-						registerUseCase.invoke(state().login, state().password, state().userType)
+
+					if (! validateEmail(state().login)) {
+						dispatch(Msg.SetError("Неверный email"))
+						return
 					}
-					//publish(Label.SuccessfulAuth)
+
+					if (! validatePassword(state().password)) {
+						dispatch(Msg.SetError("Пароль должен содержать минимум 8 символов"))
+						return
+					}
+
+					if (state().password != state().repeatPassword) {
+						dispatch(Msg.SetError("Пароли не совпадают"))
+						return
+					}
+
+					scope.launch {
+						when (
+							val result = lock.proceed {
+								registerUseCase.invoke(
+									state().login,
+									state().password,
+									state().userType
+								)
+							}
+						) {
+							is UseCaseResult.BadRequest -> {
+								dispatch(Msg.SetError(result.error.ui()))
+							}
+							is UseCaseResult.ExternalError -> {
+								dispatch(Msg.SetError("Ошибка сервера. Повторите попытку позже."))
+							}
+							is UseCaseResult.Success -> {
+								publish(Label.SuccessfulRegister)
+							}
+						}
+					}
 				}
 
 				is Intent.SetUserType -> dispatch(Msg.SetUserType(intent.newValue))
@@ -107,6 +147,7 @@ class RegisterStoreFactory(
 				is Msg.SetRepeatPassword -> copy(repeatPassword = msg.newValue)
 				is Msg.SetGithubLink -> copy(githubLink = msg.newValue)
 				is Msg.SetUsername -> copy(username = msg.newValue)
+				is Msg.SetError -> copy(errorMessage = msg.newValue)
 			}
     }
 }

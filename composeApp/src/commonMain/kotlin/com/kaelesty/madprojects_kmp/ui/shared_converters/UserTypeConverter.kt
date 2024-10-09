@@ -1,4 +1,4 @@
-package com.kaelesty.madprojects_kmp.ui.converters
+package com.kaelesty.madprojects_kmp.ui.shared_converters
 
 import com.kaelesty.domain.common.UserType
 

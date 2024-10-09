@@ -33,6 +33,12 @@ fun getCustomTypography(isDarkTheme: Boolean) = MaterialTheme.typography.copy(
 		fontSize = 20.sp,
 		fontWeight = FontWeight.Light,
 		color = Color.Black,
+	),
+	overline = TextStyle(
+		fontFamily = robotoFlex(),
+		fontSize = 18.sp,
+		fontWeight = FontWeight.Light,
+		color = Color.Red
 	)
 )
 
