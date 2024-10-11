@@ -4,6 +4,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
 @Composable
@@ -22,6 +23,22 @@ fun getCustomTypography(isDarkTheme: Boolean) = MaterialTheme.typography.copy(
 	caption = TextStyle(
 		fontFamily = justAnotherHandFamily(),
 		fontSize = 60.sp
+	),
+	button = TextStyle(
+		fontFamily = robotoFlex(),
+		fontSize = 24.sp
+	),
+	body2 = TextStyle(
+		fontFamily = robotoFlex(),
+		fontSize = 20.sp,
+		fontWeight = FontWeight.Light,
+		color = Color.Black,
+	),
+	overline = TextStyle(
+		fontFamily = robotoFlex(),
+		fontSize = 18.sp,
+		fontWeight = FontWeight.Light,
+		color = Color.Red
 	)
 )
 
@@ -29,7 +46,8 @@ fun getCustomTypography(isDarkTheme: Boolean) = MaterialTheme.typography.copy(
 fun getCustomColors(isDarkTheme: Boolean) = MaterialTheme.colors.copy(
 	secondary = hexToColor("005AAA"),
 	secondaryVariant = hexToColor("AB3A8D"),
-	onSecondary = hexToColor("E4003A")
+	onSecondary = hexToColor("E4003A"),
+	primary = hexToColor("005AAA")
 )
 
 fun hexToColor(hex: String): Color {
