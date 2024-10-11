@@ -4,8 +4,10 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.value.Value
 import com.kaelesty.madprojects_kmp.blocs.auth.AuthComponent
+import com.kaelesty.madprojects_kmp.blocs.project.ProjectComponent
 import kotlinx.serialization.Serializable
 import org.koin.core.parameter.parametersOf
 import org.koin.java.KoinJavaComponent.get
@@ -32,6 +34,22 @@ class DefaultRootComponent(
 			RootComponent.Child.Auth(
 				component = get(
 					clazz = AuthComponent::class.java,
+					parameters = { parametersOf(
+						componentContext,
+						object : AuthComponent.Navigator {
+							override fun toProject() {
+								navigation.push(Config.Project)
+							}
+						}
+					) }
+				)
+			)
+		}
+
+		Config.Project -> {
+			RootComponent.Child.Project(
+				component = get(
+					clazz = ProjectComponent::class.java,
 					parameters = { parametersOf(componentContext) }
 				)
 			)
@@ -43,5 +61,8 @@ class DefaultRootComponent(
 
 		@Serializable
 		data object Auth: Config
+
+		@Serializable
+		data object Project: Config
 	}
 }

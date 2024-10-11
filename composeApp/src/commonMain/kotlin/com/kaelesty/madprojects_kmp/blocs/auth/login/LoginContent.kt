@@ -1,4 +1,4 @@
-package com.kaelesty.madprojects_kmp.blocs.register
+package com.kaelesty.madprojects_kmp.blocs.auth.login
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,22 +17,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.kaelesty.domain.common.UserType
-import com.kaelesty.madprojects_kmp.ui.shared_converters.toUi
+import com.arkivanov.essenty.backhandler.BackHandler
 import com.kaelesty.madprojects_kmp.ui.uikit.buttons.StyledButton
 import com.kaelesty.madprojects_kmp.ui.uikit.cards.StyledCard
-import com.kaelesty.madprojects_kmp.ui.uikit.dropdowns.TitledDropdown
 import com.kaelesty.madprojects_kmp.ui.uikit.text.TitledTextField
 import com.kaelesty.madprojects_kmp.ui.uikit.text.TypewriterText
+import madprojects.composeapp.generated.resources.Res
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun RegisterContent(
-	component: RegisterComponent
+fun LoginContent(
+	component: LoginComponent
 ) {
 
 	val state by component.state.collectAsState()
-
-	val userTypes = UserType.entries.toTypedArray()
 
 	Box(
 		modifier = Modifier
@@ -42,74 +40,31 @@ fun RegisterContent(
 		StyledCard(
 			modifier = Modifier
 				.fillMaxWidth(0.85f)
-				.fillMaxHeight(0.85f)
+				.fillMaxHeight(0.5f)
 		) {
 			Column(
 				horizontalAlignment = Alignment.CenterHorizontally,
 				modifier = Modifier.padding(top = 60.dp)
 			) {
-
 				TitledTextField(
-					text = state.username,
-					title = "Имя пользователя",
-					onValueChange = {
-						component.dropError()
-						component.setUsername(it)
-					}
-				)
-				Spacer(modifier = Modifier.height(12.dp))
-
-				TitledTextField(
-					text = state.login,
+					state.login,
 					title = "Email",
 					onValueChange = {
 						component.dropError()
 						component.setLogin(it)
-					}
+					},
+					modifier = Modifier
+						.fillMaxWidth(0.8f)
 				)
 				Spacer(modifier = Modifier.height(12.dp))
-
 				TitledTextField(
-					text = state.githubLink,
-					title = "Ссылка на профиль Github",
-					onValueChange = {
-						component.dropError()
-						component.setGithubLink(it)
-					}
-				)
-				Spacer(modifier = Modifier.height(12.dp))
-
-				TitledTextField(
-					text = state.password,
-					title = "Пароль",
+					state.password,
+					title = "Password",
+					isPassword = true,
 					onValueChange = {
 						component.dropError()
 						component.setPassword(it)
 					},
-					isPassword = true
-				)
-				Spacer(modifier = Modifier.height(12.dp))
-
-				TitledTextField(
-					text = state.repeatPassword,
-					title = "Подтверждение пароля",
-					onValueChange = {
-						component.dropError()
-						component.setRepeatPassword(it)
-					}
-				)
-				Spacer(modifier = Modifier.height(12.dp))
-
-				TitledDropdown(
-					title = "Тип аккаунта",
-					onItemSelection = {
-						component.dropError()
-						component.setUserType(userTypes[it])
-					},
-					values = userTypes.map {
-						it.toUi()
-					}.toList(),
-					selectedIndex = userTypes.indexOf(state.userType),
 					modifier = Modifier
 						.fillMaxWidth(0.8f)
 				)
@@ -121,24 +76,25 @@ fun RegisterContent(
 					)
 				}
 				Spacer(modifier = Modifier.height(48.dp))
-
 				StyledButton(
-					modifier = Modifier
-						.fillMaxWidth(0.7f),
-					text = "Регистрация",
+					Modifier.fillMaxWidth(0.7f),
+					text = "Вход",
 					onClick = {
 						component.dropError()
 						component.submit()
 					}
 				)
 			}
+
+
 		}
 		TypewriterText(
 			text = "madprojects",
 			style = MaterialTheme.typography.caption,
 			onFinish = { },
-			modifier = Modifier.offset(y = (- 385).dp),
+			modifier = Modifier.offset(y = (-232).dp),
 			playAnimation = false
 		)
 	}
+
 }

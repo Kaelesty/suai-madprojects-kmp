@@ -10,7 +10,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.DefaultShadowColor
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.unit.dp
-import com.kaelesty.madprojects_kmp.blocs.welcome.topBorder
+import com.kaelesty.madprojects_kmp.blocs.auth.welcome.topBorder
 
 @Composable
 fun StyledCard(

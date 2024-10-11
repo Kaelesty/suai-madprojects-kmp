@@ -1,4 +1,4 @@
-package com.kaelesty.madprojects_kmp.blocs.login
+package com.kaelesty.madprojects_kmp.blocs.auth.login
 
 import com.kaelesty.domain.auth.login.LoginBadRequestErrors
 

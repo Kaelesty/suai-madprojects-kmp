@@ -1,4 +1,4 @@
-package com.kaelesty.madprojects_kmp.blocs.login
+package com.kaelesty.madprojects_kmp.blocs.auth.login
 
 import kotlinx.coroutines.flow.StateFlow
 

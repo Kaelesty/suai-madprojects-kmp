@@ -1,4 +1,4 @@
-package com.kaelesty.madprojects_kmp.blocs.welcome
+package com.kaelesty.madprojects_kmp.blocs.auth.welcome
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

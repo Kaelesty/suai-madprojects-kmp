@@ -4,10 +4,9 @@ import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.extensions.compose.stack.Children
 import com.arkivanov.decompose.extensions.compose.stack.animation.slide
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
-import com.kaelesty.madprojects_kmp.blocs.login.LoginContent
-import com.kaelesty.madprojects_kmp.blocs.register.RegisterComponent
-import com.kaelesty.madprojects_kmp.blocs.register.RegisterContent
-import com.kaelesty.madprojects_kmp.blocs.welcome.WelcomeContent
+import com.kaelesty.madprojects_kmp.blocs.auth.login.LoginContent
+import com.kaelesty.madprojects_kmp.blocs.auth.register.RegisterContent
+import com.kaelesty.madprojects_kmp.blocs.auth.welcome.WelcomeContent
 
 @Composable
 fun AuthContent(

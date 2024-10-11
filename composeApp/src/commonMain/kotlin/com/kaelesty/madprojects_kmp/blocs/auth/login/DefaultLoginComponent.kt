@@ -1,4 +1,4 @@
-package com.kaelesty.madprojects_kmp.blocs.login
+package com.kaelesty.madprojects_kmp.blocs.auth.login
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.mvikotlin.core.instancekeeper.getStore
@@ -21,7 +21,7 @@ class DefaultLoginComponent(
 	private val store = instanceKeeper.getStore {
 		storeFactory.create()
 	}.apply {
-		scope.launch {
+		scope.launch(Dispatchers.Main) {
 			labels.collect {
 				acceptLabel(it)
 			}
