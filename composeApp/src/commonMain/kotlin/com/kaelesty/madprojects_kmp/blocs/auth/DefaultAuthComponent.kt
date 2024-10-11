@@ -7,15 +7,16 @@ import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.pushToFront
 import com.arkivanov.decompose.value.Value
-import com.kaelesty.madprojects_kmp.blocs.login.LoginComponent
-import com.kaelesty.madprojects_kmp.blocs.register.RegisterComponent
-import com.kaelesty.madprojects_kmp.blocs.welcome.WelcomeComponent
+import com.kaelesty.madprojects_kmp.blocs.auth.login.LoginComponent
+import com.kaelesty.madprojects_kmp.blocs.auth.register.RegisterComponent
+import com.kaelesty.madprojects_kmp.blocs.auth.welcome.WelcomeComponent
 import kotlinx.serialization.Serializable
 import org.koin.core.parameter.parametersOf
 import org.koin.java.KoinJavaComponent.get
 
 class DefaultAuthComponent(
 	private val componentContext: ComponentContext,
+	private val navigator: AuthComponent.Navigator
 ): ComponentContext by componentContext, AuthComponent {
 
 	private val navigation = StackNavigation<Config>()
@@ -40,7 +41,8 @@ class DefaultAuthComponent(
 						componentContext,
 						object : LoginComponent.Navigator {
 							override fun onSuccessfulLogin() {
-								TODO("Not yet implemented")
+								navigation.pop()
+								navigator.toProject()
 							}
 
 							override fun back() {

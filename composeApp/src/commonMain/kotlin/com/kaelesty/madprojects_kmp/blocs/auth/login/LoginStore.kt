@@ -1,4 +1,4 @@
-package com.kaelesty.madprojects_kmp.blocs.login
+package com.kaelesty.madprojects_kmp.blocs.auth.login
 
 import com.arkivanov.mvikotlin.core.store.Reducer
 import com.arkivanov.mvikotlin.core.store.Store
@@ -9,9 +9,9 @@ import com.kaelesty.domain.auth.login.LoginUseCase
 import com.kaelesty.domain.common.UseCaseResult
 import com.kaelesty.domain.tools.validateEmail
 import com.kaelesty.domain.tools.validatePassword
-import com.kaelesty.madprojects_kmp.blocs.login.LoginStore.Intent
-import com.kaelesty.madprojects_kmp.blocs.login.LoginStore.Label
-import com.kaelesty.madprojects_kmp.blocs.login.LoginStore.State
+import com.kaelesty.madprojects_kmp.blocs.auth.login.LoginStore.Intent
+import com.kaelesty.madprojects_kmp.blocs.auth.login.LoginStore.Label
+import com.kaelesty.madprojects_kmp.blocs.auth.login.LoginStore.State
 import com.kaelesty.madprojects_kmp.ui.lock.Lock
 import kotlinx.coroutines.launch
 

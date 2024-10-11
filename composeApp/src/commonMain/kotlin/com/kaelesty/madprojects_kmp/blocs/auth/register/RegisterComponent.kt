@@ -1,4 +1,4 @@
-package com.kaelesty.madprojects_kmp.blocs.register
+package com.kaelesty.madprojects_kmp.blocs.auth.register
 
 import com.kaelesty.domain.common.UserType
 import kotlinx.coroutines.flow.StateFlow

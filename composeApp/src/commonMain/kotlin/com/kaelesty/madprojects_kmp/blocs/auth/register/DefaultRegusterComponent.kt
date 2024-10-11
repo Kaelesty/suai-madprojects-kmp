@@ -1,4 +1,4 @@
-package com.kaelesty.madprojects_kmp.blocs.register
+package com.kaelesty.madprojects_kmp.blocs.auth.register
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.mvikotlin.core.instancekeeper.getStore

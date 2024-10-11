@@ -1,4 +1,4 @@
-package com.kaelesty.madprojects_kmp.blocs.register
+package com.kaelesty.madprojects_kmp.blocs.auth.register
 
 import com.arkivanov.mvikotlin.core.store.Reducer
 import com.arkivanov.mvikotlin.core.store.Store
@@ -10,9 +10,9 @@ import com.kaelesty.domain.common.UseCaseResult
 import com.kaelesty.domain.common.UserType
 import com.kaelesty.domain.tools.validateEmail
 import com.kaelesty.domain.tools.validatePassword
-import com.kaelesty.madprojects_kmp.blocs.register.RegisterStore.Intent
-import com.kaelesty.madprojects_kmp.blocs.register.RegisterStore.Label
-import com.kaelesty.madprojects_kmp.blocs.register.RegisterStore.State
+import com.kaelesty.madprojects_kmp.blocs.auth.register.RegisterStore.Intent
+import com.kaelesty.madprojects_kmp.blocs.auth.register.RegisterStore.Label
+import com.kaelesty.madprojects_kmp.blocs.auth.register.RegisterStore.State
 import com.kaelesty.madprojects_kmp.ui.lock.Lock
 import kotlinx.coroutines.launch
 
