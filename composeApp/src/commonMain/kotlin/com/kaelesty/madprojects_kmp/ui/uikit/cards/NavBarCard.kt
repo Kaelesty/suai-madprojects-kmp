@@ -91,7 +91,7 @@ fun NavBarCard(
 				Modifier
 					.padding(top = 68.dp)
 				,
-				fontSize = 12.sp
+				fontSize = 10.sp
 			)
 		}
 	}

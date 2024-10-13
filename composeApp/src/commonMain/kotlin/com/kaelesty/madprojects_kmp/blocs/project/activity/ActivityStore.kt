@@ -9,7 +9,7 @@ import com.kaelesty.madprojects_kmp.blocs.project.activity.ActivityStore.Intent
 import com.kaelesty.madprojects_kmp.blocs.project.activity.ActivityStore.Label
 import com.kaelesty.madprojects_kmp.blocs.project.activity.ActivityStore.State
 
-internal interface ActivityStore : Store<Intent, State, Label> {
+interface ActivityStore : Store<Intent, State, Label> {
 
     sealed interface Intent {
 
@@ -53,7 +53,7 @@ internal interface ActivityStore : Store<Intent, State, Label> {
     }
 }
 
-internal class ActivityStoreFactory(
+class ActivityStoreFactory(
     private val storeFactory: StoreFactory
 ) {
 

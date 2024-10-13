@@ -8,6 +8,7 @@ import com.arkivanov.decompose.router.stack.pushToFront
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.mvikotlin.core.instancekeeper.getStore
 import com.arkivanov.mvikotlin.extensions.coroutines.labels
+import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
 import com.kaelesty.madprojects_kmp.blocs.project.activity.ActivityComponent
 import com.kaelesty.madprojects_kmp.blocs.project.info.InfoComponent
 import com.kaelesty.madprojects_kmp.blocs.project.kanban.KanbanComponent
@@ -15,6 +16,7 @@ import com.kaelesty.madprojects_kmp.blocs.project.messenger.MessengerComponent
 import com.kaelesty.madprojects_kmp.blocs.project.settings.SettingsComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import org.koin.core.parameter.parametersOf
@@ -42,8 +44,8 @@ class DefaultProjectComponent(
 			}
 	}
 
-	override val state: ProjectStore.State
-		get() = store.state
+	override val state: StateFlow<ProjectStore.State>
+		get() = store.stateFlow
 
 	override fun navigate(target: ProjectComponent.Child.NavTarget) {
 		store.accept(ProjectStore.Intent.Navigate(target))

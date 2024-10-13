@@ -7,6 +7,7 @@ import com.kaelesty.madprojects_kmp.blocs.project.info.InfoComponent
 import com.kaelesty.madprojects_kmp.blocs.project.kanban.KanbanComponent
 import com.kaelesty.madprojects_kmp.blocs.project.messenger.MessengerComponent
 import com.kaelesty.madprojects_kmp.blocs.project.settings.SettingsComponent
+import kotlinx.coroutines.flow.StateFlow
 import madprojects.composeapp.generated.resources.Res
 import madprojects.composeapp.generated.resources.activity_nav
 import madprojects.composeapp.generated.resources.info_nav
@@ -20,7 +21,7 @@ interface ProjectComponent {
 
 	val stack: Value<ChildStack<*, Child>>
 
-	val state: ProjectStore.State
+	val state: StateFlow<ProjectStore.State>
 
 	sealed interface Child {
 		class Messenger(val component: MessengerComponent): Child
