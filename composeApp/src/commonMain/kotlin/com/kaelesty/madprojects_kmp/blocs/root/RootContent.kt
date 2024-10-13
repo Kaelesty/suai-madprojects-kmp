@@ -1,6 +1,8 @@
 package com.kaelesty.madprojects_kmp.blocs.root
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -27,7 +29,9 @@ fun RootContent(
 	Children(
 		stack = component.stack,
 		modifier = Modifier
-			.fillMaxSize(),
+			.fillMaxSize()
+			.background(MaterialTheme.colors.background)
+		,
 		animation = stackAnimation(slide())
 	) {
 		when (val instance = it.instance) {

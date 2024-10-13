@@ -7,6 +7,14 @@ import com.kaelesty.madprojects_kmp.blocs.project.info.InfoComponent
 import com.kaelesty.madprojects_kmp.blocs.project.kanban.KanbanComponent
 import com.kaelesty.madprojects_kmp.blocs.project.messenger.MessengerComponent
 import com.kaelesty.madprojects_kmp.blocs.project.settings.SettingsComponent
+import madprojects.composeapp.generated.resources.Res
+import madprojects.composeapp.generated.resources.activity_nav
+import madprojects.composeapp.generated.resources.info_nav
+import madprojects.composeapp.generated.resources.kanban_nav
+import madprojects.composeapp.generated.resources.messenger_nav
+import madprojects.composeapp.generated.resources.settings_nav
+
+import org.jetbrains.compose.resources.DrawableResource
 
 interface ProjectComponent {
 
@@ -21,8 +29,16 @@ interface ProjectComponent {
 		class Settings(val component: SettingsComponent): Child
 		class Kanban(val component: KanbanComponent): Child
 
-		enum class NavTarget {
-			Activity, Messenger, Kanban, Info,  Settings
+		enum class NavTarget(
+			val title: String,
+			val icon: DrawableResource,
+			val iconScale: Float
+		) {
+			Activity("Активность", Res.drawable.activity_nav, 0.9f),
+			Messenger("Мессенджер", Res.drawable.messenger_nav, 0.85f),
+			Info("Информация", Res.drawable.info_nav, 0.85f),
+			Kanban("Канбан", Res.drawable.kanban_nav, 0.85f),
+			Settings("Настройки", Res.drawable.settings_nav, 0.9f),
 		}
 	}
 

@@ -1,5 +1,6 @@
 package com.kaelesty.madprojects_kmp.blocs.project
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -12,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.stack.Children
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.kaelesty.madprojects_kmp.blocs.project.activity.ActivityContent
@@ -19,6 +21,7 @@ import com.kaelesty.madprojects_kmp.blocs.project.info.InfoContent
 import com.kaelesty.madprojects_kmp.blocs.project.kanban.KanbanContent
 import com.kaelesty.madprojects_kmp.blocs.project.messenger.MessengerContent
 import com.kaelesty.madprojects_kmp.blocs.project.settings.SettingsContent
+import com.kaelesty.madprojects_kmp.ui.uikit.cards.NavBarCard
 
 @Composable
 fun ProjectContent(
@@ -28,7 +31,9 @@ fun ProjectContent(
 	val navTarget = ProjectComponent.ChildToNavTarget(currentChild.active.instance)
 
 	Scaffold(
-		modifier = Modifier.fillMaxSize(),
+		modifier = Modifier
+			.fillMaxSize()
+		,
 		topBar = { Text("AbobaTobBar") },
 		bottomBar = { ProjectBottomBar(
 			component,
@@ -61,17 +66,20 @@ fun ProjectBottomBar(
 
 	Row(
 		modifier = Modifier
+			.padding(horizontal = 4.dp)
 			.fillMaxWidth(),
-		horizontalArrangement = Arrangement.SpaceAround
+		horizontalArrangement = Arrangement.spacedBy(4.dp)
 	) {
 		children.forEach {
-			Text(
-				it.toString(),
-				fontWeight = if (it == selected) FontWeight.Bold else FontWeight.Thin,
+			NavBarCard(
+				isSelected = it == selected,
+				navTarget = it,
 				modifier = Modifier
-					.clickable {
-						component.navigate(it)
-					}
+					.weight(1f / children.size)
+				,
+				onClick = {
+					component.navigate(it)
+				}
 			)
 		}
 	}

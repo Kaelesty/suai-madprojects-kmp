@@ -20,7 +20,7 @@ class DefaultRootComponent(
 
 	override val stack: Value<ChildStack<*, RootComponent.Child>> = childStack(
 		source = navigation,
-		initialConfiguration = Config.Auth,
+		initialConfiguration = Config.Project, // TODO DEBUG CONFIG
 		handleBackButton = true,
 		serializer = Config.serializer(),
 		childFactory = ::child

@@ -47,7 +47,9 @@ fun getCustomColors(isDarkTheme: Boolean) = MaterialTheme.colors.copy(
 	secondary = hexToColor("005AAA"),
 	secondaryVariant = hexToColor("AB3A8D"),
 	onSecondary = hexToColor("E4003A"),
-	primary = hexToColor("005AAA")
+	primary = hexToColor("005AAA"),
+	background = hexToColor("F7F9FA"),
+	onPrimary = hexToColor("00B8EE")
 )
 
 fun hexToColor(hex: String): Color {
