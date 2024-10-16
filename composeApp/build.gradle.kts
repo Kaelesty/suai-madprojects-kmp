@@ -52,6 +52,8 @@ kotlin {
             implementation(libs.koin.compose)
 
             implementation(project(":domain"))
+            implementation(project(":data"))
+            implementation(project(":shared_domain"))
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
@@ -95,6 +97,11 @@ android {
     dependencies {
         debugImplementation(compose.uiTooling)
     }
+}
+dependencies {
+    implementation(project(":shared_domain"))
+    implementation(project(":shared_domain"))
+    implementation(project(":shared_domain"))
 }
 
 compose.desktop {

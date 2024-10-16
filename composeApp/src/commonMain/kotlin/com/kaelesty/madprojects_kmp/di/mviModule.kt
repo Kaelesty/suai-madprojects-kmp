@@ -6,6 +6,7 @@ import com.kaelesty.madprojects_kmp.blocs.project.activity.ActivityStoreFactory
 import com.kaelesty.madprojects_kmp.blocs.auth.login.LoginStoreFactory
 import com.kaelesty.madprojects_kmp.blocs.project.ProjectStoreFactory
 import com.kaelesty.madprojects_kmp.blocs.auth.register.RegisterStoreFactory
+import com.kaelesty.madprojects_kmp.blocs.project.messenger.MessengerStoreFactory
 import org.koin.dsl.module
 
 val mviModule = module {
@@ -35,6 +36,13 @@ val mviModule = module {
 			storeFactory = get(),
 			loginUseCase = get(),
 			lock = get(),
+		)
+	}
+
+	single<MessengerStoreFactory> {
+		MessengerStoreFactory(
+			storeFactory = get(),
+			messenger = get()
 		)
 	}
 

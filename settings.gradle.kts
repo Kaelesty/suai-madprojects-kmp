@@ -33,3 +33,5 @@ dependencyResolutionManagement {
 
 include(":composeApp")
 include(":domain")
+include(":shared_domain")
+include(":data")

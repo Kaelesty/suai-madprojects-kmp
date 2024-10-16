@@ -5,56 +5,153 @@ import com.arkivanov.mvikotlin.core.store.Store
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineBootstrapper
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
+import com.kaelesty.domain.messenger.Messenger
 import com.kaelesty.madprojects_kmp.blocs.project.messenger.MessengerStore.Intent
 import com.kaelesty.madprojects_kmp.blocs.project.messenger.MessengerStore.Label
 import com.kaelesty.madprojects_kmp.blocs.project.messenger.MessengerStore.State
+import entities.Chat
+import entities.ClientAction
+import entities.Message
+import entities.ServerAction
+import kotlinx.coroutines.launch
 
-internal interface MessengerStore : Store<Intent, State, Label> {
+interface MessengerStore : Store<Intent, State, Label> {
 
-    sealed interface Intent {
-    }
+	sealed interface Intent {
 
-    data class State()
+		data class onChatSelected(val chatId: Int) : Intent
+	}
 
-    sealed interface Label {
-    }
+	data class State(
+		val chats: List<ChatState>
+	) {
+		data class ChatState(
+			val chat: Chat,
+			val messages: List<Message>
+		)
+	}
+
+	sealed interface Label {
+	}
 }
 
-internal class MessengerStoreFactory(
-    private val storeFactory: StoreFactory
+class MessengerStoreFactory(
+	private val storeFactory: StoreFactory,
+	private val messenger: Messenger,
 ) {
 
-    fun create(): MessengerStore =
-        object : MessengerStore, Store<Intent, State, Label> by storeFactory.create(
-            name = "MessengerStore",
-            initialState = State(),
-            bootstrapper = BootstrapperImpl(),
-            executorFactory = ::ExecutorImpl,
-            reducer = ReducerImpl
-        ) {}
+	fun create(): MessengerStore =
+		object : MessengerStore, Store<Intent, State, Label> by storeFactory.create(
+			name = "MessengerStore",
+			initialState = State(listOf()),
+			bootstrapper = BootstrapperImpl(messenger),
+			executorFactory = ::ExecutorImpl,
+			reducer = ReducerImpl
+		) {}
 
-    private sealed interface Action {
-    }
+	private sealed interface Msg {
+		data class AddChat(val chat: Chat) : Msg
+		data class AddMessage(val message: Message, val chatId: Int) : Msg
+		data class SetChatMessages(val messages: List<Message>, val chatId: Int) : Msg
+		data class SetChatsList(val chats: List<Chat>) : Msg
+	}
 
-    private sealed interface Msg {
-    }
+	private class BootstrapperImpl(
+		private val messenger: Messenger
+	) : CoroutineBootstrapper<ServerAction>() {
+		override fun invoke() {
+			scope.launch {
+				messenger.actionsFlow.collect {
+					dispatch(it)
+				}
+			}
+			scope.launch {
+				messenger.connect()
+			}
+			messenger.acceptAction(
+				ClientAction.Authorize(
+					jwt = "123"
+				)
+			)
+			messenger.acceptAction(
+				ClientAction.RequestChatsList(
+					projectId = 1
+				)
+			)
+		}
+	}
 
-    private class BootstrapperImpl : CoroutineBootstrapper<Action>() {
-        override fun invoke() {
-        }
-    }
+	private class ExecutorImpl : CoroutineExecutor<Intent, ServerAction, State, Msg, Label>() {
+		override fun executeIntent(intent: Intent) {
+		}
 
-    private class ExecutorImpl : CoroutineExecutor<Intent, Action, State, Msg, Label>() {
-        override fun executeIntent(intent: Intent, getState: () -> State) {
-        }
+		override fun executeAction(action: ServerAction) {
+			when (action) {
+				is ServerAction.NewChat -> dispatch(Msg.AddChat(chat = action.chat))
+				is ServerAction.NewMessage -> dispatch(
+					Msg.AddMessage(message = action.message, chatId = action.chatId)
+				)
 
-        override fun executeAction(action: Action, getState: () -> State) {
-        }
-    }
+				is ServerAction.SendChatMessages -> dispatch(
+					Msg.SetChatMessages(messages = action.messages, chatId = action.chatId)
+				)
 
-    private object ReducerImpl : Reducer<State, Msg> {
-        override fun State.reduce(message: Msg): State =
-            when (message) {
-            }
-    }
+				is ServerAction.SendChatsList -> dispatch(
+					Msg.SetChatsList(chats = action.chats)
+				)
+			}
+		}
+	}
+
+	private object ReducerImpl : Reducer<State, Msg> {
+		override fun State.reduce(message: Msg): State =
+			when (message) {
+				is Msg.AddChat -> copy(
+					chats = chats
+						.toMutableList()
+						.apply {
+							add(
+								State.ChatState(
+									chat = message.chat,
+									messages = listOf()
+								)
+							)
+						}
+						.toList()
+				)
+
+				is Msg.AddMessage -> copy(
+					chats = chats
+						.map {
+							if (it.chat.id == message.chatId) {
+								it.copy(
+									messages = it.messages
+										.toMutableList()
+										.apply {
+											add(message.message)
+										}
+										.toList()
+								)
+							}
+							else it
+						}
+				)
+				is Msg.SetChatMessages -> copy(
+					chats = chats
+						.map {
+							if (it.chat.id == message.chatId) {
+								it.copy(
+									messages = message.messages
+								)
+							}
+							else it
+						}
+				)
+				is Msg.SetChatsList -> copy(
+					chats = message.chats.map {
+						State.ChatState(chat = it, messages = listOf())
+					}
+				)
+			}
+	}
 }

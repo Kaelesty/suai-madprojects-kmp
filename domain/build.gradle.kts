@@ -1,6 +1,7 @@
 plugins {
 	id("java-library")
 	alias(libs.plugins.jetbrains.kotlin.jvm)
+	kotlin("plugin.serialization") version "2.0.20"
 }
 
 java {
@@ -11,4 +12,6 @@ java {
 dependencies {
 	implementation(libs.koin.core)
 	implementation(libs.koin.compose)
+	implementation(libs.kotlinx.serialization.json)
+	implementation(project(":shared_domain"))
 }

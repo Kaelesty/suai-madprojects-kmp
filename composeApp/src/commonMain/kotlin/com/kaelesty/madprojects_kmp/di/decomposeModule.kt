@@ -19,6 +19,9 @@ import com.kaelesty.madprojects_kmp.blocs.project.kanban.DefaultKanbanComponent
 import com.kaelesty.madprojects_kmp.blocs.project.kanban.KanbanComponent
 import com.kaelesty.madprojects_kmp.blocs.project.messenger.DefaultMessengerComponent
 import com.kaelesty.madprojects_kmp.blocs.project.messenger.MessengerComponent
+import com.kaelesty.madprojects_kmp.blocs.project.messenger.MessengerStore
+import com.kaelesty.madprojects_kmp.blocs.project.messenger.chatslist.ChatsListComponent
+import com.kaelesty.madprojects_kmp.blocs.project.messenger.chatslist.DefaultChatListComponent
 import com.kaelesty.madprojects_kmp.blocs.project.settings.DefaultSettingsComponent
 import com.kaelesty.madprojects_kmp.blocs.project.settings.SettingsComponent
 import com.kaelesty.madprojects_kmp.blocs.root.DefaultRootComponent
@@ -83,7 +86,8 @@ val decomposeModule = module {
 	factory<ActivityComponent> {
 		(componentContext: ComponentContext) ->
 		DefaultActivityComponent(
-			componentContext = componentContext
+			componentContext = componentContext,
+			storeFactory = get()
 		)
 	}
 
@@ -104,7 +108,8 @@ val decomposeModule = module {
 	factory<MessengerComponent> {
 			(componentContext: ComponentContext) ->
 		DefaultMessengerComponent(
-			componentContext = componentContext
+			componentContext = componentContext,
+			storeFactory = get()
 		)
 	}
 
@@ -112,6 +117,14 @@ val decomposeModule = module {
 			(componentContext: ComponentContext) ->
 		DefaultSettingsComponent(
 			componentContext = componentContext
+		)
+	}
+
+	factory<ChatsListComponent> {
+			(componentContext: ComponentContext, store: MessengerStore) ->
+		DefaultChatListComponent(
+			componentContext = componentContext,
+			store = store
 		)
 	}
 }

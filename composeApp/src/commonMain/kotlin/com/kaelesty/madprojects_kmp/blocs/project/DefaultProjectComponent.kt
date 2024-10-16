@@ -30,7 +30,7 @@ class DefaultProjectComponent(
 
 	private val navigation = StackNavigation<Config>()
 
-	private val scope = CoroutineScope(Dispatchers.IO)
+	private val scope = CoroutineScope(Dispatchers.Main)
 
 	private val store = instanceKeeper.getStore {
 		storeFactory
