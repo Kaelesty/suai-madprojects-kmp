@@ -61,23 +61,27 @@ class MessengerStoreFactory(
 	) : CoroutineBootstrapper<ServerAction>() {
 		override fun invoke() {
 			scope.launch {
+				messenger.connect {
+					scope.launch {
+						messenger.acceptAction(
+							ClientAction.Authorize(
+								jwt = "1",
+								projectId = 1
+							)
+						)
+						messenger.acceptAction(
+							ClientAction.RequestChatsList(
+								projectId = 1
+							)
+						)
+					}
+				}
+			}
+			scope.launch {
 				messenger.actionsFlow.collect {
 					dispatch(it)
 				}
 			}
-			scope.launch {
-				messenger.connect()
-			}
-			messenger.acceptAction(
-				ClientAction.Authorize(
-					jwt = "123"
-				)
-			)
-			messenger.acceptAction(
-				ClientAction.RequestChatsList(
-					projectId = 1
-				)
-			)
 		}
 	}
 

@@ -6,4 +6,6 @@ import kotlinx.coroutines.flow.StateFlow
 interface ChatsListComponent {
 
 	val state: StateFlow<MessengerStore.State>
+
+	fun onChatSelected(chatId: Int)
 }

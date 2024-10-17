@@ -36,15 +36,20 @@ class MessengerImpl : Messenger {
 	}
 	private var websocketSession: WebSocketSession? = null
 
-	private val outgoingFlow = MutableSharedFlow<ClientAction>(2)
+	private val outgoingFlow = MutableSharedFlow<ClientAction>()
 
-	override suspend fun connect() {
-		websocketSession = client.webSocketSession("ws://59f4-193-32-202-60.ngrok-free.app/messenger").also { session ->
+	override suspend fun connect(
+		onFinish: () -> Unit
+	) {
+		println("!")
+		websocketSession = client.webSocketSession("ws://a99f-193-32-202-60.ngrok-free.app/messenger").also { session ->
 			scope.launch {
+				println("!")
 				outgoingFlow.collect {
 					session.send(Frame.Text(Json.encodeToString(it)))
 				}
 			}
+			onFinish()
 			session.incoming.consumeEach {
 				if (it is Frame.Text) {
 					_actionsFlow.emit(
@@ -59,7 +64,7 @@ class MessengerImpl : Messenger {
 	override val actionsFlow: SharedFlow<ServerAction>
 		get() = _actionsFlow.asSharedFlow()
 
-	override fun acceptAction(action: ClientAction) {
-		scope.launch { outgoingFlow.emit(action) }
+	override suspend fun acceptAction(action: ClientAction) {
+		outgoingFlow.emit(action)
 	}
 }

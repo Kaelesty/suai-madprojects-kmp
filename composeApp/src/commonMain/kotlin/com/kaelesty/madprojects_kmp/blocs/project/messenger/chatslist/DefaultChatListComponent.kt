@@ -12,4 +12,8 @@ class DefaultChatListComponent(
 
 	override val state: StateFlow<MessengerStore.State>
 		get() = store.stateFlow
+
+	override fun onChatSelected(chatId: Int) {
+		TODO("Not yet implemented")
+	}
 }

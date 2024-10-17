@@ -6,9 +6,9 @@ import kotlinx.coroutines.flow.SharedFlow
 
 interface Messenger {
 
-	suspend fun connect()
+	suspend fun connect(onFinish: () -> Unit)
 
 	val actionsFlow: SharedFlow<ServerAction>
 
-	fun acceptAction(action: ClientAction)
+	suspend fun acceptAction(action: ClientAction)
 }
