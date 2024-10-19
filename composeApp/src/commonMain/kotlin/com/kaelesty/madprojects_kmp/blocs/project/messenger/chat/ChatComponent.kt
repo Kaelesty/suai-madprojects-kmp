@@ -9,4 +9,28 @@ import kotlinx.coroutines.flow.StateFlow
 interface ChatComponent {
 
 	val state: StateFlow<MessengerStore.State.ChatState>
+
+	data class State(
+		val chatId: Int = -1,
+		val chatTitle: String = "None",
+		val senders: List<MessageSender> = listOf(),
+		val readBlocks: List<MessageBlock> = listOf(),
+		val unreadBlocks: List<MessageBlock> = listOf(),
+	) {
+		data class MessageBlock(
+			val senderId: Int,
+			val messages: List<Message>,
+			val type: MessageBlockType,
+		) {
+			enum class MessageBlockType {
+				Incoming, Outcoming,
+			}
+		}
+
+		data class MessageSender(
+			val name: String,
+			val id: Int,
+			val avatarUrl: String,
+		)
+	}
 }
