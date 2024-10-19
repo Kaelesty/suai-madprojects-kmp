@@ -32,6 +32,7 @@ interface MessengerStore : Store<Intent, State, Label> {
 	}
 
 	sealed interface Label {
+		data class NavigateToChat(val chatId: Int): Label
 	}
 }
 
@@ -45,7 +46,7 @@ class MessengerStoreFactory(
 			name = "MessengerStore",
 			initialState = State(listOf()),
 			bootstrapper = BootstrapperImpl(messenger),
-			executorFactory = ::ExecutorImpl,
+			executorFactory = { ExecutorImpl(messenger) },
 			reducer = ReducerImpl
 		) {}
 
@@ -85,8 +86,16 @@ class MessengerStoreFactory(
 		}
 	}
 
-	private class ExecutorImpl : CoroutineExecutor<Intent, ServerAction, State, Msg, Label>() {
+	private class ExecutorImpl(private val messenger: Messenger) : CoroutineExecutor<Intent, ServerAction, State, Msg, Label>() {
 		override fun executeIntent(intent: Intent) {
+			when (intent) {
+				is Intent.onChatSelected -> {
+					scope.launch {
+						messenger.acceptAction(ClientAction.RequestChatMessages(chatId = intent.chatId))
+					}
+					publish(Label.NavigateToChat(intent.chatId))
+				}
+			}
 		}
 
 		override fun executeAction(action: ServerAction) {

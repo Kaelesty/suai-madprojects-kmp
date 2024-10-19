@@ -4,6 +4,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.router.stack.pushToFront
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.mvikotlin.core.instancekeeper.getStore
 import com.arkivanov.mvikotlin.extensions.coroutines.labels
@@ -52,12 +53,14 @@ class DefaultMessengerComponent(
 		config: Config,
 		componentContext: ComponentContext,
 	): MessengerComponent.Child = when (config) {
-		Config.Chat -> MessengerComponent.Child.Chat(
+		is Config.Chat -> MessengerComponent.Child.Chat(
 			component = get(
 				clazz = ChatComponent::class.java,
 				parameters = {
 					parametersOf(
-						componentContext
+						componentContext,
+						store,
+						config.chatId,
 					)
 				},
 			)
@@ -69,6 +72,7 @@ class DefaultMessengerComponent(
 					parametersOf(
 						componentContext,
 						store,
+						::onChatSelected
 					)
 				},
 			)
@@ -77,13 +81,19 @@ class DefaultMessengerComponent(
 
 	private fun handleLabel(label: MessengerStore.Label) {
 		when (label) {
-			else -> {}
+			is MessengerStore.Label.NavigateToChat -> {
+				navigation.pushToFront(Config.Chat(label.chatId))
+			}
 		}
+	}
+
+	private fun onChatSelected(chatId: Int) {
+		store.accept(MessengerStore.Intent.onChatSelected(chatId))
 	}
 
 	@Serializable
 	sealed interface Config {
 		@Serializable data object ChatsList: Config
-		@Serializable data object Chat: Config
+		@Serializable data class Chat(val chatId: Int): Config
 	}
 }

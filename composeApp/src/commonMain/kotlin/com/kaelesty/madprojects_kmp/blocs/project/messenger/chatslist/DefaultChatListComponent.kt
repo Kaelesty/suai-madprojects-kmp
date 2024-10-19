@@ -7,13 +7,14 @@ import kotlinx.coroutines.flow.StateFlow
 
 class DefaultChatListComponent(
 	componentContext: ComponentContext,
-	private val store: MessengerStore
+	private val store: MessengerStore,
+	private val onChatSelected_: (Int) -> Unit,
 ): ComponentContext by componentContext, ChatsListComponent {
 
 	override val state: StateFlow<MessengerStore.State>
 		get() = store.stateFlow
 
 	override fun onChatSelected(chatId: Int) {
-		TODO("Not yet implemented")
+		onChatSelected_(chatId)
 	}
 }

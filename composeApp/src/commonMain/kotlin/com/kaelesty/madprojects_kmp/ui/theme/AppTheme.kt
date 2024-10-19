@@ -7,6 +7,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
+// Legacy
+
 @Composable
 fun AppTheme(
 	isDarkTheme: Boolean,
@@ -30,7 +32,7 @@ fun getCustomTypography(isDarkTheme: Boolean) = MaterialTheme.typography.copy(
 	),
 	body2 = TextStyle(
 		fontFamily = robotoFlex(),
-		fontSize = 20.sp,
+		fontSize = 24.sp,
 		fontWeight = FontWeight.Light,
 		color = Color.Black,
 	),

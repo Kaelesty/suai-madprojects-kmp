@@ -20,6 +20,8 @@ import com.kaelesty.madprojects_kmp.blocs.project.kanban.KanbanComponent
 import com.kaelesty.madprojects_kmp.blocs.project.messenger.DefaultMessengerComponent
 import com.kaelesty.madprojects_kmp.blocs.project.messenger.MessengerComponent
 import com.kaelesty.madprojects_kmp.blocs.project.messenger.MessengerStore
+import com.kaelesty.madprojects_kmp.blocs.project.messenger.chat.ChatComponent
+import com.kaelesty.madprojects_kmp.blocs.project.messenger.chat.DefaultChatComponent
 import com.kaelesty.madprojects_kmp.blocs.project.messenger.chatslist.ChatsListComponent
 import com.kaelesty.madprojects_kmp.blocs.project.messenger.chatslist.DefaultChatListComponent
 import com.kaelesty.madprojects_kmp.blocs.project.settings.DefaultSettingsComponent
@@ -121,10 +123,20 @@ val decomposeModule = module {
 	}
 
 	factory<ChatsListComponent> {
-			(componentContext: ComponentContext, store: MessengerStore) ->
+			(componentContext: ComponentContext, store: MessengerStore, onChatSelected: (Int) -> Unit) ->
 		DefaultChatListComponent(
 			componentContext = componentContext,
-			store = store
+			store = store,
+			onChatSelected_ = onChatSelected
+		)
+	}
+
+	factory<ChatComponent> {
+			(componentContext: ComponentContext, store: MessengerStore, chatId: Int) ->
+		DefaultChatComponent(
+			componentContext = componentContext,
+			store = store,
+			chatId = chatId
 		)
 	}
 }
