@@ -12,18 +12,19 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun StyledRoundedCard(
 	modifier: Modifier = Modifier,
+	shape: RoundedCornerShape = RoundedCornerShape(16.dp),
 	content: @Composable () -> Unit,
 ) {
 	Card(
 		modifier = modifier
-			.padding(8.dp)
+			.padding(4.dp)
 			.shadow(
-				shape = RoundedCornerShape(16.dp),
+				shape = shape,
 				elevation = 6.dp,
 				spotColor = DefaultShadowColor,
 				ambientColor = DefaultShadowColor
 			),
-		shape = RoundedCornerShape(16.dp)
+		shape = shape
 	) {
 		content()
 	}

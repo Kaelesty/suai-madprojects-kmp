@@ -88,7 +88,7 @@ class DefaultMessengerComponent(
 	}
 
 	private fun onChatSelected(chatId: Int) {
-		store.accept(MessengerStore.Intent.onChatSelected(chatId))
+		store.accept(MessengerStore.Intent.OnChatSelected(chatId))
 	}
 
 	@Serializable

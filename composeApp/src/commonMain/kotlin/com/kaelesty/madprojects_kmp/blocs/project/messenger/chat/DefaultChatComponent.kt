@@ -9,12 +9,14 @@ import entities.ChatType
 import entities.Message
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class DefaultChatComponent(
 	private val componentContext: ComponentContext,
 	private val store: MessengerStore,
@@ -31,7 +33,7 @@ class DefaultChatComponent(
 					scope.launch {
 						store.stateFlow.collect { newState ->
 							_state.emit(
-								newState.chats.first { it.chat.id == chatId }
+								newState.toChatState(chatId = chatId, userId = 1)
 							)
 						}
 					}
@@ -44,12 +46,11 @@ class DefaultChatComponent(
 		)
 	}
 
-	private val _state: MutableStateFlow<MessengerStore.State.ChatState> = MutableStateFlow(
-		MessengerStore.State.ChatState(
-			Chat(0, "", null, 0, ChatType.Public),
-			messages = listOf()
-		)
-	)
-	override val state: StateFlow<MessengerStore.State.ChatState>
+	private val _state: MutableStateFlow<ChatComponent.State> = MutableStateFlow(ChatComponent.State())
+	override val state: StateFlow<ChatComponent.State>
 		get() = _state
+
+	override fun sendMessage(text: String) {
+		store.accept(MessengerStore.Intent.SendMessage(text, chatId))
+	}
 }

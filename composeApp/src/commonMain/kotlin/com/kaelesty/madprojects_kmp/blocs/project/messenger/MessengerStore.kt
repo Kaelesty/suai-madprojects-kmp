@@ -19,7 +19,9 @@ interface MessengerStore : Store<Intent, State, Label> {
 
 	sealed interface Intent {
 
-		data class onChatSelected(val chatId: Int) : Intent
+		data class OnChatSelected(val chatId: Int) : Intent
+
+		data class SendMessage(val text: String, val chatId: Int): Intent
 	}
 
 	data class State(
@@ -86,14 +88,26 @@ class MessengerStoreFactory(
 		}
 	}
 
-	private class ExecutorImpl(private val messenger: Messenger) : CoroutineExecutor<Intent, ServerAction, State, Msg, Label>() {
+	private class ExecutorImpl(private val messenger: Messenger) :
+		CoroutineExecutor<Intent, ServerAction, State, Msg, Label>() {
 		override fun executeIntent(intent: Intent) {
 			when (intent) {
-				is Intent.onChatSelected -> {
+				is Intent.OnChatSelected -> {
 					scope.launch {
-						messenger.acceptAction(ClientAction.RequestChatMessages(chatId = intent.chatId))
+						messenger.acceptAction(
+							ClientAction.RequestChatMessages(chatId = intent.chatId)
+						)
 					}
 					publish(Label.NavigateToChat(intent.chatId))
+				}
+				is Intent.SendMessage -> {
+					scope.launch {
+						messenger.acceptAction(
+							ClientAction.SendMessage(
+								message = intent.text,
+								chatId = intent.chatId)
+						)
+					}
 				}
 			}
 		}

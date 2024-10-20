@@ -8,9 +8,14 @@ import com.kaelesty.madprojects_kmp.blocs.project.messenger.chatslist.ChatListCo
 
 @Composable
 fun MessengerContent(
-	component: MessengerComponent
+	component: MessengerComponent,
+	onChatShown: (Boolean) -> Unit
 ) {
+
 	Children(stack = component.stack) {
+
+		onChatShown(it.instance !is MessengerComponent.Child.Chat)
+
 		when (val instance = it.instance) {
 			is MessengerComponent.Child.Chat -> ChatContent(instance.component)
 			is MessengerComponent.Child.ChatsList -> ChatListContent(instance.component)

@@ -58,6 +58,8 @@ kotlin {
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.cio)
 
+            implementation(libs.androidx.ui.tooling.preview)
+
             implementation(project(":domain"))
             implementation(project(":data"))
             implementation(project(":shared_domain"))
@@ -109,6 +111,11 @@ dependencies {
     implementation(project(":shared_domain"))
     implementation(project(":shared_domain"))
     implementation(project(":shared_domain"))
+    val composeBom = platform("androidx.compose:compose-bom:2023.10.00")
+    implementation(composeBom)
+    // Android Studio Preview support
+    implementation(libs.ui.tooling.preview)
+    debugImplementation(libs.androidx.ui.tooling)
 }
 
 compose.desktop {

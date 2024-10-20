@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface ChatComponent {
 
-	val state: StateFlow<MessengerStore.State.ChatState>
+	val state: StateFlow<State>
 
 	data class State(
 		val chatId: Int = -1,
@@ -33,4 +33,6 @@ interface ChatComponent {
 			val avatarUrl: String,
 		)
 	}
+
+	fun sendMessage(text: String)
 }

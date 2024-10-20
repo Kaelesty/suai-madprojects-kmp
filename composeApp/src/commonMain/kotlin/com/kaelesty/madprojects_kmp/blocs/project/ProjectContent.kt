@@ -20,6 +20,9 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -46,15 +49,21 @@ fun ProjectContent(
 	val currentChild by component.stack.subscribeAsState()
 	val navTarget = ProjectComponent.ChildToNavTarget(currentChild.active.instance)
 
+	var showBottomBar by rememberSaveable {
+		mutableStateOf(true)
+	}
+
 	Scaffold(
 		modifier = Modifier
 			.fillMaxSize(),
 		topBar = { ProjectTopBar(component) },
 		bottomBar = {
-			ProjectBottomBar(
-				component,
-				navTarget
-			)
+			if (showBottomBar) {
+				ProjectBottomBar(
+					component,
+					navTarget
+				)
+			}
 		}
 	) { paddingValues ->
 		Children(
@@ -65,7 +74,12 @@ fun ProjectContent(
 				is ProjectComponent.Child.Activity -> ActivityContent(component = instance.component)
 				is ProjectComponent.Child.Info -> InfoContent(component = instance.component)
 				is ProjectComponent.Child.Kanban -> KanbanContent(component = instance.component)
-				is ProjectComponent.Child.Messenger -> MessengerContent(component = instance.component)
+				is ProjectComponent.Child.Messenger -> MessengerContent(
+					component = instance.component,
+					onChatShown = {
+						showBottomBar = it
+					}
+				)
 				is ProjectComponent.Child.Settings -> SettingsContent(component = instance.component)
 			}
 		}

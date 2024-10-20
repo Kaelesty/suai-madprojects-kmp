@@ -43,7 +43,6 @@ class MessengerImpl : Messenger {
 	) {
 		websocketSession = client.webSocketSession("ws://kaelesty.ru:8080/messenger").also { session ->
 			scope.launch {
-				println("!")
 				outgoingFlow.collect {
 					session.send(Frame.Text(Json.encodeToString(it)))
 				}
