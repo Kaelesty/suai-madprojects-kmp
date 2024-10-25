@@ -33,4 +33,19 @@ sealed interface ClientAction {
     class RequestChatsList(
         val projectId: Int,
     ): ClientAction
+
+    @Serializable
+    class ReadMessage(
+        val messageId: Int,
+        val chatId: Int,
+    ): ClientAction
+
+    @Serializable
+    data object CloseSession : ClientAction
+
+    @Serializable
+    class ReadMessagesBefore(
+        val messageId: Int,
+        val chatId: Int,
+    ): ClientAction
 }

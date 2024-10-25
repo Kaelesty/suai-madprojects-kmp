@@ -40,9 +40,11 @@ val mviModule = module {
 	}
 
 	single<MessengerStoreFactory> {
+		(userId: Int) ->
 		MessengerStoreFactory(
 			storeFactory = get(),
-			messenger = get()
+			messenger = get(),
+			userId = userId,
 		)
 	}
 

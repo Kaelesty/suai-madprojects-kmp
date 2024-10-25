@@ -113,19 +113,12 @@ fun ChatCard(
 							) {
 								append(
 									if (chat.lastMessage!!.text.length > 16) {
-										" ${chat.lastMessage!!.text.take(16)}..."
+										"\t${chat.lastMessage!!.text.take(16)}..."
 									}
 									else {
 										" ${chat.lastMessage!!.text}"
 									}
 								)
-							}
-							withStyle(
-								style = SpanStyle(
-									fontStyle = MaterialTheme.typography.body2.fontStyle
-								)
-							) {
-								append("${chat.lastMessage!!.time.toReadableTime()}:")
 							}
 						}
 					} else {
@@ -140,12 +133,26 @@ fun ChatCard(
 							}
 						}
 					}
-					Text(
-						style = MaterialTheme.typography.body2.copy(
-							fontSize = 20.sp
-						),
-						text = secondaryText
-					)
+					Row {
+						Text(
+							style = MaterialTheme.typography.body2.copy(
+								fontSize = 20.sp
+							),
+							text = secondaryText,
+							modifier = Modifier
+								.weight(1f)
+						)
+						chat.lastMessage?.let {
+							Text(
+								text = " ${it.time.toReadableTime()}",
+								style = MaterialTheme.typography.body2.copy(
+									fontSize = 12.sp,
+									color = Color.Gray,
+								)
+							)
+						}
+					}
+
 				}
 			}
 		}

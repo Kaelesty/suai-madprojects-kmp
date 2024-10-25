@@ -10,5 +10,6 @@ interface Messenger {
 
 	val actionsFlow: SharedFlow<ServerAction>
 
+
 	suspend fun acceptAction(action: ClientAction)
 }

@@ -6,20 +6,24 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -76,9 +80,15 @@ fun ChatContent(
                     Spacer(Modifier.height(80.dp))
                 }
                 items(state.unreadBlocks.reversed()) {
-                    IncomingMessageBlock(
-                        it, sender = state.senders.first { sender -> sender.id == it.senderId }
-                    )
+                    state.senders.firstOrNull { sender -> sender.id == it.senderId }?.let { sender ->
+                        IncomingMessageBlock(
+                            it, sender = sender,
+                            onShow = {
+                                component.readMessage(it)
+                            }
+                        )
+                    }
+
                 }
                 item {
                     if (state.unreadBlocks.isNotEmpty()) {
@@ -89,7 +99,7 @@ fun ChatContent(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = "∨ Непрочитанные сообщения ∨",
+                                text = "Непрочитанные сообщения",
                                 color = Color.Gray,
                                 modifier = Modifier
                                     .padding(vertical = 8.dp)
@@ -101,13 +111,16 @@ fun ChatContent(
                     when (it.type) {
                         ChatComponent.State.MessageBlock.MessageBlockType.Incoming -> {
                             IncomingMessageBlock(
-                                it, sender = state.senders.first { sender -> sender.id == it.senderId }
+                                it,
+                                sender = state.senders.first { sender -> sender.id == it.senderId },
+                                onShow = {}
                             )
                         }
 
                         ChatComponent.State.MessageBlock.MessageBlockType.Outcoming -> {
                             OutComingMessageBlock(
-                                it, sender = state.senders.first { sender -> sender.id == it.senderId }
+                                it,
+                                sender = state.senders.first { sender -> sender.id == it.senderId }
                             )
                         }
                     }
@@ -145,9 +158,10 @@ fun ChatInput(
                 text = text,
                 onValueChange = { text = it },
                 modifier = Modifier.weight(1f),
+                placeholder = "Введите сообщение..."
             )
             Image(
-                imageVector =  vectorResource(Res.drawable.right_arrow),
+                imageVector = vectorResource(Res.drawable.right_arrow),
                 modifier = Modifier
                     .offset(y = (-16).dp)
                     .padding(2.dp)
@@ -155,8 +169,7 @@ fun ChatInput(
                     .clickable {
                         onSubmit(text)
                         text = ""
-                    }
-                ,
+                    },
                 contentDescription = null,
             )
         }
@@ -165,12 +178,13 @@ fun ChatInput(
 
 @Composable
 fun Avatar(
-    url: String
+    url: String,
+    modifier: Modifier = Modifier
 ) {
     AsyncImage(
         model = url,
         null,
-        modifier = Modifier
+        modifier = modifier
             .padding(4.dp)
             .clip(CircleShape)
             .size(45.dp)
@@ -180,15 +194,26 @@ fun Avatar(
 @Composable
 fun IncomingMessageBlock(
     block: ChatComponent.State.MessageBlock,
-    sender: ChatComponent.State.MessageSender
+    sender: ChatComponent.State.MessageSender,
+    onShow: (Int) -> Unit,
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
     ) {
-        Avatar(sender.avatarUrl)
-        Column {
+        Avatar(
+            sender.avatarUrl,
+            modifier = Modifier
+                .weight(0.15f)
+        )
+        Column(
+            modifier = Modifier
+                .weight(0.8f)
+        ) {
             block.messages.forEachIndexed { i, message ->
+                LaunchedEffect(message.id) {
+                    onShow(message.id)
+                }
                 Column {
                     if (i == 0) {
                         Text(
@@ -218,6 +243,10 @@ fun IncomingMessageBlock(
                 }
             }
         }
+        Spacer(
+            modifier = Modifier
+                .weight(0.05f)
+        )
     }
 }
 
@@ -230,17 +259,24 @@ fun OutComingMessageBlock(
         modifier = Modifier
             .fillMaxWidth(),
     ) {
-        Spacer(Modifier.weight(1f))
-        Column {
+        Spacer(
+            modifier = Modifier
+                .weight(0.15f)
+        )
+        Column(
+            modifier = Modifier
+                .weight(0.85f),
+            horizontalAlignment = Alignment.End
+        ) {
             block.messages.forEachIndexed { i, message ->
                 Column(
                     horizontalAlignment = Alignment.End
                 ) {
-                    if (i == 0) {
-                        Text(
-                            text = sender.name
-                        )
-                    }
+//                    if (i == 0) {
+//                        Text(
+//                            text = sender.name
+//                        )
+//                    }
                     StyledRoundedCard(
                         shape = RoundedCornerShape(
                             topStart = 16.dp,
@@ -264,6 +300,5 @@ fun OutComingMessageBlock(
                 }
             }
         }
-        Avatar(sender.avatarUrl)
     }
 }

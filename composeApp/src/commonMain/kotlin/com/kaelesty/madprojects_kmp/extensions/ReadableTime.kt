@@ -16,11 +16,11 @@ fun Long.toReadableTime(): String {
 	val years = days / 365
 
 	return when {
-		seconds < 60 -> "$seconds секунд${if (seconds > 1) "ы" else ""} назад"
-		minutes < 60 -> "$minutes минут${if (minutes > 1) "ы" else ""} назад"
-		hours < 24 -> "$hours час${if (hours > 1) "а" else ""} назад"
-		days < 30 -> "$days дн${if (days > 1) "я" else ""} назад"
-		months < 12 -> "$months месяц${if (months > 1) "а" else ""} назад"
+		seconds < 60 -> "$seconds сек."
+		minutes < 60 -> "$minutes мин."
+		hours < 24 -> "$hours ч."
+		days < 30 -> "$days дн."
+		months < 12 -> "$months мес."
 		else -> {
 			val date = Date(this)
 			val sdf = SimpleDateFormat("d MMMM в HH:mm", Locale("ru"))

@@ -22,6 +22,8 @@ interface MessengerStore : Store<Intent, State, Label> {
 		data class OnChatSelected(val chatId: Int) : Intent
 
 		data class SendMessage(val text: String, val chatId: Int): Intent
+
+		data class ReadMessagesBefore(val messageId: Int, val chatId: Int): Intent
 	}
 
 	data class State(
@@ -29,7 +31,8 @@ interface MessengerStore : Store<Intent, State, Label> {
 	) {
 		data class ChatState(
 			val chat: Chat,
-			val messages: List<Message>
+			val readMessages: List<Message>,
+			val unreadMessages: List<Message>,
 		)
 	}
 
@@ -38,29 +41,39 @@ interface MessengerStore : Store<Intent, State, Label> {
 	}
 }
 
+private const val MAX_MESSAGE_SIZE = 256
+
 class MessengerStoreFactory(
 	private val storeFactory: StoreFactory,
 	private val messenger: Messenger,
+	private val userId: Int
 ) {
+
 
 	fun create(): MessengerStore =
 		object : MessengerStore, Store<Intent, State, Label> by storeFactory.create(
 			name = "MessengerStore",
 			initialState = State(listOf()),
-			bootstrapper = BootstrapperImpl(messenger),
+			bootstrapper = BootstrapperImpl(messenger, userId),
 			executorFactory = { ExecutorImpl(messenger) },
-			reducer = ReducerImpl
+			reducer = ReducerImpl(userId = userId)
 		) {}
 
 	private sealed interface Msg {
 		data class AddChat(val chat: Chat) : Msg
 		data class AddMessage(val message: Message, val chatId: Int) : Msg
-		data class SetChatMessages(val messages: List<Message>, val chatId: Int) : Msg
+		data class SetChatMessages(
+			val readMessages: List<Message>,
+			val unreadMessages: List<Message>,
+			val chatId: Int,
+		) : Msg
 		data class SetChatsList(val chats: List<Chat>) : Msg
+		data class ReadMessagesBefore(val messageId: Int, val chatId: Int) : Msg
 	}
 
 	private class BootstrapperImpl(
-		private val messenger: Messenger
+		private val messenger: Messenger,
+		private val userId: Int,
 	) : CoroutineBootstrapper<ServerAction>() {
 		override fun invoke() {
 			scope.launch {
@@ -68,7 +81,7 @@ class MessengerStoreFactory(
 					scope.launch {
 						messenger.acceptAction(
 							ClientAction.Authorize(
-								jwt = "1",
+								jwt = userId.toString(), // TODO
 								projectId = 1
 							)
 						)
@@ -92,6 +105,7 @@ class MessengerStoreFactory(
 		CoroutineExecutor<Intent, ServerAction, State, Msg, Label>() {
 		override fun executeIntent(intent: Intent) {
 			when (intent) {
+
 				is Intent.OnChatSelected -> {
 					scope.launch {
 						messenger.acceptAction(
@@ -101,13 +115,27 @@ class MessengerStoreFactory(
 					publish(Label.NavigateToChat(intent.chatId))
 				}
 				is Intent.SendMessage -> {
+					if (intent.text.isBlank() || intent.text.length > 256) return
 					scope.launch {
 						messenger.acceptAction(
 							ClientAction.SendMessage(
-								message = intent.text,
+								message = intent.text.trim(),
 								chatId = intent.chatId)
 						)
 					}
+				}
+
+				is Intent.ReadMessagesBefore -> {
+					scope.launch {
+						messenger.acceptAction(
+							ClientAction.ReadMessagesBefore(
+								messageId = intent.messageId,
+								chatId = intent.chatId
+							)
+						)
+
+					}
+					dispatch(Msg.ReadMessagesBefore(intent.messageId, intent.chatId))
 				}
 			}
 		}
@@ -120,19 +148,26 @@ class MessengerStoreFactory(
 				)
 
 				is ServerAction.SendChatMessages -> dispatch(
-					Msg.SetChatMessages(messages = action.messages, chatId = action.chatId)
+					Msg.SetChatMessages(
+						readMessages = action.readMessages,
+						unreadMessages = action.unreadMessages,
+						chatId = action.chatId,
+					)
 				)
 
 				is ServerAction.SendChatsList -> dispatch(
 					Msg.SetChatsList(chats = action.chats)
 				)
+
+				is ServerAction.MessageReadRecorded -> { /*TEMPORARY UNUSED*/ }
 			}
 		}
 	}
 
-	private object ReducerImpl : Reducer<State, Msg> {
+	private class ReducerImpl(private val userId: Int) : Reducer<State, Msg> {
 		override fun State.reduce(message: Msg): State =
 			when (message) {
+
 				is Msg.AddChat -> copy(
 					chats = chats
 						.toMutableList()
@@ -140,7 +175,8 @@ class MessengerStoreFactory(
 							add(
 								State.ChatState(
 									chat = message.chat,
-									messages = listOf()
+									readMessages = listOf(),
+									unreadMessages = listOf(),
 								)
 							)
 						}
@@ -151,14 +187,32 @@ class MessengerStoreFactory(
 					chats = chats
 						.map {
 							if (it.chat.id == message.chatId) {
-								it.copy(
-									messages = it.messages
-										.toMutableList()
-										.apply {
-											add(message.message)
-										}
-										.toList()
-								)
+								if (message.message.senderId == userId) {
+									it.copy(
+										readMessages = it.readMessages
+											.toMutableList()
+											.apply {
+												add(message.message)
+											}
+											.toList(),
+										chat = it.chat.copy(
+											lastMessage = message.message
+										)
+									)
+								}
+								else {
+									it.copy(
+										unreadMessages = it.unreadMessages
+											.toMutableList()
+											.apply {
+												add(message.message)
+											}
+											.toList(),
+										chat = it.chat.copy(
+											lastMessage = message.message
+										)
+									)
+								}
 							}
 							else it
 						}
@@ -168,7 +222,8 @@ class MessengerStoreFactory(
 						.map {
 							if (it.chat.id == message.chatId) {
 								it.copy(
-									messages = message.messages
+									readMessages = message.readMessages,
+									unreadMessages = message.unreadMessages
 								)
 							}
 							else it
@@ -176,7 +231,24 @@ class MessengerStoreFactory(
 				)
 				is Msg.SetChatsList -> copy(
 					chats = message.chats.map {
-						State.ChatState(chat = it, messages = listOf())
+						State.ChatState(chat = it, readMessages = listOf(), unreadMessages = listOf())
+					}
+				)
+
+				is Msg.ReadMessagesBefore -> copy(
+					chats = chats.map {
+						if (it.chat.id == message.chatId) {
+							val messageIdsToRead = it.unreadMessages
+								.filter { it.id <= message.messageId }
+								.map { it.id }
+							it.copy(
+								readMessages = it.readMessages + it.unreadMessages
+									.filter { it.id in messageIdsToRead },
+								unreadMessages = it.unreadMessages
+									.filter { it.id !in messageIdsToRead }
+							)
+						}
+						else it
 					}
 				)
 			}

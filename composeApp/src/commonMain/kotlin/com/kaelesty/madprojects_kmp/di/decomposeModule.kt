@@ -28,6 +28,7 @@ import com.kaelesty.madprojects_kmp.blocs.project.settings.DefaultSettingsCompon
 import com.kaelesty.madprojects_kmp.blocs.project.settings.SettingsComponent
 import com.kaelesty.madprojects_kmp.blocs.root.DefaultRootComponent
 import com.kaelesty.madprojects_kmp.blocs.root.RootComponent
+import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
 
 val decomposeModule = module {
@@ -111,7 +112,11 @@ val decomposeModule = module {
 			(componentContext: ComponentContext) ->
 		DefaultMessengerComponent(
 			componentContext = componentContext,
-			storeFactory = get()
+			storeFactory = get(
+				parameters = {
+					parametersOf(2)
+				}
+			)
 		)
 	}
 

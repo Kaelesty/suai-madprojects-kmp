@@ -35,4 +35,6 @@ interface ChatComponent {
 	}
 
 	fun sendMessage(text: String)
+
+	fun readMessage(messageId: Int)
 }
