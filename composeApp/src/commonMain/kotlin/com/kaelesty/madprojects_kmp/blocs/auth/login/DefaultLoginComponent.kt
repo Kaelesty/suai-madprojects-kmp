@@ -34,7 +34,7 @@ class DefaultLoginComponent(
 
 	private fun acceptLabel(label: LoginStore.Label) {
 		when (label) {
-			LoginStore.Label.SuccessfulAuth -> { navigator.onSuccessfulLogin() }
+			is LoginStore.Label.SuccessfulAuth -> { navigator.onSuccessfulLogin(label.jwt, label.userType) }
 		}
 	}
 

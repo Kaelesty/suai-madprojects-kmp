@@ -3,6 +3,7 @@ package com.kaelesty.madprojects_kmp.blocs.project.messenger.chatslist
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
 import com.kaelesty.madprojects_kmp.blocs.project.messenger.MessengerStore
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.StateFlow
 
 class DefaultChatListComponent(
@@ -11,6 +12,7 @@ class DefaultChatListComponent(
 	private val onChatSelected_: (Int) -> Unit,
 ): ComponentContext by componentContext, ChatsListComponent {
 
+	@OptIn(ExperimentalCoroutinesApi::class)
 	override val state: StateFlow<MessengerStore.State>
 		get() = store.stateFlow
 

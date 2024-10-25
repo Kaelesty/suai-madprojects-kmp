@@ -26,7 +26,8 @@ fun getCustomTypography(isDarkTheme: Boolean) = MaterialTheme.typography.copy(
 	),
 	button = TextStyle(
 		fontFamily = robotoFlex(),
-		fontSize = 24.sp
+		fontSize = 24.sp,
+		color = Color.White
 	),
 	body2 = TextStyle(
 		fontFamily = robotoFlex(),

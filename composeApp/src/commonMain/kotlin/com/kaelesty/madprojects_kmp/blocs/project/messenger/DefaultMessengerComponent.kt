@@ -13,6 +13,7 @@ import com.kaelesty.madprojects_kmp.blocs.project.messenger.chat.ChatComponent
 import com.kaelesty.madprojects_kmp.blocs.project.messenger.chatslist.ChatsListComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
@@ -46,6 +47,7 @@ class DefaultMessengerComponent(
 		childFactory = ::child
 	)
 
+	@OptIn(ExperimentalCoroutinesApi::class)
 	override val state: StateFlow<MessengerStore.State>
 		get() = store.stateFlow
 

@@ -41,6 +41,7 @@ import com.kaelesty.madprojects_kmp.blocs.project.kanban.KanbanContent
 import com.kaelesty.madprojects_kmp.blocs.project.messenger.MessengerContent
 import com.kaelesty.madprojects_kmp.blocs.project.settings.SettingsContent
 import com.kaelesty.madprojects_kmp.ui.uikit.cards.NavBarCard
+import com.kaelesty.madprojects_kmp.ui.uikit.layout.TopBar
 
 @Composable
 fun ProjectContent(
@@ -120,50 +121,7 @@ fun ProjectTopBar(
 	component: ProjectComponent
 ) {
 	val state by component.state.collectAsState()
-	val gradientColors = listOf(
-		MaterialTheme.colors.secondary,
-		MaterialTheme.colors.secondaryVariant,
-		MaterialTheme.colors.onSecondary
-	)
-	Box(
-		modifier = Modifier.fillMaxWidth()
-	) {
-		Surface(
-			modifier = Modifier
-				.background(
-					color = Color.White
-				)
-				.fillMaxWidth()
-				.height(60.dp)
-				.bottomBorder(
-					brush = Brush.linearGradient(gradientColors, tileMode = TileMode.Decal),
-					height = 8f
-				)
-		) { }
-		Row(
-			verticalAlignment = Alignment.CenterVertically,
-			modifier = Modifier
-				.fillMaxWidth()
-		) {
-			Spacer(Modifier.width(16.dp))
-			Text(
-				text = "mp",
-				style = MaterialTheme.typography.caption,
-				fontSize = 80.sp,
-			)
-			Spacer(Modifier.width(16.dp))
-			Text(
-				text = "Проекты/${state.projectName}",
-				style = MaterialTheme.typography.body2
-					.copy(
-						fontSize = 30.sp,
-						fontWeight = FontWeight.ExtraLight
-					),
-				modifier = Modifier
-					.offset(y= (- 4).dp)
-			)
-		}
-	}
+	TopBar("Проекты/${state.projectName ?: "Project"} ")
 }
 
 fun Modifier.bottomBorder(

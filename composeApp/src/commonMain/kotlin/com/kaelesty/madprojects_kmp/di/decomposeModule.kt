@@ -13,6 +13,9 @@ import com.kaelesty.madprojects_kmp.blocs.auth.register.DefaultRegisterComponent
 import com.kaelesty.madprojects_kmp.blocs.auth.register.RegisterComponent
 import com.kaelesty.madprojects_kmp.blocs.auth.welcome.DefaultWelcomeComponent
 import com.kaelesty.madprojects_kmp.blocs.auth.welcome.WelcomeComponent
+import com.kaelesty.madprojects_kmp.blocs.memberProfile.DefaultMemberProfileComponent
+import com.kaelesty.madprojects_kmp.blocs.memberProfile.MemberProfileComponent
+import com.kaelesty.madprojects_kmp.blocs.memberProfile.MemberProfileStoreFactory
 import com.kaelesty.madprojects_kmp.blocs.project.info.DefaultInfoComponent
 import com.kaelesty.madprojects_kmp.blocs.project.info.InfoComponent
 import com.kaelesty.madprojects_kmp.blocs.project.kanban.DefaultKanbanComponent
@@ -142,6 +145,15 @@ val decomposeModule = module {
 			componentContext = componentContext,
 			store = store,
 			chatId = chatId
+		)
+	}
+
+	factory<MemberProfileComponent> {
+			(componentContext: ComponentContext, jwt: String) ->
+		DefaultMemberProfileComponent(
+			componentContext = componentContext,
+			storeFactory = get(),
+			jwt = jwt
 		)
 	}
 }

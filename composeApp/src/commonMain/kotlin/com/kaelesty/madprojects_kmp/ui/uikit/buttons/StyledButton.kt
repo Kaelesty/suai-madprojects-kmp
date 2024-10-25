@@ -13,7 +13,6 @@ fun StyledButton(
 	text: String,
 	onClick: () -> Unit,
 ) {
-
 	Button(
 		onClick,
 		modifier = modifier,

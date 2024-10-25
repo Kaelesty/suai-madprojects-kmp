@@ -11,6 +11,7 @@ import com.arkivanov.decompose.extensions.compose.stack.Children
 import com.arkivanov.decompose.extensions.compose.stack.animation.slide
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import com.kaelesty.madprojects_kmp.blocs.auth.AuthContent
+import com.kaelesty.madprojects_kmp.blocs.memberProfile.MemberProfileContent
 import com.kaelesty.madprojects_kmp.blocs.project.ProjectContent
 import com.kaelesty.madprojects_kmp.ui.lock.Lock
 
@@ -37,6 +38,7 @@ fun RootContent(
 		when (val instance = it.instance) {
 			is RootComponent.Child.Auth -> AuthContent(component = instance.component)
 			is RootComponent.Child.Project -> ProjectContent(component = instance.component)
+			is RootComponent.Child.MemberProfile -> MemberProfileContent(component = instance.component)
 		}
 	}
 }

@@ -16,6 +16,7 @@ import com.kaelesty.madprojects_kmp.blocs.project.messenger.MessengerComponent
 import com.kaelesty.madprojects_kmp.blocs.project.settings.SettingsComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
@@ -44,11 +45,12 @@ class DefaultProjectComponent(
 			}
 	}
 
+	@OptIn(ExperimentalCoroutinesApi::class)
 	override val state: StateFlow<ProjectStore.State>
 		get() = store.stateFlow
 
-	override fun navigate(target: ProjectComponent.Child.NavTarget) {
-		store.accept(ProjectStore.Intent.Navigate(target))
+	override fun navigate(child: ProjectComponent.Child.NavTarget) {
+		store.accept(ProjectStore.Intent.Navigate(child))
 	}
 
 	override val stack: Value<ChildStack<*, ProjectComponent.Child>> = childStack(

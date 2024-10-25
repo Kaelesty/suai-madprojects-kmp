@@ -1,7 +1,9 @@
 package com.kaelesty.domain.auth.login
 
-import com.kaelesty.domain.common.UserType
+import entities.UserType
+
 
 data class LoginBody(
-	val userType: UserType
+	val userType: UserType,
+	val jwt: String,
 )
