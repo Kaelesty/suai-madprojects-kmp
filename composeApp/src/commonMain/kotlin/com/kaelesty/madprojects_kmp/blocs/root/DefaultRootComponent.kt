@@ -57,11 +57,11 @@ class DefaultRootComponent(
             )
         }
 
-        Config.Project -> {
+        is Config.Project -> {
             RootComponent.Child.Project(
                 component = get(
                     clazz = ProjectComponent::class.java,
-                    parameters = { parametersOf(componentContext) }
+                    parameters = { parametersOf(componentContext, config.projectId) }
                 )
             )
         }
@@ -73,7 +73,24 @@ class DefaultRootComponent(
                     parameters = {
                         parametersOf(
                             componentContext,
-                            config.jwt
+                            config.jwt,
+                            object : MemberProfileComponent.Navigator {
+                                override fun editProfile() {
+                                    TODO("Not yet implemented")
+                                }
+
+                                override fun openProject(projectId: Int) {
+                                    navigation.push(Config.Project(projectId))
+                                }
+
+                                override fun connectProject() {
+                                    TODO("Not yet implemented")
+                                }
+
+                                override fun createProject() {
+                                    TODO("Not yet implemented")
+                                }
+                            }
                         )
                     }
                 )
@@ -88,7 +105,7 @@ class DefaultRootComponent(
         data object Auth : Config
 
         @Serializable
-        data object Project : Config
+        data class Project(val projectId: Int) : Config
 
         @Serializable
         data class MemberProfile(val jwt: String) : Config

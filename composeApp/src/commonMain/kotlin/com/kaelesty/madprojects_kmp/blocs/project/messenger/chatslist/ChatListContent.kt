@@ -1,6 +1,8 @@
 package com.kaelesty.madprojects_kmp.blocs.project.messenger.chatslist
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -68,7 +71,8 @@ fun ChatCard(
 		Row(
 			modifier = Modifier
 				.fillMaxWidth()
-				.padding(8.dp)
+				.padding(8.dp),
+			verticalAlignment = Alignment.CenterVertically
 		) {
 			Image(
 				imageVector =  vectorResource(when (chat.chatType) {
@@ -86,8 +90,7 @@ fun ChatCard(
 			)
 			Spacer(Modifier.width(10.dp))
 			Box(
-				contentAlignment = Alignment.Center,
-				modifier = Modifier//.padding(vertical = 4.dp)
+				contentAlignment = Alignment.CenterStart,
 			) {
 				Column {
 					Text(
@@ -133,15 +136,16 @@ fun ChatCard(
 							}
 						}
 					}
-					Row {
+					Row(
+						verticalAlignment = Alignment.CenterVertically
+					) {
 						Text(
 							style = MaterialTheme.typography.body2.copy(
 								fontSize = 20.sp
 							),
 							text = secondaryText,
-							modifier = Modifier
-								.weight(1f)
 						)
+						Spacer(Modifier.width(8.dp))
 						chat.lastMessage?.let {
 							Text(
 								text = " ${it.time.toReadableTime()}",
@@ -154,6 +158,18 @@ fun ChatCard(
 					}
 
 				}
+			}
+			Spacer(Modifier.weight(1f))
+			if (chat.unreadMessagesCount != 0) {
+				Text(
+					text = chat.unreadMessagesCount.toString(),
+					modifier = Modifier
+						.border(
+							BorderStroke(1.dp, Color.Blue),
+							shape = RoundedCornerShape(100)
+						)
+						.padding(8.dp)
+				)
 			}
 		}
 	}

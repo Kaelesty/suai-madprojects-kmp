@@ -16,10 +16,6 @@ import kotlinx.coroutines.launch
 interface MemberProfileStore : Store<Intent, State, Label> {
 
     sealed interface Intent {
-        data class OpenProject(val projectId: Int): Intent
-        data object CreateProject: Intent
-        data object ConnectProject: Intent
-        data object EditProfile: Intent
     }
 
     data class State(
@@ -83,6 +79,7 @@ class MemberProfileStoreFactory(
 
     private class ExecutorImpl : CoroutineExecutor<Intent, Action, State, Msg, Label>() {
         override fun executeIntent(intent: Intent) {
+
         }
 
         override fun executeAction(action: Action) {

@@ -10,6 +10,7 @@ class DefaultMemberProfileComponent(
     private val storeFactory: MemberProfileStoreFactory,
     private val componentContext: ComponentContext,
     private val jwt: String,
+    private val navigator: MemberProfileComponent.Navigator
 ): ComponentContext by componentContext, MemberProfileComponent {
 
     private val store = instanceKeeper.getStore {
@@ -21,18 +22,18 @@ class DefaultMemberProfileComponent(
         get() = store.stateFlow
 
     override fun onOpenProject(projectId: Int) {
-        store.accept(MemberProfileStore.Intent.OpenProject(projectId))
+        navigator.openProject(projectId)
     }
 
     override fun onConnectProject() {
-        store.accept(MemberProfileStore.Intent.ConnectProject)
+        navigator.connectProject()
     }
 
     override fun onCreateProject() {
-        store.accept(MemberProfileStore.Intent.CreateProject)
+        navigator.createProject()
     }
 
     override fun onEditProfile() {
-        store.accept(MemberProfileStore.Intent.EditProfile)
+        navigator.editProfile()
     }
 }

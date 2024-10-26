@@ -69,6 +69,7 @@ class MessengerStoreFactory(
 		) : Msg
 		data class SetChatsList(val chats: List<Chat>) : Msg
 		data class ReadMessagesBefore(val messageId: Int, val chatId: Int) : Msg
+		data class UpdateUnreadCount(val chatId: Int, val count: Int): Msg
 	}
 
 	private class BootstrapperImpl(
@@ -160,6 +161,9 @@ class MessengerStoreFactory(
 				)
 
 				is ServerAction.MessageReadRecorded -> { /*TEMPORARY UNUSED*/ }
+				is ServerAction.UpdateChatUnreadCount -> {
+					dispatch(Msg.UpdateUnreadCount(action.chatId, action.count))
+				}
 			}
 		}
 	}
@@ -246,6 +250,19 @@ class MessengerStoreFactory(
 									.filter { it.id in messageIdsToRead },
 								unreadMessages = it.unreadMessages
 									.filter { it.id !in messageIdsToRead }
+							)
+						}
+						else it
+					}
+				)
+
+				is Msg.UpdateUnreadCount -> copy(
+					chats = chats.map {
+						if (it.chat.id == message.chatId) {
+							it.copy(
+								chat = it.chat.copy(
+									unreadMessagesCount = message.count
+								)
 							)
 						}
 						else it

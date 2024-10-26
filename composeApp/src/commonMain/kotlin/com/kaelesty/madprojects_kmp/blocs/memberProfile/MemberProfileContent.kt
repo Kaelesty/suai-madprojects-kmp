@@ -1,5 +1,6 @@
 package com.kaelesty.madprojects_kmp.blocs.memberProfile
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -56,7 +57,7 @@ fun MemberProfileContent(
         ) {
             MetaCard(state, gradientColors)
             Spacer(Modifier.height(18.dp))
-            ProjectsList(state, gradientColors)
+            ProjectsList(state, gradientColors, component)
         }
     }
 }
@@ -64,7 +65,8 @@ fun MemberProfileContent(
 @Composable
 private fun ProjectsList(
     state: MemberProfileStore.State,
-    gradientColors: List<Color>
+    gradientColors: List<Color>,
+    component: MemberProfileComponent
 ) {
     TitledRoundedCard(
         title = "Мои проекты",
@@ -87,6 +89,9 @@ private fun ProjectsList(
                             ),
                             height = 2f
                         )
+                        .clickable {
+                            component.onOpenProject(it.id)
+                        }
                 ) {
                     Text(
                         text = it.name,

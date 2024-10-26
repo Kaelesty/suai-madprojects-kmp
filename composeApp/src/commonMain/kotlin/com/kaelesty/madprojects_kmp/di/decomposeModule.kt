@@ -15,6 +15,7 @@ import com.kaelesty.madprojects_kmp.blocs.auth.welcome.DefaultWelcomeComponent
 import com.kaelesty.madprojects_kmp.blocs.auth.welcome.WelcomeComponent
 import com.kaelesty.madprojects_kmp.blocs.memberProfile.DefaultMemberProfileComponent
 import com.kaelesty.madprojects_kmp.blocs.memberProfile.MemberProfileComponent
+import com.kaelesty.madprojects_kmp.blocs.memberProfile.MemberProfileStore
 import com.kaelesty.madprojects_kmp.blocs.memberProfile.MemberProfileStoreFactory
 import com.kaelesty.madprojects_kmp.blocs.project.info.DefaultInfoComponent
 import com.kaelesty.madprojects_kmp.blocs.project.info.InfoComponent
@@ -33,6 +34,7 @@ import com.kaelesty.madprojects_kmp.blocs.root.DefaultRootComponent
 import com.kaelesty.madprojects_kmp.blocs.root.RootComponent
 import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
+import java.lang.reflect.Member
 
 val decomposeModule = module {
 
@@ -81,11 +83,11 @@ val decomposeModule = module {
 	}
 
 	factory<ProjectComponent> {
-		(componentContext: ComponentContext) ->
+		(componentContext: ComponentContext, projectId: Int) ->
 		DefaultProjectComponent(
 			componentContext = componentContext,
 			storeFactory = get(),
-			projectId = 0
+			projectId = projectId
 		)
 	}
 
@@ -149,11 +151,12 @@ val decomposeModule = module {
 	}
 
 	factory<MemberProfileComponent> {
-			(componentContext: ComponentContext, jwt: String) ->
+			(componentContext: ComponentContext, jwt: String, navigator: MemberProfileComponent.Navigator) ->
 		DefaultMemberProfileComponent(
 			componentContext = componentContext,
 			storeFactory = get(),
-			jwt = jwt
+			jwt = jwt,
+			navigator = navigator
 		)
 	}
 }

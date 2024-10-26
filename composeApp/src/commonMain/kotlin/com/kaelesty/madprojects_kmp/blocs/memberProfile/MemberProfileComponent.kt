@@ -13,4 +13,15 @@ interface MemberProfileComponent {
     fun onCreateProject()
 
     fun onEditProfile()
+
+    interface Navigator {
+
+        fun editProfile()
+
+        fun openProject(projectId: Int)
+
+        fun connectProject()
+
+        fun createProject()
+    }
 }
