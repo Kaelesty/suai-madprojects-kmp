@@ -13,6 +13,10 @@ import com.kaelesty.madprojects_kmp.blocs.auth.register.DefaultRegisterComponent
 import com.kaelesty.madprojects_kmp.blocs.auth.register.RegisterComponent
 import com.kaelesty.madprojects_kmp.blocs.auth.welcome.DefaultWelcomeComponent
 import com.kaelesty.madprojects_kmp.blocs.auth.welcome.WelcomeComponent
+import com.kaelesty.madprojects_kmp.blocs.memberProfile.DefaultMemberProfileComponent
+import com.kaelesty.madprojects_kmp.blocs.memberProfile.MemberProfileComponent
+import com.kaelesty.madprojects_kmp.blocs.memberProfile.MemberProfileStore
+import com.kaelesty.madprojects_kmp.blocs.memberProfile.MemberProfileStoreFactory
 import com.kaelesty.madprojects_kmp.blocs.project.info.DefaultInfoComponent
 import com.kaelesty.madprojects_kmp.blocs.project.info.InfoComponent
 import com.kaelesty.madprojects_kmp.blocs.project.kanban.DefaultKanbanComponent
@@ -20,13 +24,17 @@ import com.kaelesty.madprojects_kmp.blocs.project.kanban.KanbanComponent
 import com.kaelesty.madprojects_kmp.blocs.project.messenger.DefaultMessengerComponent
 import com.kaelesty.madprojects_kmp.blocs.project.messenger.MessengerComponent
 import com.kaelesty.madprojects_kmp.blocs.project.messenger.MessengerStore
+import com.kaelesty.madprojects_kmp.blocs.project.messenger.chat.ChatComponent
+import com.kaelesty.madprojects_kmp.blocs.project.messenger.chat.DefaultChatComponent
 import com.kaelesty.madprojects_kmp.blocs.project.messenger.chatslist.ChatsListComponent
 import com.kaelesty.madprojects_kmp.blocs.project.messenger.chatslist.DefaultChatListComponent
 import com.kaelesty.madprojects_kmp.blocs.project.settings.DefaultSettingsComponent
 import com.kaelesty.madprojects_kmp.blocs.project.settings.SettingsComponent
 import com.kaelesty.madprojects_kmp.blocs.root.DefaultRootComponent
 import com.kaelesty.madprojects_kmp.blocs.root.RootComponent
+import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
+import java.lang.reflect.Member
 
 val decomposeModule = module {
 
@@ -75,11 +83,11 @@ val decomposeModule = module {
 	}
 
 	factory<ProjectComponent> {
-		(componentContext: ComponentContext) ->
+		(componentContext: ComponentContext, projectId: Int) ->
 		DefaultProjectComponent(
 			componentContext = componentContext,
 			storeFactory = get(),
-			projectId = 0
+			projectId = projectId
 		)
 	}
 
@@ -109,7 +117,11 @@ val decomposeModule = module {
 			(componentContext: ComponentContext) ->
 		DefaultMessengerComponent(
 			componentContext = componentContext,
-			storeFactory = get()
+			storeFactory = get(
+				parameters = {
+					parametersOf(2)
+				}
+			)
 		)
 	}
 
@@ -121,10 +133,30 @@ val decomposeModule = module {
 	}
 
 	factory<ChatsListComponent> {
-			(componentContext: ComponentContext, store: MessengerStore) ->
+			(componentContext: ComponentContext, store: MessengerStore, onChatSelected: (Int) -> Unit) ->
 		DefaultChatListComponent(
 			componentContext = componentContext,
-			store = store
+			store = store,
+			onChatSelected_ = onChatSelected
+		)
+	}
+
+	factory<ChatComponent> {
+			(componentContext: ComponentContext, store: MessengerStore, chatId: Int) ->
+		DefaultChatComponent(
+			componentContext = componentContext,
+			store = store,
+			chatId = chatId
+		)
+	}
+
+	factory<MemberProfileComponent> {
+			(componentContext: ComponentContext, jwt: String, navigator: MemberProfileComponent.Navigator) ->
+		DefaultMemberProfileComponent(
+			componentContext = componentContext,
+			storeFactory = get(),
+			jwt = jwt,
+			navigator = navigator
 		)
 	}
 }

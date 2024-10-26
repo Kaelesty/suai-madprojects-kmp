@@ -15,7 +15,6 @@ sealed interface ServerAction {
     class SendChatsList(
         val chats: List<Chat>
     ): ServerAction
-    // On connect to WS
 
     @Serializable
     class NewChat(
@@ -25,6 +24,20 @@ sealed interface ServerAction {
     @Serializable
     class SendChatMessages(
         val chatId: Int,
-        val messages: List<Message>
+        val readMessages: List<Message>,
+        val unreadMessages: List<Message>,
+    ): ServerAction
+
+
+    @Serializable
+    class MessageReadRecorded(
+        val messageId: Int,
+        val chatId: Int,
+    ): ServerAction
+
+    @Serializable
+    class UpdateChatUnreadCount(
+        val chatId: Int,
+        val count: Int,
     ): ServerAction
 }

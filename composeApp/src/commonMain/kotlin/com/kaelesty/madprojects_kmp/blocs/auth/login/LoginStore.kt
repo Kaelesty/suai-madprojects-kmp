@@ -13,7 +13,9 @@ import com.kaelesty.madprojects_kmp.blocs.auth.login.LoginStore.Intent
 import com.kaelesty.madprojects_kmp.blocs.auth.login.LoginStore.Label
 import com.kaelesty.madprojects_kmp.blocs.auth.login.LoginStore.State
 import com.kaelesty.madprojects_kmp.ui.lock.Lock
+import entities.UserType
 import kotlinx.coroutines.launch
+import kotlin.math.log
 
 interface LoginStore : Store<Intent, State, Label> {
 
@@ -31,7 +33,7 @@ interface LoginStore : Store<Intent, State, Label> {
     )
 
     sealed interface Label {
-        data object SuccessfulAuth: Label
+        data class SuccessfulAuth(val jwt: String, val userType: UserType): Label
     }
 }
 
@@ -44,7 +46,11 @@ class LoginStoreFactory(
     fun create(): LoginStore =
         object : LoginStore, Store<Intent, State, Label> by storeFactory.create(
             name = "LoginStore",
-            initialState = State(),
+            initialState = State(
+                login = "Kaelesty@email.com",
+                password = "123123123",
+                errorMessage = "! DEBUG INITIAL STATE !"
+            ), // TODO REMOVE
             bootstrapper = BootstrapperImpl(),
             executorFactory = { ExecutorImpl(loginUseCase, lock = lock) },
             reducer = ReducerImpl
@@ -99,7 +105,10 @@ class LoginStoreFactory(
                                 dispatch(Msg.SetError("Ошибка сервера. Повторите попытку позже."))
                             }
                             is UseCaseResult.Success -> {
-                                publish(Label.SuccessfulAuth)
+                                publish(Label.SuccessfulAuth(
+                                    userType = result.body.userType,
+                                    jwt = result.body.jwt
+                                ))
                             }
                         }
                     }

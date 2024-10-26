@@ -59,7 +59,7 @@ fun LoginContent(
 				Spacer(modifier = Modifier.height(12.dp))
 				TitledTextField(
 					state.password,
-					title = "Password",
+					title = "Пароль",
 					isPassword = true,
 					onValueChange = {
 						component.dropError()

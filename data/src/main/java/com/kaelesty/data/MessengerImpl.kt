@@ -41,10 +41,8 @@ class MessengerImpl : Messenger {
 	override suspend fun connect(
 		onFinish: () -> Unit
 	) {
-		println("!")
-		websocketSession = client.webSocketSession("ws://a99f-193-32-202-60.ngrok-free.app/messenger").also { session ->
+		websocketSession = client.webSocketSession("ws://kaelesty.ru:8080/messenger").also { session ->
 			scope.launch {
-				println("!")
 				outgoingFlow.collect {
 					session.send(Frame.Text(Json.encodeToString(it)))
 				}

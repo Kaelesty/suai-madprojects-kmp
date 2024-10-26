@@ -27,6 +27,7 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.ktor.client.okhttp)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -50,6 +51,14 @@ kotlin {
 
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
+
+            implementation(libs.coil.compose)
+            implementation(libs.coil.network.ktor3)
+
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.cio)
+
+            implementation(libs.androidx.ui.tooling.preview)
 
             implementation(project(":domain"))
             implementation(project(":data"))
@@ -102,6 +111,11 @@ dependencies {
     implementation(project(":shared_domain"))
     implementation(project(":shared_domain"))
     implementation(project(":shared_domain"))
+    val composeBom = platform("androidx.compose:compose-bom:2023.10.00")
+    implementation(composeBom)
+    // Android Studio Preview support
+    implementation(libs.ui.tooling.preview)
+    debugImplementation(libs.androidx.ui.tooling)
 }
 
 compose.desktop {

@@ -5,6 +5,7 @@ import com.arkivanov.decompose.value.Value
 import com.kaelesty.madprojects_kmp.blocs.auth.login.LoginComponent
 import com.kaelesty.madprojects_kmp.blocs.auth.register.RegisterComponent
 import com.kaelesty.madprojects_kmp.blocs.auth.welcome.WelcomeComponent
+import entities.UserType
 
 interface AuthComponent {
 
@@ -21,6 +22,6 @@ interface AuthComponent {
 
 	interface Navigator {
 
-		fun toProject()
+		fun onSuccessfulAuth(jwt: String, userType: UserType)
 	}
 }

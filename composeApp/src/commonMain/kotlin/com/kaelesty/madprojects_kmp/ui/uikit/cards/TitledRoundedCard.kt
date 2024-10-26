@@ -2,7 +2,9 @@ package com.kaelesty.madprojects_kmp.ui.uikit.cards
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -30,6 +32,7 @@ fun TitledRoundedCard(
 			modifier = Modifier
 				.offset(x = 24.dp)
 		)
+		Spacer(Modifier.height(12.dp))
 		StyledRoundedCard(
 			modifier = Modifier
 				.fillMaxWidth()

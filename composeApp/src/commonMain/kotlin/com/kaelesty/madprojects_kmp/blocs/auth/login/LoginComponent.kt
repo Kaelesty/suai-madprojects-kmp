@@ -1,5 +1,6 @@
 package com.kaelesty.madprojects_kmp.blocs.auth.login
 
+import entities.UserType
 import kotlinx.coroutines.flow.StateFlow
 
 interface LoginComponent {
@@ -18,7 +19,7 @@ interface LoginComponent {
 
 	interface Navigator {
 
-		fun onSuccessfulLogin()
+		fun onSuccessfulLogin(jwt: String, userType: UserType)
 
 		fun back()
 	}
