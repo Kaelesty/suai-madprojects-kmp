@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.arkivanov.essenty.backhandler.BackHandler
+import com.kaelesty.madprojects_kmp.ui.experimental.Styled
 import com.kaelesty.madprojects_kmp.ui.uikit.buttons.StyledButton
 import com.kaelesty.madprojects_kmp.ui.uikit.cards.StyledCard
 import com.kaelesty.madprojects_kmp.ui.uikit.text.TitledTextField
@@ -70,10 +71,7 @@ fun LoginContent(
 				)
 				Spacer(modifier = Modifier.height(4.dp))
 				if (state.errorMessage != "") {
-					Text(
-						text = state.errorMessage,
-						style = MaterialTheme.typography.overline
-					)
+					Styled.uiKit().ErrorText(state.errorMessage)
 				}
 				Spacer(modifier = Modifier.height(48.dp))
 				StyledButton(

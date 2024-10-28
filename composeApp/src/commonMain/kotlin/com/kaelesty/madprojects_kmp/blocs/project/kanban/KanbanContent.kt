@@ -1,11 +1,14 @@
 package com.kaelesty.madprojects_kmp.blocs.project.kanban
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -13,8 +16,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -40,21 +41,21 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.kaelesty.madprojects_kmp.extensions.toReadableTime
+import com.kaelesty.madprojects_kmp.ui.experimental.Styled
 import com.kaelesty.madprojects_kmp.ui.uikit.buttons.StyledButton
 import com.kaelesty.madprojects_kmp.ui.uikit.cards.StyledRoundedCard
 import com.kaelesty.madprojects_kmp.ui.uikit.text.TitledTextField
 import entities.KanbanState
 import madprojects.composeapp.generated.resources.Res
 import madprojects.composeapp.generated.resources.circle_add
+import madprojects.composeapp.generated.resources.folder_add
 import madprojects.composeapp.generated.resources.move_dots
 import madprojects.composeapp.generated.resources.right_arrow
 import org.jetbrains.compose.resources.vectorResource
@@ -63,6 +64,7 @@ import org.jetbrains.compose.resources.vectorResource
 fun KanbanContent(
 	component: KanbanComponent
 ) {
+	println("recompose")
 	val state by component.state.collectAsState()
 	if (state.kanbanState == null) {
 		Box(
@@ -89,13 +91,19 @@ fun Kanban(
 		mutableStateOf(false)
 	}
 
-	if (showNewKardDialog) {
+	var showNewColumnDialog by remember {
+		mutableStateOf(false)
+	}
+
+	if (showNewColumnDialog) {
 		EditDialog(
-			title = "Создание карточки",
+			title = "Создать новую колонку",
 			initialName = "",
 			initialDesc = "",
-			onDismiss = { showNewKardDialog = false },
-			onSubmit = { name, desc -> /* TODO */ }
+			showSecond = false,
+			onDismiss = { showNewColumnDialog = false },
+			onSubmit = { name, _ -> component.createColumn(name) },
+			nameLimit = 25,
 		)
 	}
 
@@ -124,16 +132,33 @@ fun Kanban(
 			mutableStateOf(state.columns.first().id)
 		}
 
+		if (showNewKardDialog) {
+			EditDialog(
+				title = "Создание карточки",
+				initialName = "",
+				initialDesc = "",
+				onDismiss = { showNewKardDialog = false },
+				onSubmit = { name, desc ->
+					component.createKard(name, desc, selectedColumnId)
+				}
+			)
+		}
+
 		Column(
 			modifier = Modifier
 				.fillMaxSize()
 				.padding(it)
 				.padding(4.dp)
 		) {
+
+			val rowScroll = rememberScrollState()
+
 			Row(
 				modifier = Modifier
 					.fillMaxWidth()
 					.padding(8.dp)
+					.horizontalScroll(rowScroll)
+					.height(40.dp)
 			) {
 				state.columns.forEach {
 					ColumnSnack(
@@ -145,6 +170,26 @@ fun Kanban(
 					)
 					Spacer(Modifier.width(8.dp))
 				}
+				IconButton(
+					onClick = { showNewColumnDialog = true }
+				) {
+					Card(
+						backgroundColor = MaterialTheme.colors.primary,
+						shape = RoundedCornerShape(12.dp),
+					) {
+						Icon(
+							vectorResource(Res.drawable.folder_add),
+							null,
+							modifier = Modifier
+								.padding(4.dp)
+								.fillMaxHeight()
+								.aspectRatio(1f)
+							,
+							tint = Color.White
+						)
+					}
+				}
+
 			}
 			LazyVerticalGrid(
 				modifier = Modifier
@@ -178,6 +223,7 @@ fun ColumnSnack(
 		else MaterialTheme.colors.surface,
 		shape = RoundedCornerShape(12.dp),
 		modifier = Modifier
+			.fillMaxHeight()
 			.clickable { onClick(column.id) }
 	) {
 		Text(
@@ -357,8 +403,11 @@ fun EditDialog(
 	title: String,
 	initialName: String,
 	initialDesc: String,
+	showSecond: Boolean = true,
 	onDismiss: () -> Unit,
 	onSubmit: (String, String) -> Unit,
+	nameLimit: Int = 50,
+	descLimit: Int = 1024,
 ) {
 
 	var name by rememberSaveable {
@@ -366,6 +415,9 @@ fun EditDialog(
 	}
 	var desc by rememberSaveable {
 		mutableStateOf(initialDesc)
+	}
+	var errorMessage by remember {
+		mutableStateOf<String?>(null)
 	}
 
 	Dialog(
@@ -390,18 +442,32 @@ fun EditDialog(
 					title = "Название",
 					text = name,
 					onValueChange = {
+						if (name.length > nameLimit) {
+							errorMessage = "Слишком длинное имя (${name.length}/$nameLimit)"
+						}
 						name = it
 					}
 				)
 				Spacer(Modifier.height(8.dp))
-				TitledTextField(
-					title = "Описание",
-					text = desc,
-					onValueChange = {
-						desc = it
-					},
-					isSingleLine = false
-				)
+				if (showSecond) {
+					TitledTextField(
+						title = "Описание",
+						text = desc,
+						onValueChange = {
+							if (desc.length > descLimit) {
+								errorMessage = "Слишком длинное описание (${desc.length}/$descLimit)"
+							}
+							desc = it
+						},
+						isSingleLine = false
+					)
+				}
+				Spacer(Modifier.height(4.dp))
+				errorMessage?.let {
+					Styled.uiKit().ErrorText(
+						text = it
+					)
+				}
 				Spacer(Modifier.height(12.dp))
 				StyledButton(
 					modifier = Modifier
@@ -409,8 +475,11 @@ fun EditDialog(
 						.padding(horizontal = 8.dp),
 					text = "Подтвердить",
 					onClick = {
-						onSubmit(name, desc)
-						onDismiss()
+						if (errorMessage == null) {
+							errorMessage = null
+							onSubmit(name, desc)
+							onDismiss()
+						}
 					}
 				)
 			}
@@ -442,12 +511,8 @@ fun DeleteDialog(
 					),
 				)
 				Spacer(Modifier.height(4.dp))
-				Text(
-					text = "Это действие не может быть отменено",
-					style = MaterialTheme.typography.body2.copy(
-						fontSize = 20.sp,
-						color = Color.Red,
-					),
+				Styled.uiKit().ErrorText(
+					text = "Это действие не может быть отменено"
 				)
 				Spacer(Modifier.height(8.dp))
 				StyledButton(
