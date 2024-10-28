@@ -61,7 +61,7 @@ fun TopBar(title: String) {
                 style = MaterialTheme.typography.body2
                     .copy(
                         fontSize = 30.sp,
-                        fontWeight = FontWeight.ExtraLight
+                        fontWeight = FontWeight.Light
                     ),
                 modifier = Modifier
                     .offset(y = (-4).dp)

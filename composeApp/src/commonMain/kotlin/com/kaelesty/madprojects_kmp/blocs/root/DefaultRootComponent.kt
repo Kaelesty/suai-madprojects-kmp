@@ -61,7 +61,9 @@ class DefaultRootComponent(
             RootComponent.Child.Project(
                 component = get(
                     clazz = ProjectComponent::class.java,
-                    parameters = { parametersOf(componentContext, config.projectId) }
+                    parameters = {
+                        parametersOf(componentContext, config.projectId, config.jwt)
+                    }
                 )
             )
         }
@@ -80,7 +82,7 @@ class DefaultRootComponent(
                                 }
 
                                 override fun openProject(projectId: Int) {
-                                    navigation.push(Config.Project(projectId))
+                                    navigation.push(Config.Project(projectId, config.jwt))
                                 }
 
                                 override fun connectProject() {
@@ -105,7 +107,7 @@ class DefaultRootComponent(
         data object Auth : Config
 
         @Serializable
-        data class Project(val projectId: Int) : Config
+        data class Project(val projectId: Int, val jwt: String) : Config
 
         @Serializable
         data class MemberProfile(val jwt: String) : Config

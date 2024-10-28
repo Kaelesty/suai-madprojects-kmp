@@ -83,11 +83,12 @@ val decomposeModule = module {
 	}
 
 	factory<ProjectComponent> {
-		(componentContext: ComponentContext, projectId: Int) ->
+		(componentContext: ComponentContext, projectId: Int, jwt: String) ->
 		DefaultProjectComponent(
 			componentContext = componentContext,
 			storeFactory = get(),
-			projectId = projectId
+			projectId = projectId,
+			jwt = jwt
 		)
 	}
 
@@ -109,7 +110,8 @@ val decomposeModule = module {
 	factory<KanbanComponent> {
 			(componentContext: ComponentContext) ->
 		DefaultKanbanComponent(
-			componentContext = componentContext
+			componentContext = componentContext,
+			storeFactory = get()
 		)
 	}
 

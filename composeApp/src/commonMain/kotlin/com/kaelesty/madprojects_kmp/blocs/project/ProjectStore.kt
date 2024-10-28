@@ -5,9 +5,11 @@ import com.arkivanov.mvikotlin.core.store.Store
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineBootstrapper
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
+import com.kaelesty.domain.messenger.Socket
 import com.kaelesty.madprojects_kmp.blocs.project.ProjectStore.Intent
 import com.kaelesty.madprojects_kmp.blocs.project.ProjectStore.Label
 import com.kaelesty.madprojects_kmp.blocs.project.ProjectStore.State
+import kotlinx.coroutines.launch
 
 interface ProjectStore : Store<Intent, State, Label> {
 
@@ -32,16 +34,18 @@ interface ProjectStore : Store<Intent, State, Label> {
 }
 
 class ProjectStoreFactory(
-    private val storeFactory: StoreFactory
+    private val storeFactory: StoreFactory,
+    private val socket: Socket
 ) {
 
     fun create(
         projectId: Int,
+        jwt: String,
     ): ProjectStore =
         object : ProjectStore, Store<Intent, State, Label> by storeFactory.create(
             name = "ProjectStore",
             initialState = State(projectId),
-            bootstrapper = BootstrapperImpl(),
+            bootstrapper = BootstrapperImpl(jwt, projectId),
             executorFactory = ::ExecutorImpl,
             reducer = ReducerImpl
         ) {}
@@ -52,8 +56,24 @@ class ProjectStoreFactory(
     private sealed interface Msg {
     }
 
-    private class BootstrapperImpl : CoroutineBootstrapper<Action>() {
+    private inner class BootstrapperImpl(
+        private val jwt: String,
+        private val projectId: Int
+    ) : CoroutineBootstrapper<Action>() {
         override fun invoke() {
+            scope.launch {
+                socket.connect {
+                    scope.launch {
+                        socket.acceptIntent(
+                            entities.Intent.Authorize(
+                                jwt = jwt,
+                                projectId = projectId
+                            )
+                        )
+                    }
+                }
+            }
+
         }
     }
 

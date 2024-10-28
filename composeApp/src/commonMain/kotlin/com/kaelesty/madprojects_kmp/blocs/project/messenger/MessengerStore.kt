@@ -5,17 +5,13 @@ import com.arkivanov.mvikotlin.core.store.Store
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineBootstrapper
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
-import com.kaelesty.domain.messenger.Messenger
-import com.kaelesty.madprojects_kmp.blocs.project.messenger.MessengerStore.Intent
+import com.kaelesty.domain.messenger.Socket
 import com.kaelesty.madprojects_kmp.blocs.project.messenger.MessengerStore.Label
 import com.kaelesty.madprojects_kmp.blocs.project.messenger.MessengerStore.State
-import entities.Chat
-import entities.ClientAction
-import entities.Message
-import entities.ServerAction
+import entities.*
 import kotlinx.coroutines.launch
 
-interface MessengerStore : Store<Intent, State, Label> {
+interface MessengerStore : Store<MessengerStore.Intent, State, Label> {
 
 	sealed interface Intent {
 
@@ -24,6 +20,8 @@ interface MessengerStore : Store<Intent, State, Label> {
 		data class SendMessage(val text: String, val chatId: Int): Intent
 
 		data class ReadMessagesBefore(val messageId: Int, val chatId: Int): Intent
+
+		data object Close: Intent
 	}
 
 	data class State(
@@ -45,17 +43,17 @@ private const val MAX_MESSAGE_SIZE = 256
 
 class MessengerStoreFactory(
 	private val storeFactory: StoreFactory,
-	private val messenger: Messenger,
+	private val socket: Socket,
 	private val userId: Int
 ) {
 
 
 	fun create(): MessengerStore =
-		object : MessengerStore, Store<Intent, State, Label> by storeFactory.create(
+		object : MessengerStore, Store<MessengerStore.Intent, State, Label> by storeFactory.create(
 			name = "MessengerStore",
 			initialState = State(listOf()),
-			bootstrapper = BootstrapperImpl(messenger, userId),
-			executorFactory = { ExecutorImpl(messenger) },
+			bootstrapper = BootstrapperImpl(socket, userId),
+			executorFactory = { ExecutorImpl(socket) },
 			reducer = ReducerImpl(userId = userId)
 		) {}
 
@@ -73,63 +71,56 @@ class MessengerStoreFactory(
 	}
 
 	private class BootstrapperImpl(
-		private val messenger: Messenger,
+		private val socket: Socket,
 		private val userId: Int,
-	) : CoroutineBootstrapper<ServerAction>() {
+	) : CoroutineBootstrapper<Action>() {
 		override fun invoke() {
 			scope.launch {
-				messenger.connect {
-					scope.launch {
-						messenger.acceptAction(
-							ClientAction.Authorize(
-								jwt = userId.toString(), // TODO
-								projectId = 1
-							)
-						)
-						messenger.acceptAction(
-							ClientAction.RequestChatsList(
-								projectId = 1
-							)
-						)
-					}
-				}
+				socket.acceptIntent(
+					Intent.Messenger.Start
+				)
+				socket.acceptIntent(
+					Intent.Messenger.RequestChatsList(
+						projectId = 1
+					)
+				)
 			}
 			scope.launch {
-				messenger.actionsFlow.collect {
+				socket.actionsFlow.collect {
 					dispatch(it)
 				}
 			}
 		}
 	}
 
-	private class ExecutorImpl(private val messenger: Messenger) :
-		CoroutineExecutor<Intent, ServerAction, State, Msg, Label>() {
-		override fun executeIntent(intent: Intent) {
+	private class ExecutorImpl(private val socket: Socket) :
+		CoroutineExecutor<MessengerStore.Intent, Action, State, Msg, Label>() {
+		override fun executeIntent(intent: MessengerStore.Intent) {
 			when (intent) {
 
-				is Intent.OnChatSelected -> {
+				is MessengerStore.Intent.OnChatSelected -> {
 					scope.launch {
-						messenger.acceptAction(
-							ClientAction.RequestChatMessages(chatId = intent.chatId)
+						socket.acceptIntent(
+							Intent.Messenger.RequestChatMessages(chatId = intent.chatId)
 						)
 					}
 					publish(Label.NavigateToChat(intent.chatId))
 				}
-				is Intent.SendMessage -> {
+				is MessengerStore.Intent.SendMessage -> {
 					if (intent.text.isBlank() || intent.text.length > 256) return
 					scope.launch {
-						messenger.acceptAction(
-							ClientAction.SendMessage(
+						socket.acceptIntent(
+							Intent.Messenger.SendMessage(
 								message = intent.text.trim(),
 								chatId = intent.chatId)
 						)
 					}
 				}
 
-				is Intent.ReadMessagesBefore -> {
+				is MessengerStore.Intent.ReadMessagesBefore -> {
 					scope.launch {
-						messenger.acceptAction(
-							ClientAction.ReadMessagesBefore(
+						socket.acceptIntent(
+							Intent.Messenger.ReadMessagesBefore(
 								messageId = intent.messageId,
 								chatId = intent.chatId
 							)
@@ -138,17 +129,24 @@ class MessengerStoreFactory(
 					}
 					dispatch(Msg.ReadMessagesBefore(intent.messageId, intent.chatId))
 				}
+
+				MessengerStore.Intent.Close -> scope.launch {
+					socket.acceptIntent(
+						intent = Intent.Messenger.Stop
+					)
+				}
 			}
 		}
 
-		override fun executeAction(action: ServerAction) {
+		override fun executeAction(action: Action) {
+			if (action !is Action.Messenger) return
 			when (action) {
-				is ServerAction.NewChat -> dispatch(Msg.AddChat(chat = action.chat))
-				is ServerAction.NewMessage -> dispatch(
+				is Action.Messenger.NewChat -> dispatch(Msg.AddChat(chat = action.chat))
+				is Action.Messenger.NewMessage -> dispatch(
 					Msg.AddMessage(message = action.message, chatId = action.chatId)
 				)
 
-				is ServerAction.SendChatMessages -> dispatch(
+				is Action.Messenger.SendChatMessages -> dispatch(
 					Msg.SetChatMessages(
 						readMessages = action.readMessages,
 						unreadMessages = action.unreadMessages,
@@ -156,12 +154,12 @@ class MessengerStoreFactory(
 					)
 				)
 
-				is ServerAction.SendChatsList -> dispatch(
+				is Action.Messenger.SendChatsList -> dispatch(
 					Msg.SetChatsList(chats = action.chats)
 				)
 
-				is ServerAction.MessageReadRecorded -> { /*TEMPORARY UNUSED*/ }
-				is ServerAction.UpdateChatUnreadCount -> {
+				is Action.Messenger.MessageReadRecorded -> { /*TEMPORARY UNUSED*/ }
+				is Action.Messenger.UpdateChatUnreadCount -> {
 					dispatch(Msg.UpdateUnreadCount(action.chatId, action.count))
 				}
 			}

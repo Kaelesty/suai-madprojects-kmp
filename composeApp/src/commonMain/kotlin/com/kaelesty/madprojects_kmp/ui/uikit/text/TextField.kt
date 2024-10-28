@@ -28,7 +28,7 @@ fun StyledTextField(
 	modifier: Modifier = Modifier,
 	onValueChange: (String) -> Unit,
 	singleLine: Boolean = true,
-	isPassword: Boolean = false
+	isPassword: Boolean = false,
 ) {
 	Card(
 		modifier = modifier
@@ -69,6 +69,7 @@ fun TitledTextField(
 	isPassword: Boolean = false,
 	modifier: Modifier = Modifier,
 	onValueChange: (String) -> Unit,
+	isSingleLine: Boolean = true,
 ) {
 
 	Column {
@@ -78,7 +79,7 @@ fun TitledTextField(
 		)
 		Spacer(modifier = Modifier.height(10.dp))
 		StyledTextField(
-			text, modifier, onValueChange, isPassword = isPassword,
+			text, modifier, onValueChange, isPassword = isPassword, singleLine = isSingleLine
 		)
 	}
 }

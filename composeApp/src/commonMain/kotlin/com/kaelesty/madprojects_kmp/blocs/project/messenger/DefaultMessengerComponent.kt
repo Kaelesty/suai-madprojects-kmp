@@ -6,6 +6,7 @@ import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pushToFront
 import com.arkivanov.decompose.value.Value
+import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.arkivanov.mvikotlin.core.instancekeeper.getStore
 import com.arkivanov.mvikotlin.extensions.coroutines.labels
 import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
@@ -37,6 +38,17 @@ class DefaultMessengerComponent(
 				}
 			}
 		}
+	}
+
+	init {
+	    lifecycle.subscribe(
+			object: Lifecycle.Callbacks {
+				override fun onDestroy() {
+					super.onDestroy()
+					store.accept(MessengerStore.Intent.Close)
+				}
+			}
+		)
 	}
 
 	override val stack: Value<ChildStack<*, MessengerComponent.Child>> = childStack(

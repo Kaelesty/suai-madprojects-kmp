@@ -26,7 +26,8 @@ import org.koin.java.KoinJavaComponent.get
 class DefaultProjectComponent(
 	private val componentContext: ComponentContext,
 	private val storeFactory: ProjectStoreFactory,
-	projectId: Int
+	projectId: Int,
+	jwt: String,
 ) : ComponentContext by componentContext, ProjectComponent {
 
 	private val navigation = StackNavigation<Config>()
@@ -35,7 +36,7 @@ class DefaultProjectComponent(
 
 	private val store = instanceKeeper.getStore {
 		storeFactory
-			.create(projectId)
+			.create(projectId, jwt)
 			.apply {
 				scope.launch {
 					labels.collect {
