@@ -68,10 +68,10 @@ class DefaultKanbanComponent(
 	}
 
 	override fun deleteKard(id: Int) {
-		TODO("Not yet implemented")
+		store.accept(KanbanStore.Intent.DeleteKard(id))
 	}
 
 	override fun deleteColumn(id: Int) {
-		TODO("Not yet implemented")
+		store.accept(KanbanStore.Intent.DeleteColumn(id))
 	}
 }

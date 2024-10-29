@@ -41,6 +41,14 @@ interface KanbanStore : Store<Intent, State, Label> {
             val name: String,
             val desc: String,
         ): Intent
+
+        data class DeleteKard(
+            val kardId: Int
+        ): Intent
+
+        data class DeleteColumn(
+            val columnId: Int
+        ): Intent
     }
 
     data class State(
@@ -158,6 +166,21 @@ class KanbanStoreFactory(
                                 )
                             )
                         }
+                    }
+                }
+
+                is Intent.DeleteColumn -> {
+                    scope.launch {
+                        socket.acceptIntent(
+                            entities.Intent.Kanban.DeleteColumn(intent.columnId)
+                        )
+                    }
+                }
+                is Intent.DeleteKard -> {
+                    scope.launch {
+                        socket.acceptIntent(
+                            entities.Intent.Kanban.DeleteKard(intent.kardId)
+                        )
                     }
                 }
             }

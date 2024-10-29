@@ -10,6 +10,7 @@ object Styled {
 
     interface Colors {
         val errorRed: Color
+        val gradient: List<Color>
     }
 
     interface Typography {

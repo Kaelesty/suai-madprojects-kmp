@@ -19,13 +19,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kaelesty.madprojects_kmp.blocs.project.bottomBorder
 import com.kaelesty.madprojects_kmp.blocs.project.messenger.chat.Avatar
+import com.kaelesty.madprojects_kmp.ui.experimental.Styled
 import com.kaelesty.madprojects_kmp.ui.uikit.cards.StyledRoundedCard
 import com.kaelesty.madprojects_kmp.ui.uikit.cards.TitledRoundedCard
 import com.kaelesty.madprojects_kmp.ui.uikit.layout.TopBar
@@ -39,11 +39,6 @@ fun MemberProfileContent(
 ) {
 
     val state by component.state.collectAsState()
-    val gradientColors = listOf(
-        MaterialTheme.colors.secondary,
-        MaterialTheme.colors.secondaryVariant,
-        MaterialTheme.colors.onSecondary
-    )
 
     Scaffold(
         topBar = {
@@ -55,9 +50,9 @@ fun MemberProfileContent(
                 .padding(it)
                 .padding(4.dp)
         ) {
-            MetaCard(state, gradientColors)
+            MetaCard(state)
             Spacer(Modifier.height(18.dp))
-            ProjectsList(state, gradientColors, component)
+            ProjectsList(state, component)
         }
     }
 }
@@ -65,7 +60,6 @@ fun MemberProfileContent(
 @Composable
 private fun ProjectsList(
     state: MemberProfileStore.State,
-    gradientColors: List<Color>,
     component: MemberProfileComponent
 ) {
     TitledRoundedCard(
@@ -84,7 +78,7 @@ private fun ProjectsList(
                         .fillMaxWidth()
                         .bottomBorder(
                             brush = Brush.linearGradient(
-                                gradientColors,
+                                Styled.uiKit().colors().gradient,
                                 tileMode = TileMode.Decal
                             ),
                             height = 2f
@@ -117,7 +111,6 @@ private fun ProjectsList(
 @Composable
 private fun MetaCard(
     state: MemberProfileStore.State,
-    gradientColors: List<Color>
 ) {
     StyledRoundedCard(
         modifier = Modifier
@@ -167,7 +160,7 @@ private fun MetaCard(
                             modifier = Modifier
                                 .bottomBorder(
                                     brush = Brush.linearGradient(
-                                        gradientColors,
+                                        Styled.uiKit().colors().gradient,
                                         tileMode = TileMode.Decal
                                     ),
                                     height = 4f
