@@ -1,39 +1,62 @@
 package com.kaelesty.madprojects_kmp.blocs.memberProfile
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.mvikotlin.core.instancekeeper.getStore
-import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.StateFlow
+import com.arkivanov.decompose.router.stack.ChildStack
+import com.arkivanov.decompose.router.stack.StackNavigation
+import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.value.Value
+import com.kaelesty.madprojects_kmp.blocs.memberProfile.profile.ProfileComponent
+import kotlinx.serialization.Serializable
+import org.koin.core.parameter.parametersOf
+import org.koin.java.KoinJavaComponent.get
 
 class DefaultMemberProfileComponent(
-    private val storeFactory: MemberProfileStoreFactory,
     private val componentContext: ComponentContext,
-    private val jwt: String,
-    private val navigator: MemberProfileComponent.Navigator
 ): ComponentContext by componentContext, MemberProfileComponent {
 
-    private val store = instanceKeeper.getStore {
-        storeFactory.create(jwt)
+    private val navigation = StackNavigation<Config>()
+
+    override val stack: Value<ChildStack<*, MemberProfileComponent.Child>>
+        get() = childStack(
+            source = navigation,
+            initialConfiguration = Config.Profile,
+            handleBackButton = true,
+            serializer = Config.serializer(),
+            childFactory = ::child
+        )
+
+    private fun child(
+        config: Config,
+        componentContext: ComponentContext,
+    ): MemberProfileComponent.Child = when (config) {
+        Config.NewProject -> {
+            MemberProfileComponent.Child.NewProject(
+                component = get(
+                    clazz = ProfileComponent::class.java,
+                    parameters = {
+                        parametersOf(componentContext)
+                    }
+                )
+            )
+        }
+        Config.Profile -> {
+            MemberProfileComponent.Child.Profile(
+                component = get(
+                    clazz = ProfileComponent::class.java,
+                    parameters = {
+                        parametersOf(componentContext)
+                    }
+                )
+            )
+        }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override val state: StateFlow<MemberProfileStore.State>
-        get() = store.stateFlow
+    @Serializable
+    private sealed interface Config {
+        @Serializable
+        data object NewProject : Config
 
-    override fun onOpenProject(projectId: Int) {
-        navigator.openProject(projectId)
-    }
-
-    override fun onConnectProject() {
-        navigator.connectProject()
-    }
-
-    override fun onCreateProject() {
-        navigator.createProject()
-    }
-
-    override fun onEditProfile() {
-        navigator.editProfile()
+        @Serializable
+        data object Profile : Config
     }
 }

@@ -2,6 +2,8 @@ plugins {
 	id("java-library")
 	alias(libs.plugins.jetbrains.kotlin.jvm)
 	alias(libs.plugins.serialization)
+	alias(libs.plugins.ksp)
+	alias(libs.plugins.ktorfit)
 }
 
 java {
@@ -14,6 +16,8 @@ dependencies {
 	implementation(libs.kotlinx.coroutines.core)
 	implementation(libs.ktor.client.websockets)
 	implementation(libs.ktor.client.cio)
-	implementation( libs.kotlinx.serialization.json)
+	implementation(libs.kotlinx.serialization.json)
+	implementation(libs.ktorfit)
+	implementation(libs.koin.core)
 	implementation(project(":shared_domain"))
 }

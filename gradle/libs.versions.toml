@@ -25,6 +25,8 @@ espressoCore = "3.6.1"
 appcompat = "1.7.0"
 material = "1.12.0"
 uiToolingPreview = "1.7.4"
+kspVersion = "2.1.0-1.0.29"
+ktorfitVersion = "2.2.0"
 
 [libraries]
 androidx-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
@@ -56,6 +58,7 @@ androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-co
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
+ktorfit = { module = "de.jensklingenberg.ktorfit:ktorfit-lib", version.ref ="ktorfitVersion"  }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -66,3 +69,5 @@ kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref =
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin"}
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinVersion" }
+ksp = { id = "com.google.devtools.ksp",  version.ref = "kspVersion" }
+ktorfit = { id = "de.jensklingenberg.ktorfit", version.ref = "ktorfitVersion" }

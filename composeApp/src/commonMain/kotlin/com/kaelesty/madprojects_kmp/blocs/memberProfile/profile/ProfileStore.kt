@@ -1,4 +1,4 @@
-package com.kaelesty.madprojects_kmp.blocs.memberProfile
+package com.kaelesty.madprojects_kmp.blocs.memberProfile.profile
 
 import com.arkivanov.mvikotlin.core.store.Reducer
 import com.arkivanov.mvikotlin.core.store.Store
@@ -8,12 +8,9 @@ import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.kaelesty.domain.common.UseCaseResult
 import com.kaelesty.domain.memberProfile.getProfile.GetMemberProfileUseCase
 import com.kaelesty.domain.memberProfile.getProfile.GetProfileBody
-import com.kaelesty.madprojects_kmp.blocs.memberProfile.MemberProfileStore.Intent
-import com.kaelesty.madprojects_kmp.blocs.memberProfile.MemberProfileStore.Label
-import com.kaelesty.madprojects_kmp.blocs.memberProfile.MemberProfileStore.State
 import kotlinx.coroutines.launch
 
-interface MemberProfileStore : Store<Intent, State, Label> {
+interface ProfileStore : Store<ProfileStore.Intent, ProfileStore.State, ProfileStore.Label> {
 
     sealed interface Intent {
     }
@@ -36,17 +33,17 @@ interface MemberProfileStore : Store<Intent, State, Label> {
     }
 }
 
-class MemberProfileStoreFactory(
+class ProfileStoreFactory(
     private val storeFactory: StoreFactory,
     private val getMemberProfileUseCase: GetMemberProfileUseCase,
 ) {
 
-    fun create(jwt: String): MemberProfileStore =
-        object : MemberProfileStore, Store<Intent, State, Label> by storeFactory.create(
-            name = "MemberProfileStore",
-            initialState = State(),
+    fun create(jwt: String): ProfileStore =
+        object : ProfileStore, Store<ProfileStore.Intent, ProfileStore.State, ProfileStore.Label> by storeFactory.create(
+            name = "ProfileStore",
+            initialState = ProfileStore.State(),
             bootstrapper = BootstrapperImpl(getMemberProfileUseCase, jwt),
-            executorFactory = ::ExecutorImpl,
+            executorFactory = ProfileStoreFactory::ExecutorImpl,
             reducer = ReducerImpl
         ) {}
 
@@ -77,8 +74,8 @@ class MemberProfileStoreFactory(
         }
     }
 
-    private class ExecutorImpl : CoroutineExecutor<Intent, Action, State, Msg, Label>() {
-        override fun executeIntent(intent: Intent) {
+    private class ExecutorImpl : CoroutineExecutor<ProfileStore.Intent, Action, ProfileStore.State, Msg, ProfileStore.Label>() {
+        override fun executeIntent(intent: ProfileStore.Intent) {
 
         }
 
@@ -90,15 +87,15 @@ class MemberProfileStoreFactory(
         }
     }
 
-    private object ReducerImpl : Reducer<State, Msg> {
-        override fun State.reduce(msg: Msg): State =
+    private object ReducerImpl : Reducer<ProfileStore.State, Msg> {
+        override fun ProfileStore.State.reduce(msg: Msg): ProfileStore.State =
             when (msg) {
-                is Msg.SetStateBy -> State(
+                is Msg.SetStateBy -> ProfileStore.State(
                     userName = msg.body.userName,
                     githubLink = msg.body.githubLink,
                     avatarUrl = msg.body.avatarUrl,
                     projects = msg.body.projects.map {
-                        State.Project(it.id, it.name)
+                        ProfileStore.State.Project(it.id, it.name)
                     },
                     group = msg.body.group,
                     email = msg.body.email,

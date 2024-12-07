@@ -1,27 +1,17 @@
 package com.kaelesty.madprojects_kmp.blocs.memberProfile
 
-import kotlinx.coroutines.flow.StateFlow
+import com.arkivanov.decompose.router.stack.ChildStack
+import com.arkivanov.decompose.value.Value
+import com.kaelesty.madprojects_kmp.blocs.memberProfile.newProject.NewProjectComponent
+import com.kaelesty.madprojects_kmp.blocs.memberProfile.profile.ProfileComponent
+
 
 interface MemberProfileComponent {
 
-    val state: StateFlow<MemberProfileStore.State>
+    val stack: Value<ChildStack<*, Child>>
 
-    fun onOpenProject(projectId: Int)
-
-    fun onConnectProject()
-
-    fun onCreateProject()
-
-    fun onEditProfile()
-
-    interface Navigator {
-
-        fun editProfile()
-
-        fun openProject(projectId: Int)
-
-        fun connectProject()
-
-        fun createProject()
+    sealed interface Child {
+        class Profile(val component: ProfileComponent): Child
+        class NewProject(val component: NewProjectComponent): Child
     }
 }
