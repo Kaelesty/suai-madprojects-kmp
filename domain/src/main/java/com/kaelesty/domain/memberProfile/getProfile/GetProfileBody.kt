@@ -7,9 +7,11 @@ data class GetProfileBody(
     val userName: String,
     val avatarUrl: String,
     val group: String,
-    val githubLink: String,
     val email: String,
     val projects: List<ProjectBody>,
+    val firstName: String,
+    val secondName: String,
+    val lastName: String,
 ) {
     @Serializable
     data class ProjectBody(

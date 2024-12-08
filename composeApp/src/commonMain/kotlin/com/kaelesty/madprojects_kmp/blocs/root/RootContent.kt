@@ -9,6 +9,7 @@ import com.arkivanov.decompose.extensions.compose.stack.Children
 import com.arkivanov.decompose.extensions.compose.stack.animation.slide
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import com.kaelesty.madprojects_kmp.blocs.auth.AuthContent
+import com.kaelesty.madprojects_kmp.blocs.createProject.CreateProjectContent
 import com.kaelesty.madprojects_kmp.blocs.profile.ProfileContent
 import com.kaelesty.madprojects_kmp.blocs.project.ProjectContent
 
@@ -29,6 +30,7 @@ fun RootContent(
 			is RootComponent.Child.Project -> ProjectContent(component = instance.component)
 			is RootComponent.Child.Profile -> ProfileContent(component = instance.component)
 			is RootComponent.Child.Auth -> AuthContent(component = instance.component)
+			is RootComponent.Child.CreateProject -> CreateProjectContent(component = instance.component)
 		}
 	}
 }

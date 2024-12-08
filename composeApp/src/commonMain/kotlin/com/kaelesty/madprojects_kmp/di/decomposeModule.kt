@@ -13,6 +13,8 @@ import com.kaelesty.madprojects_kmp.blocs.auth.register.DefaultRegisterComponent
 import com.kaelesty.madprojects_kmp.blocs.auth.register.RegisterComponent
 import com.kaelesty.madprojects_kmp.blocs.auth.welcome.DefaultWelcomeComponent
 import com.kaelesty.madprojects_kmp.blocs.auth.welcome.WelcomeComponent
+import com.kaelesty.madprojects_kmp.blocs.createProject.CreateProjectComponent
+import com.kaelesty.madprojects_kmp.blocs.createProject.DefaultCreateProjectComponent
 import com.kaelesty.madprojects_kmp.blocs.profile.DefaultProfileComponent
 import com.kaelesty.madprojects_kmp.blocs.profile.ProfileComponent
 import com.kaelesty.madprojects_kmp.blocs.project.info.DefaultInfoComponent
@@ -142,6 +144,13 @@ val decomposeModule = module {
             componentContext = componentContext,
             storeFactory = get(),
             navigator = navigator
+        )
+    }
+
+    factory<CreateProjectComponent> {  (componentContext: ComponentContext) ->
+        DefaultCreateProjectComponent(
+            componentContext = componentContext,
+            storeFactory = get()
         )
     }
 }

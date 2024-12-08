@@ -1,6 +1,7 @@
 package com.kaelesty.data
 
 import com.kaelesty.data.auth.authModule
+import com.kaelesty.data.profile.memberProfileModule
 import com.kaelesty.domain.messenger.Socket
 import de.jensklingenberg.ktorfit.Ktorfit
 import io.ktor.client.HttpClient
@@ -12,7 +13,10 @@ import org.koin.dsl.module
 
 val dataModule = module {
 
-    includes(authModule)
+    includes(
+        authModule,
+        memberProfileModule,
+    )
 
     single<Socket> {
         SocketImpl()

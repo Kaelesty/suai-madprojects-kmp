@@ -1,8 +1,22 @@
 package com.kaelesty.domain.auth
 
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.serialization.Serializable
 
 interface AuthenticationManager {
+
+    @Serializable
+    data class AuthenticationContext(
+        val token: String,
+        val username: String?, // TODO remove nullability
+        val email: String,
+        val id: String,
+        val password: String,
+        val firstName: String,
+        val secondName: String,
+        val lastName: String,
+        val group: String,
+    )
 
     suspend fun init()
 
@@ -24,6 +38,8 @@ interface AuthenticationManager {
     suspend fun logout()
 
     val authorizedFlow: StateFlow<Boolean>
+
+    suspend fun getContext(): AuthenticationContext?
 }
 
 enum class LoginResult {

@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kaelesty.madprojects_kmp.blocs.project.bottomBorder
@@ -96,7 +97,7 @@ private fun MetaCard(
                     .copy(
                         fontSize = 30.sp
                     ),
-                text = state.userName
+                text = "${state.lastName} ${state.firstName} ${state.secondName}"
             )
             Spacer(Modifier.height(12.dp))
             Column(
@@ -104,9 +105,19 @@ private fun MetaCard(
                     .padding(horizontal = 16.dp)
                     .fillMaxWidth()
             ) {
+                Text(
+                    text = "@${state.userName}",
+                    style = MaterialTheme.typography.body2.copy(
+                        fontSize = 24.sp,
+                        textAlign = TextAlign.Center
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp)
+                )
+                Spacer(Modifier.width(4.dp))
                 listOf(
                     "Группа:" to state.group,
-                    "Github:" to state.githubLink,
                     "Email:" to state.email
                 ).forEach {
                     Row {
@@ -114,7 +125,9 @@ private fun MetaCard(
                             text = it.first,
                             style = MaterialTheme.typography.body2.copy(
                                 fontSize = 24.sp
-                            )
+                            ),
+                            modifier = Modifier
+                                .width(80.dp)
                         )
                         Spacer(Modifier.width(4.dp))
                         Text(

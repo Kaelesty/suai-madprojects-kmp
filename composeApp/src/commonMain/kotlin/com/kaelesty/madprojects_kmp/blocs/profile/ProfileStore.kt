@@ -17,11 +17,13 @@ interface ProfileStore : Store<ProfileStore.Intent, ProfileStore.State, ProfileS
 
     data class State(
         val userName: String = "",
-        val avatarUrl: String = "",
+        val avatarUrl: String = "https://samsunggamer.hu/uploads/page_texts/sq/0000/032/Among-us-party-32-1605633457.png",
         val group: String = "",
-        val githubLink: String = "",
         val email: String = "",
         val projects: List<Project> = listOf(),
+        val firstName: String = "",
+        val secondName: String = "",
+        val lastName: String = "",
     ) {
         data class Project(
             val id: Int,
@@ -59,7 +61,9 @@ class ProfileStoreFactory(
         private val getMemberProfileUseCase: GetMemberProfileUseCase,
     ) : CoroutineBootstrapper<Action>() {
         override fun invoke() {
-
+            scope.launch {
+                dispatch(Action.SetProfile(getMemberProfileUseCase()))
+            }
         }
     }
 
@@ -81,13 +85,15 @@ class ProfileStoreFactory(
             when (msg) {
                 is Msg.SetStateBy -> ProfileStore.State(
                     userName = msg.body.userName,
-                    githubLink = msg.body.githubLink,
                     avatarUrl = msg.body.avatarUrl,
                     projects = msg.body.projects.map {
                         ProfileStore.State.Project(it.id, it.name)
                     },
                     group = msg.body.group,
                     email = msg.body.email,
+                    firstName = msg.body.firstName,
+                    secondName = msg.body.secondName,
+                    lastName = msg.body.lastName
                 )
             }
     }

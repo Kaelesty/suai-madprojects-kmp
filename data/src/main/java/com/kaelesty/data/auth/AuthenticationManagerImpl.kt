@@ -3,7 +3,6 @@ package com.kaelesty.data.auth
 import com.kaelesty.data.auth.apiService.AuthApiService
 import com.kaelesty.data.auth.dtos.LoginRequest
 import com.kaelesty.data.auth.dtos.RegisterRequest
-import com.kaelesty.data.auth.store.AuthenticationContext
 import com.kaelesty.data.auth.store.AuthenticationStore
 import com.kaelesty.domain.auth.AuthenticationManager
 import com.kaelesty.domain.auth.LoginResult
@@ -33,6 +32,10 @@ class AuthenticationManagerImpl(
         }
     }
 
+    override suspend fun getContext(): AuthenticationManager.AuthenticationContext? {
+        return store.get()
+    }
+
     private fun isTokenAlive(token: String): Boolean {
         // TODO
         return false
@@ -47,12 +50,16 @@ class AuthenticationManagerImpl(
             )
 
             store.save(
-                new = AuthenticationContext(
+                new = AuthenticationManager.AuthenticationContext(
                     token = response.token,
                     username = response.userName,
                     email = email,
                     id = response.id,
-                    password = password
+                    password = password,
+                    firstName = response.firstName,
+                    secondName = response.secondName,
+                    lastName = response.lastName,
+                    group = response.group,
                 )
             )
             _authorizedFlow.emit(true)
@@ -85,12 +92,16 @@ class AuthenticationManagerImpl(
             )
 
             store.save(
-                new = AuthenticationContext(
+                new = AuthenticationManager.AuthenticationContext(
                     token = response.token,
                     username = username,
                     email = email,
                     id = response.id,
-                    password = password
+                    password = password,
+                    firstName = response.firstName,
+                    secondName = response.secondName,
+                    lastName = response.lastName,
+                    group = response.group,
                 )
             )
             _authorizedFlow.emit(true)

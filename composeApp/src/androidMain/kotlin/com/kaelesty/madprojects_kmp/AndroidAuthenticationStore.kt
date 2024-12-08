@@ -3,8 +3,8 @@ package com.kaelesty.madprojects_kmp
 import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.kaelesty.data.auth.store.AuthenticationContext
 import com.kaelesty.data.auth.store.AuthenticationStore
+import com.kaelesty.domain.auth.AuthenticationManager
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import javax.crypto.Cipher
@@ -25,18 +25,15 @@ class AndroidAuthenticationStore(
         .getSharedPreferences(PREFS_STORAGE, Context.MODE_PRIVATE)
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override suspend fun get(): AuthenticationContext? {
+    override suspend fun get(): AuthenticationManager.AuthenticationContext? {
         val json = sharedPreferences.getString(AU_CONTEXT, null)
         return try {
             json?.let { Json.decodeFromString(json.decrypt(AuthSecret.key, AuthSecret.salt)) }
-        } catch (e: Exception) {
-            e
-            null
-        }
+        } catch (_: Exception) { null }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override suspend fun save(new: AuthenticationContext) {
+    override suspend fun save(new: AuthenticationManager.AuthenticationContext) {
         sharedPreferences.edit().putString(
             AU_CONTEXT,
             Json.encodeToString(new).encrypt(AuthSecret.key, AuthSecret.salt)

@@ -4,9 +4,11 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.router.stack.replaceAll
 import com.arkivanov.decompose.value.Value
 import com.kaelesty.madprojects_kmp.blocs.auth.AuthComponent
+import com.kaelesty.madprojects_kmp.blocs.createProject.CreateProjectComponent
 import com.kaelesty.madprojects_kmp.blocs.profile.ProfileComponent
 import com.kaelesty.madprojects_kmp.blocs.project.ProjectComponent
 import kotlinx.serialization.Serializable
@@ -70,7 +72,7 @@ class DefaultRootComponent(
                                 }
 
                                 override fun createProject() {
-                                    TODO("Not yet implemented")
+                                    navigation.push(Config.CreateProject)
                                 }
                             }
                         )
@@ -79,10 +81,23 @@ class DefaultRootComponent(
             )
         }
 
+
+
         Config.Auth -> {
             RootComponent.Child.Auth(
                 component = get(
                     clazz = AuthComponent::class.java,
+                    parameters = {
+                        parametersOf(componentContext)
+                    }
+                )
+            )
+        }
+
+        Config.CreateProject -> {
+            RootComponent.Child.CreateProject(
+                component = get(
+                    clazz = CreateProjectComponent::class.java,
                     parameters = {
                         parametersOf(componentContext)
                     }
@@ -102,5 +117,8 @@ class DefaultRootComponent(
 
         @Serializable
         data object Auth: Config
+
+        @Serializable
+        data object CreateProject: Config
     }
 }

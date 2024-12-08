@@ -1,21 +1,12 @@
 package com.kaelesty.data.auth.store
 
-import kotlinx.serialization.Serializable
-
-@Serializable
-data class AuthenticationContext(
-    val token: String,
-    val username: String,
-    val email: String,
-    val id: String,
-    val password: String,
-)
+import com.kaelesty.domain.auth.AuthenticationManager
 
 interface AuthenticationStore {
 
-    suspend fun get(): AuthenticationContext?
+    suspend fun get(): AuthenticationManager.AuthenticationContext?
 
-    suspend fun save(new: AuthenticationContext)
+    suspend fun save(new: AuthenticationManager.AuthenticationContext)
 
     suspend fun updateToken(new: String)
 
