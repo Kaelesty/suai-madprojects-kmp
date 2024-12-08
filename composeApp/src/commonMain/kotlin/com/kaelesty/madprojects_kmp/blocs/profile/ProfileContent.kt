@@ -1,4 +1,4 @@
-package com.kaelesty.madprojects_kmp.blocs.memberProfile.profile
+package com.kaelesty.madprojects_kmp.blocs.profile
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

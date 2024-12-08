@@ -1,21 +1,19 @@
-package com.kaelesty.madprojects_kmp.blocs.memberProfile.profile
+package com.kaelesty.madprojects_kmp.blocs.profile
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.mvikotlin.core.instancekeeper.getStore
 import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
-import com.kaelesty.domain.common.JwtTool
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.StateFlow
 
 class DefaultProfileComponent(
     private val storeFactory: ProfileStoreFactory,
     private val componentContext: ComponentContext,
-    private val jwtTool: JwtTool,
     private val navigator: ProfileComponent.Navigator
 ): ComponentContext by componentContext, ProfileComponent {
 
     private val store = instanceKeeper.getStore {
-        storeFactory.create(jwtTool.getJwt())
+        storeFactory.create()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

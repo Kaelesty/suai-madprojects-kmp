@@ -1,4 +1,4 @@
-package com.kaelesty.madprojects_kmp.blocs.memberProfile.newProject
+package com.kaelesty.madprojects_kmp.blocs.newProject
 
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable

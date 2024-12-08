@@ -1,5 +1,8 @@
-package com.kaelesty.data.auth
+package com.kaelesty.data.auth.dtos
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class RegisterRequest(
     val username: String,
     val firstName: String,
@@ -8,11 +11,4 @@ data class RegisterRequest(
     val group: String,
     val email: String,
     val password: String,
-)
-
-data class RegisterResponse(
-    val id: Int,
-    val username: String,
-    val email: String,
-    val token: String,
 )

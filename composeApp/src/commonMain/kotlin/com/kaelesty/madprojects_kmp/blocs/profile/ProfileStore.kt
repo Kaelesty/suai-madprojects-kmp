@@ -1,4 +1,4 @@
-package com.kaelesty.madprojects_kmp.blocs.memberProfile.profile
+package com.kaelesty.madprojects_kmp.blocs.profile
 
 import com.arkivanov.mvikotlin.core.store.Reducer
 import com.arkivanov.mvikotlin.core.store.Store
@@ -38,11 +38,11 @@ class ProfileStoreFactory(
     private val getMemberProfileUseCase: GetMemberProfileUseCase,
 ) {
 
-    fun create(jwt: String): ProfileStore =
+    fun create(): ProfileStore =
         object : ProfileStore, Store<ProfileStore.Intent, ProfileStore.State, ProfileStore.Label> by storeFactory.create(
             name = "ProfileStore",
             initialState = ProfileStore.State(),
-            bootstrapper = BootstrapperImpl(getMemberProfileUseCase, jwt),
+            bootstrapper = BootstrapperImpl(getMemberProfileUseCase),
             executorFactory = ProfileStoreFactory::ExecutorImpl,
             reducer = ReducerImpl
         ) {}
@@ -57,20 +57,9 @@ class ProfileStoreFactory(
 
     private class BootstrapperImpl(
         private val getMemberProfileUseCase: GetMemberProfileUseCase,
-        private val jwt: String
     ) : CoroutineBootstrapper<Action>() {
         override fun invoke() {
-            scope.launch {
-                when (val res = getMemberProfileUseCase.invoke(
-                    jwt = jwt
-                )) {
-                    is UseCaseResult.BadRequest -> TODO()
-                    is UseCaseResult.ExternalError -> TODO()
-                    is UseCaseResult.Success -> dispatch(
-                        Action.SetProfile(res.body)
-                    )
-                }
-            }
+
         }
     }
 

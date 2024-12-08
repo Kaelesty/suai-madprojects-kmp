@@ -1,4 +1,4 @@
-package com.kaelesty.madprojects_kmp.blocs.memberProfile.profile
+package com.kaelesty.madprojects_kmp.blocs.profile
 
 import kotlinx.coroutines.flow.StateFlow
 

@@ -5,31 +5,30 @@ import com.arkivanov.mvikotlin.core.store.Store
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineBootstrapper
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
-import com.kaelesty.domain.auth.login.LoginUseCase
-import com.kaelesty.domain.common.UseCaseResult
+import com.kaelesty.domain.auth.AuthenticationManager
+import com.kaelesty.domain.auth.LoginResult
 import com.kaelesty.domain.tools.validateEmail
 import com.kaelesty.domain.tools.validatePassword
 import com.kaelesty.madprojects_kmp.blocs.auth.login.LoginStore.Intent
 import com.kaelesty.madprojects_kmp.blocs.auth.login.LoginStore.Label
 import com.kaelesty.madprojects_kmp.blocs.auth.login.LoginStore.State
-import com.kaelesty.madprojects_kmp.ui.lock.Lock
 import entities.UserType
 import kotlinx.coroutines.launch
-import kotlin.math.log
 
 interface LoginStore : Store<Intent, State, Label> {
 
     sealed interface Intent {
-        class SetLogin(val newValue: String): Intent
+        class SetEmail(val newValue: String): Intent
         class SetPassword(val newValue: String): Intent
         data object Submit: Intent
         data object DropError: Intent
     }
 
     data class State(
-        val login: String = "",
+        val email: String = "",
         val password: String = "",
-        val errorMessage: String = ""
+        val errorMessage: String = "",
+        val isLoading: Boolean = false,
     )
 
     sealed interface Label {
@@ -39,20 +38,16 @@ interface LoginStore : Store<Intent, State, Label> {
 
 class LoginStoreFactory(
     private val storeFactory: StoreFactory,
-    private val loginUseCase: LoginUseCase,
-    private val lock: Lock
 ) {
 
-    fun create(): LoginStore =
+    fun create(
+        authenticationManager: AuthenticationManager,
+    ): LoginStore =
         object : LoginStore, Store<Intent, State, Label> by storeFactory.create(
             name = "LoginStore",
-            initialState = State(
-                login = "Kaelesty@email.com",
-                password = "123123123",
-                errorMessage = "! DEBUG INITIAL STATE !"
-            ), // TODO REMOVE
+            initialState = State(),
             bootstrapper = BootstrapperImpl(),
-            executorFactory = { ExecutorImpl(loginUseCase, lock = lock) },
+            executorFactory = { ExecutorImpl(authenticationManager) },
             reducer = ReducerImpl
         ) {}
 
@@ -60,10 +55,11 @@ class LoginStoreFactory(
     }
 
     private sealed interface Msg {
-        class SetLogin(val newValue: String): Msg
+        class SetEmail(val newValue: String): Msg
         class SetPassword(val newValue: String): Msg
         data object DropError: Msg
         class SetError(val newValue: String): Msg
+        class SetLoading(val newValue: Boolean): Msg
     }
 
     private class BootstrapperImpl : CoroutineBootstrapper<Action>() {
@@ -73,8 +69,7 @@ class LoginStoreFactory(
     }
 
     private class ExecutorImpl(
-        private val loginUseCase: LoginUseCase,
-        private val lock: Lock,
+        private val authenticationManager: AuthenticationManager,
     ) : CoroutineExecutor<Intent, Action, State, Msg, Label>() {
 
         override fun executeIntent(intent: Intent) {
@@ -82,11 +77,11 @@ class LoginStoreFactory(
                 Intent.DropError -> {
                     dispatch(Msg.DropError)
                 }
-                is Intent.SetLogin -> dispatch(Msg.SetLogin(intent.newValue.trim()))
+                is Intent.SetEmail -> dispatch(Msg.SetEmail(intent.newValue.trim()))
                 is Intent.SetPassword -> dispatch(Msg.SetPassword(intent.newValue.trim()))
                 Intent.Submit -> {
 
-                    if (! validateEmail(state().login)) {
+                    if (! validateEmail(state().email)) {
                         dispatch(Msg.SetError("Неверный email"))
                         return
                     }
@@ -96,20 +91,23 @@ class LoginStoreFactory(
                         return
                     }
 
+                    dispatch(Msg.SetLoading(true))
+
                     scope.launch {
-                        when (val result = lock.proceed { loginUseCase.invoke(state().login, state().password) }) {
-                            is UseCaseResult.BadRequest -> {
-                                dispatch(Msg.SetError(result.error.ui()))
+                        with(state()) {
+                            val res = authenticationManager.login(
+                                email = email, password = password
+                            )
+
+                            when (res) {
+                                LoginResult.OK -> {
+
+                                }
+                                LoginResult.ERROR -> {
+                                    dispatch(Msg.SetError("Ошибка авторизации"))
+                                }
                             }
-                            is UseCaseResult.ExternalError -> {
-                                dispatch(Msg.SetError("Ошибка сервера. Повторите попытку позже."))
-                            }
-                            is UseCaseResult.Success -> {
-                                publish(Label.SuccessfulAuth(
-                                    userType = result.body.userType,
-                                    jwt = result.body.jwt
-                                ))
-                            }
+                            dispatch(Msg.SetLoading(false))
                         }
                     }
                 }
@@ -121,9 +119,10 @@ class LoginStoreFactory(
         override fun State.reduce(msg: Msg): State =
             when (msg) {
                 Msg.DropError -> copy(errorMessage = "")
-                is Msg.SetLogin -> copy(login = msg.newValue)
+                is Msg.SetEmail -> copy(email = msg.newValue)
                 is Msg.SetPassword -> copy(password = msg.newValue)
                 is Msg.SetError -> copy(errorMessage = msg.newValue)
+                is Msg.SetLoading -> copy(isLoading = msg.newValue)
             }
     }
 }

@@ -1,5 +1,10 @@
 package com.kaelesty.madprojects_kmp.blocs.auth.register
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -9,13 +14,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.kaelesty.domain.common.UserType
 import com.kaelesty.madprojects_kmp.ui.experimental.Styled
@@ -35,6 +45,8 @@ fun RegisterContent(
 
 	val userTypes = UserType.entries.toTypedArray()
 
+	var secondStep by rememberSaveable { mutableStateOf(false) }
+
 	Box(
 		modifier = Modifier
 			.fillMaxSize(),
@@ -45,90 +57,165 @@ fun RegisterContent(
 				.fillMaxWidth(0.85f)
 				.fillMaxHeight(0.85f)
 		) {
-			Column(
-				horizontalAlignment = Alignment.CenterHorizontally,
-				modifier = Modifier.padding(top = 60.dp)
+			AnimatedVisibility(
+				visible = !secondStep,
+				enter = slideInHorizontally { -it },
+				exit = slideOutHorizontally { -it },
 			) {
+				Column(
+					horizontalAlignment = Alignment.CenterHorizontally,
+					modifier = Modifier.padding(top = 60.dp)
+				) {
+					TitledTextField(
+						text = state.username,
+						title = "Имя пользователя",
+						onValueChange = {
+							component.dropError()
+							component.setUsername(it)
+						},
+						imeAction = ImeAction.Next,
+					)
+					Spacer(modifier = Modifier.height(12.dp))
 
-				TitledTextField(
-					text = state.username,
-					title = "Имя пользователя",
-					onValueChange = {
-						component.dropError()
-						component.setUsername(it)
-					}
-				)
-				Spacer(modifier = Modifier.height(12.dp))
+					TitledTextField(
+						text = state.email,
+						title = "Email",
+						onValueChange = {
+							component.dropError()
+							component.setLogin(it)
+						},
+						imeAction = ImeAction.Next,
+					)
+					Spacer(modifier = Modifier.height(12.dp))
 
-				TitledTextField(
-					text = state.login,
-					title = "Email",
-					onValueChange = {
-						component.dropError()
-						component.setLogin(it)
-					}
-				)
-				Spacer(modifier = Modifier.height(12.dp))
+					TitledTextField(
+						text = state.lastName,
+						title = "Фамилия",
+						onValueChange = {
+							component.dropError()
+							component.setLastname(it)
+						},
+						imeAction = ImeAction.Next,
+					)
+					Spacer(modifier = Modifier.height(12.dp))
 
-				TitledTextField(
-					text = state.githubLink,
-					title = "Ссылка на профиль Github",
-					onValueChange = {
-						component.dropError()
-						component.setGithubLink(it)
-					}
-				)
-				Spacer(modifier = Modifier.height(12.dp))
+					TitledTextField(
+						text = state.firstName,
+						title = "Имя",
+						onValueChange = {
+							component.dropError()
+							component.setFirstname(it)
+						},
+						imeAction = ImeAction.Next,
+					)
+					Spacer(modifier = Modifier.height(12.dp))
 
-				TitledTextField(
-					text = state.password,
-					title = "Пароль",
-					onValueChange = {
-						component.dropError()
-						component.setPassword(it)
-					},
-					isPassword = true
-				)
-				Spacer(modifier = Modifier.height(12.dp))
+					TitledTextField(
+						text = state.secondName,
+						title = "Отчество",
+						onValueChange = {
+							component.dropError()
+							component.setSecondname(it)
+						},
+						imeAction = ImeAction.Done,
+					)
+					Spacer(modifier = Modifier.height(12.dp))
 
-				TitledTextField(
-					text = state.repeatPassword,
-					title = "Подтверждение пароля",
-					onValueChange = {
-						component.dropError()
-						component.setRepeatPassword(it)
-					}
-				)
-				Spacer(modifier = Modifier.height(12.dp))
-
-				TitledDropdown(
-					title = "Тип аккаунта",
-					onItemSelection = {
-						component.dropError()
-						component.setUserType(userTypes[it])
-					},
-					values = userTypes.map {
-						it.toUi()
-					}.toList(),
-					selectedIndex = userTypes.indexOf(state.userType),
-					modifier = Modifier
-						.fillMaxWidth(0.8f)
-				)
-				Spacer(modifier = Modifier.height(4.dp))
-				if (state.errorMessage != "") {
-					Styled.uiKit().ErrorText(state.errorMessage)
+					StyledButton(
+						modifier = Modifier
+							.fillMaxWidth(0.7f),
+						text = "Далее >>>",
+						onClick = {
+							secondStep = true
+						}
+					)
 				}
-				Spacer(modifier = Modifier.height(48.dp))
 
-				StyledButton(
-					modifier = Modifier
-						.fillMaxWidth(0.7f),
-					text = "Регистрация",
-					onClick = {
-						component.dropError()
-						component.submit()
+			}
+
+			AnimatedVisibility(
+				visible = secondStep,
+				enter = slideInHorizontally { -it },
+				exit = slideOutHorizontally { -it },
+			) {
+				Column(
+					horizontalAlignment = Alignment.CenterHorizontally,
+					modifier = Modifier.padding(top = 60.dp)
+				) {
+					TitledTextField(
+						text = state.group,
+						title = "Группа",
+						onValueChange = {
+							component.dropError()
+							component.setGroup(it)
+						},
+						imeAction = ImeAction.Next,
+					)
+					Spacer(modifier = Modifier.height(12.dp))
+
+					TitledTextField(
+						text = state.password,
+						title = "Пароль",
+						onValueChange = {
+							component.dropError()
+							component.setPassword(it)
+						},
+						isPassword = true,
+						imeAction = ImeAction.Next,
+					)
+					Spacer(modifier = Modifier.height(12.dp))
+
+					TitledTextField(
+						text = state.repeatPassword,
+						title = "Подтверждение пароля",
+						onValueChange = {
+							component.dropError()
+							component.setRepeatPassword(it)
+						},
+						imeAction = ImeAction.Done,
+						isPassword = true,
+					)
+					Spacer(modifier = Modifier.height(12.dp))
+
+					TitledDropdown(
+						title = "Тип аккаунта",
+						onItemSelection = {
+							component.dropError()
+							component.setUserType(userTypes[it])
+						},
+						values = userTypes.map {
+							it.toUi()
+						}.toList(),
+						selectedIndex = userTypes.indexOf(state.userType),
+						modifier = Modifier
+							.fillMaxWidth(0.8f)
+					)
+					Spacer(modifier = Modifier.height(4.dp))
+					if (state.errorMessage != "") {
+						Styled.uiKit().ErrorText(state.errorMessage)
 					}
-				)
+					Spacer(modifier = Modifier.height(48.dp))
+
+					StyledButton(
+						modifier = Modifier
+							.fillMaxWidth(0.7f),
+						text = "<<< Назад",
+						onClick = {
+							secondStep = false
+						}
+					)
+					Spacer(modifier = Modifier.height(4.dp))
+					StyledButton(
+						modifier = Modifier
+							.fillMaxWidth(0.7f),
+						text = "Регистрация",
+						onClick = {
+							component.dropError()
+							component.submit()
+						}
+					)
+				}
+
 			}
 		}
 		TypewriterText(

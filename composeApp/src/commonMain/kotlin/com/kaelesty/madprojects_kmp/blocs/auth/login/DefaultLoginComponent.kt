@@ -4,6 +4,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.mvikotlin.core.instancekeeper.getStore
 import com.arkivanov.mvikotlin.extensions.coroutines.labels
 import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
+import com.kaelesty.domain.auth.AuthenticationManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -13,13 +14,14 @@ import kotlinx.coroutines.launch
 class DefaultLoginComponent(
 	private val componentContext: ComponentContext,
 	private val storeFactory: LoginStoreFactory,
-	private val navigator: LoginComponent.Navigator
+	private val navigator: LoginComponent.Navigator,
+	private val authenticationManager: AuthenticationManager,
 ): LoginComponent, ComponentContext  by componentContext {
 
 	private val scope = CoroutineScope(Dispatchers.IO)
 
 	private val store = instanceKeeper.getStore {
-		storeFactory.create()
+		storeFactory.create(authenticationManager)
 	}.apply {
 		scope.launch(Dispatchers.Main) {
 			labels.collect {
@@ -34,12 +36,12 @@ class DefaultLoginComponent(
 
 	private fun acceptLabel(label: LoginStore.Label) {
 		when (label) {
-			is LoginStore.Label.SuccessfulAuth -> { navigator.onSuccessfulLogin(label.jwt, label.userType) }
+			is LoginStore.Label.SuccessfulAuth -> { }
 		}
 	}
 
 	override fun setLogin(newValue: String) {
-		store.accept(LoginStore.Intent.SetLogin(newValue))
+		store.accept(LoginStore.Intent.SetEmail(newValue))
 	}
 
 	override fun setPassword(newValue: String) {

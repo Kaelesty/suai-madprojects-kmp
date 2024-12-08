@@ -3,30 +3,32 @@ agp = "8.2.2"
 android-compileSdk = "34"
 android-minSdk = "24"
 android-targetSdk = "34"
-androidx-activityCompose = "1.9.1"
+androidx-activityCompose = "1.9.3"
 androidx-lifecycle = "2.8.0"
 coilCompose = "3.0.0-rc01"
 compose-plugin = "1.6.11"
 decompose = "3.1.0"
+exposed = "0.57.0"
 koinCore = "4.0.0"
-kotlin = "2.0.20"
-kotlinx-coroutines = "1.8.1"
+kotlin = "2.1.0"
+kotlinx-coroutines = "1.9.0"
 kotlinxCoroutinesCore = "1.9.0"
 kotlinxSerializationJson = "1.7.3"
-ktorClientOkhttp = "3.0.0"
-ktorClientWebsockets = "3.0.0"
+ktorClientOkhttp = "3.0.1"
+ktorClientWebsockets = "3.0.2"
 mvikotlin = "4.2.0"
 jetbrainsKotlinJvm = "1.9.0"
 kotlinVersion = "2.0.20"
-coreKtx = "1.13.1"
+coreKtx = "1.15.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 appcompat = "1.7.0"
 material = "1.12.0"
-uiToolingPreview = "1.7.4"
+uiToolingPreview = "1.7.5"
 kspVersion = "2.1.0-1.0.29"
 ktorfitVersion = "2.2.0"
+jdbc = "3.47.1.0"
 
 [libraries]
 androidx-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
@@ -35,6 +37,13 @@ coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCo
 coil-network-ktor3 = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coilCompose" }
 decompose = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }
 decompose-extensions-compose = { module = "com.arkivanov.decompose:extensions-compose", version.ref = "decompose" }
+exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
+exposed-crypt = { module = "org.jetbrains.exposed:exposed-crypt", version.ref = "exposed" }
+exposed-dao = { module = "org.jetbrains.exposed:exposed-dao", version.ref = "exposed" }
+exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktorClientOkhttp" }
+ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktorClientOkhttp" }
+sqlite-jdbc = { module = "org.xerial:sqlite-jdbc", version.ref = "jdbc" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koinCore" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koinCore" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }

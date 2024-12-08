@@ -10,21 +10,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.arkivanov.essenty.backhandler.BackHandler
 import com.kaelesty.madprojects_kmp.ui.experimental.Styled
 import com.kaelesty.madprojects_kmp.ui.uikit.buttons.StyledButton
 import com.kaelesty.madprojects_kmp.ui.uikit.cards.StyledCard
 import com.kaelesty.madprojects_kmp.ui.uikit.text.TitledTextField
 import com.kaelesty.madprojects_kmp.ui.uikit.text.TypewriterText
-import madprojects.composeapp.generated.resources.Res
-import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun LoginContent(
@@ -48,7 +44,7 @@ fun LoginContent(
 				modifier = Modifier.padding(top = 60.dp)
 			) {
 				TitledTextField(
-					state.login,
+					state.email,
 					title = "Email",
 					onValueChange = {
 						component.dropError()

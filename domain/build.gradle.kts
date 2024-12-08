@@ -14,4 +14,5 @@ dependencies {
 	implementation(libs.koin.compose)
 	implementation(libs.kotlinx.serialization.json)
 	implementation(project(":shared_domain"))
+
 }

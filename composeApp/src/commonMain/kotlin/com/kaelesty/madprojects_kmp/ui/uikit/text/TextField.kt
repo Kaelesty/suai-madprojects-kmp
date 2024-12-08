@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -16,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.DefaultShadowColor
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -29,6 +31,7 @@ fun StyledTextField(
 	onValueChange: (String) -> Unit,
 	singleLine: Boolean = true,
 	isPassword: Boolean = false,
+	imeAction: ImeAction? = null
 ) {
 	Card(
 		modifier = modifier
@@ -56,7 +59,10 @@ fun StyledTextField(
 			),
 			textStyle = MaterialTheme.typography.body2,
 			visualTransformation = if (isPassword) PasswordVisualTransformation()
-				                   else VisualTransformation.None
+				                   else VisualTransformation.None,
+			keyboardOptions = KeyboardOptions(
+				imeAction = imeAction ?: ImeAction.Done
+			)
 		)
 	}
 
@@ -70,6 +76,7 @@ fun TitledTextField(
 	modifier: Modifier = Modifier,
 	onValueChange: (String) -> Unit,
 	isSingleLine: Boolean = true,
+	imeAction: ImeAction? = null,
 ) {
 
 	Column {
@@ -79,7 +86,12 @@ fun TitledTextField(
 		)
 		Spacer(modifier = Modifier.height(10.dp))
 		StyledTextField(
-			text, modifier, onValueChange, isPassword = isPassword, singleLine = isSingleLine
+			text,
+			modifier,
+			onValueChange,
+			isPassword = isPassword,
+			singleLine = isSingleLine,
+			imeAction = imeAction
 		)
 	}
 }

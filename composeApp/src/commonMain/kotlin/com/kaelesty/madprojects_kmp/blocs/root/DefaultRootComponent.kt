@@ -4,12 +4,11 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
-import com.arkivanov.decompose.router.stack.push
+import com.arkivanov.decompose.router.stack.replaceAll
 import com.arkivanov.decompose.value.Value
 import com.kaelesty.madprojects_kmp.blocs.auth.AuthComponent
-import com.kaelesty.madprojects_kmp.blocs.memberProfile.MemberProfileComponent
+import com.kaelesty.madprojects_kmp.blocs.profile.ProfileComponent
 import com.kaelesty.madprojects_kmp.blocs.project.ProjectComponent
-import entities.UserType
 import kotlinx.serialization.Serializable
 import org.koin.core.parameter.parametersOf
 import org.koin.java.KoinJavaComponent.get
@@ -28,34 +27,14 @@ class DefaultRootComponent(
         childFactory = ::child
     )
 
+    override fun setAuthorized(boolean: Boolean) {
+        navigation.replaceAll(if (boolean) Config.Profile else Config.Auth)
+    }
+
     private fun child(
         config: Config,
         componentContext: ComponentContext,
     ): RootComponent.Child = when (config) {
-        is Config.Auth -> {
-            RootComponent.Child.Auth(
-                component = get(
-                    clazz = AuthComponent::class.java,
-                    parameters = {
-                        parametersOf(
-                            componentContext,
-                            object : AuthComponent.Navigator {
-                                override fun onSuccessfulAuth(jwt: String, userType: UserType) {
-
-                                    when (userType) {
-                                        UserType.DEFAULT -> navigation.push(
-                                            configuration = Config.MemberProfile(jwt)
-                                        )
-
-                                        UserType.CURATOR -> TODO()
-                                    }
-                                }
-                            }
-                        )
-                    }
-                )
-            )
-        }
 
         is Config.Project -> {
             RootComponent.Child.Project(
@@ -68,21 +47,22 @@ class DefaultRootComponent(
             )
         }
 
-        is Config.MemberProfile -> {
-            RootComponent.Child.MemberProfile(
+
+
+        is Config.Profile -> {
+            RootComponent.Child.Profile(
                 component = get(
-                    clazz = MemberProfileComponent::class.java,
+                    clazz = ProfileComponent::class.java,
                     parameters = {
                         parametersOf(
                             componentContext,
-                            config.jwt,
-                            object : MemberProfileComponent.Navigator {
+                            object : ProfileComponent.Navigator {
                                 override fun editProfile() {
                                     TODO("Not yet implemented")
                                 }
 
                                 override fun openProject(projectId: Int) {
-                                    navigation.push(Config.Project(projectId, config.jwt))
+                                    TODO("Not yet implemented")
                                 }
 
                                 override fun connectProject() {
@@ -98,18 +78,29 @@ class DefaultRootComponent(
                 )
             )
         }
+
+        Config.Auth -> {
+            RootComponent.Child.Auth(
+                component = get(
+                    clazz = AuthComponent::class.java,
+                    parameters = {
+                        parametersOf(componentContext)
+                    }
+                )
+            )
+        }
     }
 
     @Serializable
     private sealed interface Config {
 
         @Serializable
-        data object Auth : Config
-
-        @Serializable
         data class Project(val projectId: Int, val jwt: String) : Config
 
         @Serializable
-        data class MemberProfile(val jwt: String) : Config
+        data object Profile : Config
+
+        @Serializable
+        data object Auth: Config
     }
 }

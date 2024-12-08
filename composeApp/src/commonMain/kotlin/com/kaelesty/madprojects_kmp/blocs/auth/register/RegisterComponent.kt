@@ -17,17 +17,21 @@ interface RegisterComponent {
 
 	fun setUserType(newValue: UserType)
 
-	fun setGithubLink(newValue: String)
-
 	fun setUsername(newValue: String)
+
+	fun setFirstname(newValue: String)
+
+	fun setSecondname(newValue: String)
+
+	fun setLastname(newValue: String)
+
+	fun setGroup(newValue: String)
 
 	fun dropError()
 
 	fun back()
 
 	interface Navigator {
-
-		fun onSuccessfulRegister()
 
 		fun back()
 	}

@@ -5,38 +5,44 @@ import com.arkivanov.mvikotlin.core.store.Store
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineBootstrapper
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
-import com.kaelesty.domain.auth.register.RegisterUseCase
-import com.kaelesty.domain.common.UseCaseResult
+import com.kaelesty.domain.auth.AuthenticationManager
+import com.kaelesty.domain.auth.RegisterResult
 import com.kaelesty.domain.common.UserType
 import com.kaelesty.domain.tools.validateEmail
 import com.kaelesty.domain.tools.validatePassword
 import com.kaelesty.madprojects_kmp.blocs.auth.register.RegisterStore.Intent
 import com.kaelesty.madprojects_kmp.blocs.auth.register.RegisterStore.Label
 import com.kaelesty.madprojects_kmp.blocs.auth.register.RegisterStore.State
-import com.kaelesty.madprojects_kmp.ui.lock.Lock
 import kotlinx.coroutines.launch
 
 interface RegisterStore : Store<Intent, State, Label> {
 
 	sealed interface Intent {
-		class SetLogin(val newValue: String): Intent
+		class SetEmail(val newValue: String): Intent
+		class SetFirstName(val newValue: String): Intent
+		class SetSecondName(val newValue: String): Intent
+		class SetLastName(val newValue: String): Intent
 		class SetPassword(val newValue: String): Intent
 		class SetRepeatPassword(val newValue: String): Intent
 		class SetUserType(val newValue: UserType): Intent
-		class SetGithubLink(val newValue: String): Intent
 		class SetUsername(val newValue: String): Intent
+		class SetGroup(val newValue: String): Intent
 		data object Submit: Intent
 		data object DropError: Intent
 	}
 
 	data class State(
 		val username: String = "",
-		val login: String = "",
+		val firstName: String = "",
+		val secondName: String = "",
+		val lastName: String = "",
+		val email: String = "",
 		val password: String = "",
 		val repeatPassword: String = "",
-		val githubLink: String = "",
 		val errorMessage: String = "",
-		val userType: UserType = UserType.STUDENT
+		val group: String = "",
+		val userType: UserType = UserType.STUDENT,
+		val isLoading: Boolean = false
 	)
 
 	sealed interface Label {
@@ -46,16 +52,16 @@ interface RegisterStore : Store<Intent, State, Label> {
 
 class RegisterStoreFactory(
     private val storeFactory: StoreFactory,
-	private val registerUseCase: RegisterUseCase,
-	private val lock: Lock,
 ) {
 
-    fun create(): RegisterStore =
+    fun create(
+		authenticationManager: AuthenticationManager
+	): RegisterStore =
         object : RegisterStore, Store<Intent, State, Label> by storeFactory.create(
             name = "RegisterStore",
             initialState = State(),
             bootstrapper = BootstrapperImpl(),
-            executorFactory = { ExecutorImpl(registerUseCase, lock) },
+            executorFactory = { ExecutorImpl(authenticationManager) },
             reducer = ReducerImpl
         ) {}
 
@@ -63,13 +69,17 @@ class RegisterStoreFactory(
     }
 
 	private sealed interface Msg {
-		class SetLogin(val newValue: String): Msg
+		class SetFirstName(val newValue: String): Msg
+		class SetSecondName(val newValue: String): Msg
+		class SetLastName(val newValue: String): Msg
+		class SetEmail(val newValue: String): Msg
 		class SetPassword(val newValue: String): Msg
 		class SetRepeatPassword(val newValue: String): Msg
 		class SetUserType(val newValue: UserType): Msg
-		class SetGithubLink(val newValue: String): Msg
 		class SetUsername(val newValue: String): Msg
+		class SetGroup(val newValue: String): Msg
 		class SetError(val newValue: String): Msg
+		class SetLoading(val newValue: Boolean): Msg
 		data object DropError: Msg
 	}
 
@@ -79,19 +89,19 @@ class RegisterStoreFactory(
     }
 
     private class ExecutorImpl(
-		private val registerUseCase: RegisterUseCase,
-		private val lock: Lock
-	) : CoroutineExecutor<Intent, Action, State, Msg, Label>() {
+		private val authenticationManager: AuthenticationManager,
+	): CoroutineExecutor<Intent, Action, State, Msg, Label>() {
         override fun executeIntent(intent: Intent) {
 			when (intent) {
+
 				Intent.DropError -> {
 					dispatch(Msg.DropError)
 				}
-				is Intent.SetLogin -> dispatch(Msg.SetLogin(intent.newValue.trim()))
+				is Intent.SetEmail -> dispatch(Msg.SetEmail(intent.newValue.trim()))
 				is Intent.SetPassword -> dispatch(Msg.SetPassword(intent.newValue.trim()))
 				Intent.Submit -> {
 
-					if (! validateEmail(state().login)) {
+					if (! validateEmail(state().email)) {
 						dispatch(Msg.SetError("Неверный email"))
 						return
 					}
@@ -106,33 +116,42 @@ class RegisterStoreFactory(
 						return
 					}
 
+					dispatch(Msg.SetLoading(true))
+
 					scope.launch {
-						when (
-							val result = lock.proceed {
-								registerUseCase.invoke(
-									state().login,
-									state().password,
-									state().userType
-								)
+						with(state()) {
+							val result = authenticationManager.register(
+								username = username,
+								firstName = firstName,
+								secondName = secondName,
+								lastName = lastName,
+								group = group,
+								email = email,
+								password = password
+							)
+							when (result) {
+								RegisterResult.OK -> {
+									// authentication will be handled by higher-level component
+									// additional navigation isn't required
+								}
+								RegisterResult.ERROR -> {
+									dispatch(Msg.SetError("Ошибка при регистрации"))
+								}
 							}
-						) {
-							is UseCaseResult.BadRequest -> {
-								dispatch(Msg.SetError(result.error.ui()))
-							}
-							is UseCaseResult.ExternalError -> {
-								dispatch(Msg.SetError("Ошибка сервера. Повторите попытку позже."))
-							}
-							is UseCaseResult.Success -> {
-								publish(Label.SuccessfulRegister)
-							}
+							dispatch(Msg.SetLoading(false))
 						}
 					}
 				}
 
-				is Intent.SetUserType -> dispatch(Msg.SetUserType(intent.newValue))
-				is Intent.SetRepeatPassword -> dispatch(Msg.SetRepeatPassword(intent.newValue))
-				is Intent.SetGithubLink -> dispatch(Msg.SetGithubLink(intent.newValue))
-				is Intent.SetUsername -> dispatch(Msg.SetUsername(intent.newValue))
+				is Intent.SetUserType -> {
+					// dispatch(Msg.SetUserType(intent.newValue))
+				}
+				is Intent.SetRepeatPassword -> dispatch(Msg.SetRepeatPassword(intent.newValue.trim()))
+				is Intent.SetUsername -> dispatch(Msg.SetUsername(intent.newValue.trim()))
+				is Intent.SetFirstName -> dispatch(Msg.SetFirstName(intent.newValue.trim()))
+				is Intent.SetLastName -> dispatch(Msg.SetLastName(intent.newValue.trim()))
+				is Intent.SetSecondName -> dispatch(Msg.SetSecondName(intent.newValue.trim()))
+				is Intent.SetGroup -> dispatch(Msg.SetGroup(intent.newValue.trim()))
 			}
         }
     }
@@ -141,13 +160,17 @@ class RegisterStoreFactory(
         override fun State.reduce(msg: Msg): State =
             when (msg) {
 				Msg.DropError -> copy(errorMessage = "")
-				is Msg.SetLogin -> copy(login = msg.newValue)
+				is Msg.SetEmail -> copy(email = msg.newValue)
 				is Msg.SetPassword -> copy(password = msg.newValue)
 				is Msg.SetUserType -> copy(userType = msg.newValue)
 				is Msg.SetRepeatPassword -> copy(repeatPassword = msg.newValue)
-				is Msg.SetGithubLink -> copy(githubLink = msg.newValue)
 				is Msg.SetUsername -> copy(username = msg.newValue)
 				is Msg.SetError -> copy(errorMessage = msg.newValue)
+				is Msg.SetFirstName -> copy(firstName = msg.newValue)
+				is Msg.SetLastName -> copy(lastName = msg.newValue)
+				is Msg.SetSecondName -> copy(secondName = msg.newValue)
+				is Msg.SetGroup -> copy(group = msg.newValue)
+				is Msg.SetLoading -> copy(isLoading = msg.newValue)
 			}
     }
 }

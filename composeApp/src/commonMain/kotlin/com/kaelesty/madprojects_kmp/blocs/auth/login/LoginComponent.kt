@@ -19,8 +19,6 @@ interface LoginComponent {
 
 	interface Navigator {
 
-		fun onSuccessfulLogin(jwt: String, userType: UserType)
-
 		fun back()
 	}
 }

@@ -19,5 +19,13 @@ dependencies {
 	implementation(libs.kotlinx.serialization.json)
 	implementation(libs.ktorfit)
 	implementation(libs.koin.core)
+	implementation(libs.ktor.client.content.negotiation)
+	implementation(libs.ktor.serialization.kotlinx.json)
 	implementation(project(":shared_domain"))
+
+	implementation(libs.exposed.core)
+	implementation(libs.exposed.crypt)
+	implementation(libs.exposed.dao)
+	implementation(libs.exposed.jdbc)
+	//implementation(libs.sqlite.jdbc)
 }

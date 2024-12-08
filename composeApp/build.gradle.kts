@@ -1,7 +1,6 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.ir.backend.js.compile
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -57,8 +56,16 @@ kotlin {
 
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.cio)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.serialization.kotlinx.json)
 
             implementation(libs.androidx.ui.tooling.preview)
+
+            implementation(libs.exposed.core)
+            implementation(libs.exposed.crypt)
+            implementation(libs.exposed.dao)
+            implementation(libs.exposed.jdbc)
+            //implementation(libs.sqlite.jdbc)
 
             implementation(project(":domain"))
             implementation(project(":data"))
