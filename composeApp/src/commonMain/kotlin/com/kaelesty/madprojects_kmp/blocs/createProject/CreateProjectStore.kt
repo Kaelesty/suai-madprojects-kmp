@@ -14,7 +14,7 @@ interface CreateProjectStore : Store<Intent, State, Label> {
     sealed interface Intent {
         data class UpdateName(val new: String): Intent
         data class UpdateDesc(val new: String): Intent
-        data class UpdateMembersCount(val new: Int): Intent
+        data class UpdateMembersCount(val new: String): Intent
         data class UpdateCurator(val new: State.Curator?): Intent
         data class LinkRepo(val link: String): Intent
         data class UnlinkRepo(val repo: State.Repo): Intent
@@ -22,7 +22,7 @@ interface CreateProjectStore : Store<Intent, State, Label> {
 
     data class State(
         val name: String = "",
-        val membersCount: Int = 0,
+        val membersCount: Int = 1,
         val desc: String = "",
         val curators: List<Curator> = listOf(),
         val selectedCurator: Curator? = null,

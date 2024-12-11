@@ -6,6 +6,8 @@ import org.koin.dsl.module
 val memberProfileModule = module {
 
     single<MemberProfileRepository> {
-        MemberProfileRepoImpl()
+        MemberProfileRepoImpl(
+            httpClient = get()
+        )
     }
 }

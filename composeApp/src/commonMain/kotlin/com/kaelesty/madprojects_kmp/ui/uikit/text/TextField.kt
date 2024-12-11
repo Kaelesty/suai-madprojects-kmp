@@ -2,13 +2,12 @@ package com.kaelesty.madprojects_kmp.ui.uikit.text
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
@@ -18,11 +17,13 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.DefaultShadowColor
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import com.kaelesty.madprojects_kmp.ui.theme.AppTheme
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun StyledTextField(
@@ -31,7 +32,11 @@ fun StyledTextField(
 	onValueChange: (String) -> Unit,
 	singleLine: Boolean = true,
 	isPassword: Boolean = false,
-	imeAction: ImeAction? = null
+	imeAction: ImeAction? = null,
+	keyboardType: KeyboardType? = null,
+	maxLines: Int = 1,
+	height: Dp = 60.dp,
+	textSize: TextUnit = 24.sp,
 ) {
 	Card(
 		modifier = modifier
@@ -40,30 +45,39 @@ fun StyledTextField(
 				spotColor = DefaultShadowColor,
 				ambientColor = DefaultShadowColor
 			)
-			.height(60.dp)
+			.height(height)
 		,
 		shape = MaterialTheme.shapes.medium.copy(
 			CornerSize(0), CornerSize(0), CornerSize(0), CornerSize(0),
 		),
 	) {
-		TextField(
-			value = text,
-			modifier = modifier,
-			onValueChange = onValueChange,
-			singleLine = singleLine,
-			colors = TextFieldDefaults.textFieldColors(
-				backgroundColor = Color.Transparent,
-				focusedIndicatorColor = Color.Transparent,
-				unfocusedIndicatorColor = Color.Transparent,
-				disabledIndicatorColor = Color.Transparent,
-			),
-			textStyle = MaterialTheme.typography.body2,
-			visualTransformation = if (isPassword) PasswordVisualTransformation()
-				                   else VisualTransformation.None,
-			keyboardOptions = KeyboardOptions(
-				imeAction = imeAction ?: ImeAction.Done
+		Column(
+			modifier = Modifier.fillMaxSize()
+		) {
+			TextField(
+				value = text,
+				modifier = modifier,
+				onValueChange = onValueChange,
+				singleLine = singleLine,
+				colors = TextFieldDefaults.textFieldColors(
+					backgroundColor = Color.Transparent,
+					focusedIndicatorColor = Color.Transparent,
+					unfocusedIndicatorColor = Color.Transparent,
+					disabledIndicatorColor = Color.Transparent,
+				),
+				textStyle = MaterialTheme.typography.body2.copy(
+					fontSize = textSize
+				),
+				visualTransformation = if (isPassword) PasswordVisualTransformation()
+				else VisualTransformation.None,
+				keyboardOptions = KeyboardOptions(
+					imeAction = imeAction ?: ImeAction.Done,
+					keyboardType = keyboardType ?: KeyboardType.Text
+				),
+				maxLines = maxLines,
 			)
-		)
+			Spacer(Modifier.weight(1f))
+		}
 	}
 
 }
@@ -77,12 +91,19 @@ fun TitledTextField(
 	onValueChange: (String) -> Unit,
 	isSingleLine: Boolean = true,
 	imeAction: ImeAction? = null,
+	keyboardType: KeyboardType? = null,
+	maxLines: Int = 1,
+	titleSize: TextUnit = 24.sp,
+	textSize: TextUnit = 24.sp,
+	height: Dp = 60.dp,
 ) {
 
 	Column {
 		Text(
 			text = title,
-			style = MaterialTheme.typography.body2
+			style = MaterialTheme.typography.body2.copy(
+				fontSize = titleSize,
+			),
 		)
 		Spacer(modifier = Modifier.height(10.dp))
 		StyledTextField(
@@ -91,7 +112,42 @@ fun TitledTextField(
 			onValueChange,
 			isPassword = isPassword,
 			singleLine = isSingleLine,
-			imeAction = imeAction
+			imeAction = imeAction,
+			maxLines = maxLines,
+			keyboardType = keyboardType,
+			height = height,
+			textSize = textSize,
 		)
 	}
+}
+
+@Composable
+fun TinyTitledTextField(
+	text: String,
+	title: String,
+	isPassword: Boolean = false,
+	modifier: Modifier = Modifier,
+	onValueChange: (String) -> Unit,
+	isSingleLine: Boolean = true,
+	imeAction: ImeAction? = null,
+	keyboardType: KeyboardType? = null,
+	maxLines: Int = 1,
+	height: Dp = 45.dp
+) {
+	TitledTextField(
+		text = text,
+		title = title,
+		onValueChange = {
+			onValueChange(it)
+		},
+		keyboardType = keyboardType,
+		titleSize = 16.sp,
+		height = height,
+		textSize = 18.sp,
+		imeAction = imeAction,
+		isSingleLine = isSingleLine,
+		modifier = modifier,
+		isPassword = isPassword,
+		maxLines = maxLines,
+	)
 }

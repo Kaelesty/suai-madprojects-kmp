@@ -3,6 +3,7 @@ package com.kaelesty.madprojects_kmp.blocs.profile
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -44,8 +45,10 @@ fun ProfileContent(
     ) {
         Column(
             modifier = Modifier
+                .fillMaxSize()
                 .padding(it)
-                .padding(4.dp)
+                .padding(4.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             MetaCard(state)
             Spacer(Modifier.height(18.dp))
