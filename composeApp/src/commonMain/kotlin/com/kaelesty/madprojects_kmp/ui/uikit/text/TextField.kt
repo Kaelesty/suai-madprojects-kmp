@@ -96,9 +96,12 @@ fun TitledTextField(
 	titleSize: TextUnit = 24.sp,
 	textSize: TextUnit = 24.sp,
 	height: Dp = 60.dp,
+	outerModifier: Modifier = Modifier
 ) {
 
-	Column {
+	Column(
+		modifier = outerModifier
+	) {
 		Text(
 			text = title,
 			style = MaterialTheme.typography.body2.copy(
@@ -127,12 +130,13 @@ fun TinyTitledTextField(
 	title: String,
 	isPassword: Boolean = false,
 	modifier: Modifier = Modifier,
+	outerModifier: Modifier = Modifier,
 	onValueChange: (String) -> Unit,
 	isSingleLine: Boolean = true,
 	imeAction: ImeAction? = null,
 	keyboardType: KeyboardType? = null,
 	maxLines: Int = 1,
-	height: Dp = 45.dp
+	height: Dp = 50.dp
 ) {
 	TitledTextField(
 		text = text,
@@ -149,5 +153,6 @@ fun TinyTitledTextField(
 		modifier = modifier,
 		isPassword = isPassword,
 		maxLines = maxLines,
+		outerModifier = outerModifier
 	)
 }

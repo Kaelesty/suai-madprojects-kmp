@@ -5,11 +5,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.kaelesty.madprojects_kmp.blocs.createProject.CreateProjectComponent
 import com.kaelesty.madprojects_kmp.blocs.createProject.CreateProjectStore
 import com.kaelesty.madprojects_kmp.ui.uikit.Loading
@@ -27,16 +29,15 @@ fun CuratorsCard(
         modifier = Modifier
             .fillMaxWidth(0.95f)
     ) {
-        Column(
+        Box(
             modifier = Modifier
-                .height(120.dp)
+                .height(80.dp)
                 .fillMaxWidth(0.95f),
-            horizontalAlignment = Alignment.CenterHorizontally,
+            contentAlignment = Alignment.Center
         ) {
             if (state.curators.isEmpty()) {
                 Loading()
             } else {
-                Spacer(Modifier.height(8.dp))
                 StyledDropdown(
                     values = state.curators.map { it.name },
                     selectedIndex = state.curators.indexOf(state.selectedCurator),
@@ -46,7 +47,9 @@ fun CuratorsCard(
                                 new = state.curators[it]
                             )
                         )
-                    }
+                    },
+                    modifier = Modifier.padding(8.dp),
+                    fontSize = 18.sp
                 )
             }
         }

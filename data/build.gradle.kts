@@ -21,7 +21,6 @@ dependencies {
 	implementation(libs.koin.core)
 	implementation(libs.ktor.client.content.negotiation)
 	implementation(libs.ktor.serialization.kotlinx.json)
-	implementation(project(":shared_domain"))
 
 	implementation(libs.exposed.core)
 	implementation(libs.exposed.crypt)

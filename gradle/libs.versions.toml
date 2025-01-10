@@ -80,3 +80,4 @@ jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrai
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinVersion" }
 ksp = { id = "com.google.devtools.ksp",  version.ref = "kspVersion" }
 ktorfit = { id = "de.jensklingenberg.ktorfit", version.ref = "ktorfitVersion" }
+compose-preview = { id = "org.jetbrains.compose.ui.tooling.preview.Preview", version.ref = "compose-plugin" }

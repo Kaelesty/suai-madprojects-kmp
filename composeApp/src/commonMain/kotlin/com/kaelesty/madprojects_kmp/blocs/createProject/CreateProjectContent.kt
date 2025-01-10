@@ -1,7 +1,9 @@
 package com.kaelesty.madprojects_kmp.blocs.createProject
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
@@ -35,6 +37,7 @@ fun CreateProjectContent(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             MetaCard(state, component)
+            Spacer(modifier = Modifier.height(16.dp))
             CuratorsCard(state, component)
             ReposCard(state, component)
         }

@@ -64,7 +64,8 @@ val mviModule = module {
 
 	single<CreateProjectStoreFactory> {
 		CreateProjectStoreFactory(
-			storeFactory = get()
+			storeFactory = get(),
+			getCuratorsListUseCase = get(),
 		)
 	}
 

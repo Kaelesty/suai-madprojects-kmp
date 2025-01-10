@@ -33,6 +33,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import com.kaelesty.madprojects_kmp.ui.uikit.text.StyledTextField
 import madprojects.composeapp.generated.resources.Res
@@ -47,7 +48,8 @@ fun StyledDropdown(
 	values: List<String>,
 	modifier: Modifier = Modifier,
 	onItemSelection: (Int) -> Unit,
-	closeOnSelect: Boolean = true
+	closeOnSelect: Boolean = true,
+	fontSize: TextUnit = MaterialTheme.typography.body2.fontSize
 ) {
 
 	var expanded by remember {
@@ -77,8 +79,10 @@ fun StyledDropdown(
 				.padding(horizontal = 16.dp)
 		) {
 			Text(
-				text = values[selectedIndex],
-				style = MaterialTheme.typography.body2,
+				text = values.getOrElse(selectedIndex, {"Выбрать..."}),
+				style = MaterialTheme.typography.body2.copy(
+					fontSize = fontSize
+				),
 				modifier = Modifier.weight(1f)
 			)
 			DropdownMenu(
@@ -95,7 +99,9 @@ fun StyledDropdown(
 					) {
 						Text(
 							text = it,
-							style = MaterialTheme.typography.body2,
+							style = MaterialTheme.typography.body2.copy(
+								fontSize = fontSize
+							),
 							textDecoration = if (index == selectedIndex) TextDecoration.Underline else null
 						)
 					}

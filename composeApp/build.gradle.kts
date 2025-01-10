@@ -69,7 +69,6 @@ kotlin {
 
             implementation(project(":domain"))
             implementation(project(":data"))
-            implementation(project(":shared_domain"))
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
