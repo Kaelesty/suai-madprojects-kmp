@@ -82,7 +82,7 @@ class DefaultRootComponent(
             component = authComponentFactory.create(componentContext)
         )
         is Config.Main -> RootComponent.Child.Main(
-            component = mainComponentFactory.create(componentContext)
+            component = mainComponentFactory.create(componentContext, config.user)
         )
     }
 

@@ -14,20 +14,31 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class AuthRepoImpl(
     private val apiService: AuthApiService,
-    private val preferencesStorage: PreferencesStorage
+    private val preferencesStorage: PreferencesStorage,
+    private val loginManager: LoginManager
 ) : AuthRepo {
 
     private val scope = CoroutineScope(Dispatchers.Main)
 
     private val _user = MutableStateFlow<User?>(null)
-    override fun getUser(): StateFlow<User?> = _user.asStateFlow()
+    override fun getUser(): StateFlow<User?> = _user
 
     init {
+        scope.launch {
+            loginManager.authorization.collect {
+                _user.emit(
+                    it?.let {
+                        User(it.userType)
+                    }
+                )
+            }
+        }
         scope.launch {
             checkAuthorizedOnLaunch()
         }
@@ -65,6 +76,7 @@ class AuthRepoImpl(
                         RegisterResult.BAD_REQUEST
                     }
                 }
+
                 HttpStatusCode.Forbidden -> RegisterResult.BAD_PASSWORD
                 HttpStatusCode.Conflict -> RegisterResult.BAD_EMAIL
                 HttpStatusCode.NotAcceptable -> RegisterResult.BAD_USERNAME
@@ -95,21 +107,15 @@ class AuthRepoImpl(
 
     private suspend fun onAuthorized(res: AuthorizedResponse) {
         preferencesStorage.saveAuthResponse(res)
-        _user.emit(
-            User(
-                type = res.userType
-            )
+        loginManager.authorize(
+            res
         )
     }
 
     private suspend fun checkAuthorizedOnLaunch() {
         preferencesStorage.getAuthResponse().collect {
             it?.let {
-                _user.emit(
-                    User(
-                        type = it.userType
-                    )
-                )
+                loginManager.authorize(it)
             }
         }
     }

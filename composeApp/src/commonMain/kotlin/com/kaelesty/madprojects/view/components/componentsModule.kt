@@ -1,10 +1,13 @@
 package com.kaelesty.madprojects.view.components
 
 import com.arkivanov.decompose.ComponentContext
+import com.kaelesty.madprojects.domain.stores.root.User
 import com.kaelesty.madprojects.view.components.auth.AuthComponent
 import com.kaelesty.madprojects.view.components.auth.DefaultAuthComponent
 import com.kaelesty.madprojects.view.components.main.DefaultMainComponent
 import com.kaelesty.madprojects.view.components.main.MainComponent
+import com.kaelesty.madprojects.view.components.main.profile.DefaultProfileComponent
+import com.kaelesty.madprojects.view.components.main.profile.ProfileComponent
 import com.kaelesty.madprojects.view.components.root.DefaultRootComponent
 import com.kaelesty.madprojects.view.components.root.RootComponent
 import com.kaelesty.madprojects_kmp.blocs.auth.login.DefaultLoginComponent
@@ -78,6 +81,26 @@ val componentsModule = module {
     }
 
     factory<MainComponent.Factory> {
-        DefaultMainComponent.Companion.Factory
+        object : MainComponent.Factory {
+            override fun create(c: ComponentContext, user: User): MainComponent {
+                return DefaultMainComponent(
+                    c,
+                    user = user,
+                    profileComponentFactory = get(),
+                )
+            }
+        }
+    }
+
+    factory<ProfileComponent.Factory> {
+        object : ProfileComponent.Factory {
+
+            override fun create(c: ComponentContext): ProfileComponent {
+                return DefaultProfileComponent(
+                    c,
+                    storeFactory = get()
+                )
+            }
+        }
     }
 }

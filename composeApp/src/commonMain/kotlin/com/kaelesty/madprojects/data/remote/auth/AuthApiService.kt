@@ -2,6 +2,7 @@ package com.kaelesty.madprojects.data.remote.auth
 
 import com.kaelesty.data.remote.auth.LoginRequest
 import com.kaelesty.data.remote.auth.RegisterRequest
+import com.kaelesty.madprojects.data.BASE_URL
 import com.kaelesty.madprojects.domain.UserType
 import io.ktor.client.HttpClient
 import io.ktor.client.request.header
@@ -14,10 +15,6 @@ import io.ktor.http.contentType
 class AuthApiService(
     private val httpClient: HttpClient
 ) {
-
-    companion object {
-        private const val BASE_URL = "https://mad-projects.ru:8080"
-    }
 
     suspend fun refresh(token: String): HttpResponse? {
         return try {

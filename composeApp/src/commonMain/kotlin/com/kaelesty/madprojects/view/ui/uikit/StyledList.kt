@@ -13,9 +13,13 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kaelesty.madprojects.view.extensions.bottomBorder
+import com.kaelesty.madprojects.view.ui.experimental.Styled
 import madprojects.composeapp.generated.resources.Res
 import madprojects.composeapp.generated.resources.close
 import madprojects.composeapp.generated.resources.right_arrow
@@ -39,13 +43,13 @@ fun <T> StyledList(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-//                    //.bottomBorder(
-//                        brush = Brush.linearGradient(
-//                            Styled.uiKit().colors().gradient,
-//                            tileMode = TileMode.Decal
-//                        ),
-//                        height = 2f
-//                    )
+                    .bottomBorder(
+                        brush = Brush.linearGradient(
+                            Styled.uiKit().colors().gradient,
+                            tileMode = TileMode.Decal
+                        ),
+                        height = 2f
+                    )
                     .clickable {
                         onLeadingClick?.let { it() }
                     }
@@ -72,13 +76,13 @@ fun <T> StyledList(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-//                    .bottomBorder(
-//                        brush = Brush.linearGradient(
-//                            Styled.uiKit().colors().gradient,
-//                            tileMode = TileMode.Decal
-//                        ),
-//                        height = 2f
-//                    )
+                    .bottomBorder(
+                        brush = Brush.linearGradient(
+                            Styled.uiKit().colors().gradient,
+                            tileMode = TileMode.Decal
+                        ),
+                        height = 2f
+                    )
                     .clickable {
                         onItemClick(item)
                     }
