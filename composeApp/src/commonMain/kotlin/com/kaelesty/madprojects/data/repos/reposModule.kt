@@ -8,7 +8,8 @@ val reposModule = module {
 
     single<AuthRepo> {
         AuthRepoImpl(
-            apiService = get()
+            apiService = get(),
+            preferencesStorage = get()
         )
     }
 }

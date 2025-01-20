@@ -4,6 +4,7 @@ import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.main.store.DefaultStoreFactory
 import com.kaelesty.madprojects.domain.stores.login.LoginStoreFactory
 import com.kaelesty.madprojects.domain.stores.root.RootStoreFactory
+import com.kaelesty.madprojects_kmp.blocs.auth.register.RegisterStoreFactory
 import org.koin.dsl.module
 
 val storesModule = module {
@@ -14,6 +15,13 @@ val storesModule = module {
 
     single<RootStoreFactory> {
         RootStoreFactory(
+            storeFactory = get(),
+            authRepo = get(),
+        )
+    }
+
+    factory<RegisterStoreFactory> {
+        RegisterStoreFactory(
             storeFactory = get(),
             authRepo = get(),
         )

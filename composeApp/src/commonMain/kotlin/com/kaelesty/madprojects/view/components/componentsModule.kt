@@ -9,6 +9,8 @@ import com.kaelesty.madprojects.view.components.root.DefaultRootComponent
 import com.kaelesty.madprojects.view.components.root.RootComponent
 import com.kaelesty.madprojects_kmp.blocs.auth.login.DefaultLoginComponent
 import com.kaelesty.madprojects_kmp.blocs.auth.login.LoginComponent
+import com.kaelesty.madprojects_kmp.blocs.auth.register.DefaultRegisterComponent
+import com.kaelesty.madprojects_kmp.blocs.auth.register.RegisterComponent
 import com.kaelesty.madprojects_kmp.blocs.auth.welcome.DefaultWelcomeComponent
 import com.kaelesty.madprojects_kmp.blocs.auth.welcome.WelcomeComponent
 import org.koin.dsl.module
@@ -22,6 +24,20 @@ val componentsModule = module {
             authComponentFactory = get(),
             mainComponentFactory = get(),
         )
+    }
+
+    factory<RegisterComponent.Factory> {
+        object : RegisterComponent.Factory {
+            override fun create(
+                c: ComponentContext,
+                n: RegisterComponent.Navigator
+            ): RegisterComponent {
+                return DefaultRegisterComponent(
+                    c, n,
+                    storeFactory = get()
+                )
+            }
+        }
     }
 
     factory<LoginComponent.Factory> {
@@ -55,6 +71,7 @@ val componentsModule = module {
                     c,
                     welcomeComponentFactory = get(),
                     loginComponentFactory = get(),
+                    registerComponentFactory = get(),
                 )
             }
         }

@@ -15,6 +15,10 @@ class AuthApiService(
     private val httpClient: HttpClient
 ) {
 
+    companion object {
+        private const val BASE_URL = "https://mad-projects.ru:8080"
+    }
+
     suspend fun refresh(token: String): HttpResponse? {
         return try {
             httpClient.post("auth/refresh") {
@@ -28,7 +32,7 @@ class AuthApiService(
 
     suspend fun login(email: String, password: String): HttpResponse? {
         return try {
-            httpClient.post("auth/login") {
+            httpClient.post("$BASE_URL/auth/login") {
                 setBody(
                     LoginRequest(
                         email = email, password = password
@@ -54,7 +58,8 @@ class AuthApiService(
         userType: UserType
     ): HttpResponse? {
         return try {
-            httpClient.post("/auth/register") {
+            httpClient.post("$BASE_URL/auth/register") {
+                contentType(ContentType.Application.Json)
                 setBody(
                     RegisterRequest(
                         username = username,
@@ -65,12 +70,12 @@ class AuthApiService(
                         email = email,
                         password = password,
                         userType = userType
-
                     )
                 )
             }
         }
         catch (e: Exception) {
+            e.toString()
             null
         }
     }

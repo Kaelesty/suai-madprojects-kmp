@@ -25,5 +25,7 @@ data class LoginRequest(
 data class AuthorizedResponse(
     val refreshToken: String,
     val accessToken: String,
-    val userType: UserType
+    val userType: UserType,
+    val accessExpiresAt: Long,
+    val refreshExpiresAt: Long,
 )

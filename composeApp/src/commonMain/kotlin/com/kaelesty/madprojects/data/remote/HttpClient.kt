@@ -12,13 +12,6 @@ import io.ktor.serialization.kotlinx.json.json
 
 val httpClient = HttpClient(CIO) {
 
-    defaultRequest {
-        url {
-            host = "mad-projects.ru:8080"
-            protocol = URLProtocol.HTTPS
-        }
-    }
-
     install(ContentNegotiation) {
         json()
     }
