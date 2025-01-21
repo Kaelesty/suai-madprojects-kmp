@@ -1,21 +1,18 @@
-package com.kaelesty.madprojects.data.repos.auth
+package com.kaelesty.madprojects.data.features.auth
 
 import com.kaelesty.data.remote.auth.AuthorizedResponse
 import com.kaelesty.madprojects.data.local.PreferencesStorage
-import com.kaelesty.madprojects.data.remote.auth.AuthApiService
 import com.kaelesty.madprojects.domain.UserType
 import com.kaelesty.madprojects.domain.repos.auth.AuthRepo
 import com.kaelesty.madprojects.domain.repos.auth.LoginResult
 import com.kaelesty.madprojects.domain.repos.auth.RegisterResult
-import com.kaelesty.madprojects.domain.stores.root.User
+import com.kaelesty.madprojects.domain.repos.auth.User
 import io.ktor.client.call.body
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class AuthRepoImpl(

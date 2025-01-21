@@ -20,8 +20,7 @@ import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.kaelesty.madprojects.domain.repos.profile.ProfileProject
-import com.kaelesty.madprojects.domain.repos.profile.ProfileStore
+import com.kaelesty.madprojects.domain.stores.ProfileStore
 import com.kaelesty.madprojects.domain.repos.project.ProjectGroup
 import com.kaelesty.madprojects.view.components.shared.elements.Avatar
 import com.kaelesty.madprojects.view.components.shared.elements.TopBar
@@ -35,26 +34,16 @@ import com.kaelesty.madprojects_kmp.ui.uikit.cards.TitledRoundedCard
 fun CuratorProfileScreen(
     state: ProfileStore.State.CuratorProfile
 ) {
-    Scaffold(
-        topBar = {
-            TopBar("Профиль")
-        }
+    Styled.uiKit().DefaultScreenScaffold(
+        topBarTitle = "Профиль"
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(it)
-                .padding(4.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            CuratorMetaCard(state)
-            Spacer(Modifier.height(18.dp))
-            ProjectGroupsList(
-                state = state,
-                onProjectGroupClick = {},
-                onCreateNewProjectGroup = {}
-            )
-        }
+        CuratorMetaCard(state)
+        Spacer(Modifier.height(18.dp))
+        ProjectGroupsList(
+            state = state,
+            onProjectGroupClick = {},
+            onCreateNewProjectGroup = {}
+        )
     }
 }
 
@@ -91,6 +80,7 @@ fun CuratorMetaCard(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // TODO github
             Spacer(Modifier.height(8.dp))
             Avatar(
                 modifier = Modifier.size(128.dp),

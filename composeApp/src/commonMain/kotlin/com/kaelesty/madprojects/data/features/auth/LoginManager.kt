@@ -1,7 +1,8 @@
-package com.kaelesty.madprojects.data.repos.auth
+package com.kaelesty.madprojects.data.features.auth
 
 import com.kaelesty.data.remote.auth.AuthorizedResponse
-import com.kaelesty.madprojects.data.local.PreferencesStorage
+import com.kaelesty.madprojects.data.UnauthorizedException
+import com.kaelesty.madprojects.data.suspended
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
@@ -16,5 +17,11 @@ class LoginManager {
 
     suspend fun unauthorize() {
         _authorization.emit(null)
+    }
+
+    suspend fun getTokenOrThrow(): String {
+        return _authorization.value?.accessToken ?: throw UnauthorizedException.suspended {
+            unauthorize()
+        }
     }
 }

@@ -1,13 +1,17 @@
 package com.kaelesty.madprojects.view.components
 
 import com.arkivanov.decompose.ComponentContext
-import com.kaelesty.madprojects.domain.stores.root.User
+import com.kaelesty.madprojects.domain.repos.auth.User
 import com.kaelesty.madprojects.view.components.auth.AuthComponent
 import com.kaelesty.madprojects.view.components.auth.DefaultAuthComponent
 import com.kaelesty.madprojects.view.components.main.DefaultMainComponent
 import com.kaelesty.madprojects.view.components.main.MainComponent
 import com.kaelesty.madprojects.view.components.main.profile.DefaultProfileComponent
 import com.kaelesty.madprojects.view.components.main.profile.ProfileComponent
+import com.kaelesty.madprojects.view.components.main.project.DefaultProjectComponent
+import com.kaelesty.madprojects.view.components.main.project.ProjectComponent
+import com.kaelesty.madprojects.view.components.main.project_creation.DefaultProjectCreationComponent
+import com.kaelesty.madprojects.view.components.main.project_creation.ProjectCreationComponent
 import com.kaelesty.madprojects.view.components.root.DefaultRootComponent
 import com.kaelesty.madprojects.view.components.root.RootComponent
 import com.kaelesty.madprojects_kmp.blocs.auth.login.DefaultLoginComponent
@@ -87,6 +91,8 @@ val componentsModule = module {
                     c,
                     user = user,
                     profileComponentFactory = get(),
+                    projectCreationComponentFactory = get(),
+                    projectComponentFactory = get(),
                 )
             }
         }
@@ -94,11 +100,40 @@ val componentsModule = module {
 
     factory<ProfileComponent.Factory> {
         object : ProfileComponent.Factory {
-
-            override fun create(c: ComponentContext): ProfileComponent {
+            override fun create(c: ComponentContext, n: ProfileComponent.Navigator): ProfileComponent {
                 return DefaultProfileComponent(
                     c,
+                    n,
                     storeFactory = get()
+                )
+            }
+        }
+    }
+
+    factory<ProjectCreationComponent.Factory> {
+        object : ProjectCreationComponent.Factory {
+            override fun create(
+                c: ComponentContext,
+                n: ProjectCreationComponent.Navigator
+            ): ProjectCreationComponent {
+                return DefaultProjectCreationComponent(
+                    c, n,
+                    storeFactory = get()
+                )
+            }
+        }
+    }
+
+    factory<ProjectComponent.Factory> {
+        object : ProjectComponent.Factory {
+            override fun create(
+                c: ComponentContext,
+                n: ProjectComponent.Navigator,
+                projectId: String
+            ): ProjectComponent {
+                return DefaultProjectComponent(
+                    c, n,
+                    projectId
                 )
             }
         }

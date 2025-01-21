@@ -1,4 +1,4 @@
-package com.kaelesty.madprojects.domain.stores.root
+package com.kaelesty.madprojects.domain.repos.auth
 
 import com.kaelesty.madprojects.domain.UserType
 

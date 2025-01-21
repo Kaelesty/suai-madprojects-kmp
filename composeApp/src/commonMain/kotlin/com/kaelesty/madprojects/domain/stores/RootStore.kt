@@ -1,4 +1,4 @@
-package com.kaelesty.madprojects.domain.stores.root
+package com.kaelesty.madprojects.domain.stores
 
 import com.arkivanov.mvikotlin.core.store.Reducer
 import com.arkivanov.mvikotlin.core.store.Store
@@ -6,6 +6,7 @@ import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineBootstrapper
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.kaelesty.madprojects.domain.repos.auth.AuthRepo
+import com.kaelesty.madprojects.domain.repos.auth.User
 import kotlinx.coroutines.launch
 
 interface RootStore : Store<RootStore.Intent, RootStore.RootState, RootStore.Label> {

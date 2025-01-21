@@ -1,7 +1,6 @@
-package com.kaelesty.madprojects.data.repos.profile
+package com.kaelesty.madprojects.data.features.profile
 
-import com.kaelesty.madprojects.data.remote.profile.ProfileApiService
-import com.kaelesty.madprojects.data.repos.auth.LoginManager
+import com.kaelesty.madprojects.data.features.auth.LoginManager
 import com.kaelesty.madprojects.domain.UserType
 import com.kaelesty.madprojects.domain.repos.profile.Profile
 import com.kaelesty.madprojects.domain.repos.profile.ProfileRepo

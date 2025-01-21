@@ -1,4 +1,4 @@
-package com.kaelesty.madprojects.data.remote.profile
+package com.kaelesty.madprojects.data.features.profile
 
 import com.kaelesty.madprojects.data.BASE_URL
 import io.ktor.client.HttpClient

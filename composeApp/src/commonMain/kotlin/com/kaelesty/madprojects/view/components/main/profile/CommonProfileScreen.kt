@@ -18,11 +18,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kaelesty.madprojects.domain.repos.profile.ProfileProject
-import com.kaelesty.madprojects.domain.repos.profile.ProfileStore
+import com.kaelesty.madprojects.domain.stores.ProfileStore
 import com.kaelesty.madprojects.view.components.shared.elements.Avatar
 import com.kaelesty.madprojects.view.components.shared.elements.TopBar
 import com.kaelesty.madprojects.view.extensions.bottomBorder
@@ -36,26 +35,16 @@ import com.kaelesty.madprojects_kmp.ui.uikit.cards.TitledRoundedCard
 fun CommonProfileScreen(
     state: ProfileStore.State.CommonProfile
 ) {
-    Scaffold(
-        topBar = {
-            TopBar("Профиль")
-        }
+    Styled.uiKit().DefaultScreenScaffold(
+        topBarTitle = "Профиль"
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(it)
-                .padding(4.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            MetaCard(state)
-            Spacer(Modifier.height(18.dp))
-            ProjectsList(
-                state = state,
-                onProjectClick = {},
-                onCreateNewProject = {}
-            )
-        }
+        MetaCard(state)
+        Spacer(Modifier.height(18.dp))
+        ProjectsList(
+            state = state,
+            onProjectClick = {},
+            onCreateNewProject = {}
+        )
     }
 }
 
@@ -92,6 +81,7 @@ fun MetaCard(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // TODO github
             Spacer(Modifier.height(8.dp))
             Avatar(
                 modifier = Modifier.size(128.dp),

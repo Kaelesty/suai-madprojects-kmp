@@ -1,4 +1,4 @@
-package com.kaelesty.madprojects.data.remote.auth
+package com.kaelesty.madprojects.data.features.auth
 
 import com.kaelesty.data.remote.auth.LoginRequest
 import com.kaelesty.data.remote.auth.RegisterRequest

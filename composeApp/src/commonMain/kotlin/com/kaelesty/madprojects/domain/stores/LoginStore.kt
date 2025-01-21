@@ -1,4 +1,4 @@
-package com.kaelesty.madprojects.domain.stores.login
+package com.kaelesty.madprojects.domain.stores
 
 import com.arkivanov.mvikotlin.core.store.Reducer
 import com.arkivanov.mvikotlin.core.store.Store
@@ -10,9 +10,9 @@ import com.kaelesty.madprojects.domain.repos.auth.AuthRepo
 import com.kaelesty.madprojects.domain.repos.auth.LoginResult
 import com.kaelesty.madprojects.shared.validateEmail
 import com.kaelesty.madprojects.shared.validatePassword
-import com.kaelesty.madprojects.domain.stores.login.LoginStore.Intent
-import com.kaelesty.madprojects.domain.stores.login.LoginStore.Label
-import com.kaelesty.madprojects.domain.stores.login.LoginStore.State
+import com.kaelesty.madprojects.domain.stores.LoginStore.Intent
+import com.kaelesty.madprojects.domain.stores.LoginStore.Label
+import com.kaelesty.madprojects.domain.stores.LoginStore.State
 import kotlinx.coroutines.launch
 
 interface LoginStore : Store<Intent, State, Label> {

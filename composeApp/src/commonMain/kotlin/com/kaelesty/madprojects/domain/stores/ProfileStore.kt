@@ -1,18 +1,22 @@
-package com.kaelesty.madprojects.domain.repos.profile
+package com.kaelesty.madprojects.domain.stores
 
 import com.arkivanov.mvikotlin.core.store.Reducer
 import com.arkivanov.mvikotlin.core.store.Store
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineBootstrapper
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
-import com.kaelesty.madprojects.domain.repos.profile.ProfileStore.Intent
-import com.kaelesty.madprojects.domain.repos.profile.ProfileStore.Label
-import com.kaelesty.madprojects.domain.repos.profile.ProfileStore.State
+import com.kaelesty.madprojects.domain.repos.profile.Profile
+import com.kaelesty.madprojects.domain.repos.profile.ProfileRepo
+import com.kaelesty.madprojects.domain.repos.project.ProjectRepo
+import com.kaelesty.madprojects.domain.stores.ProfileStore.Intent
+import com.kaelesty.madprojects.domain.stores.ProfileStore.Label
+import com.kaelesty.madprojects.domain.stores.ProfileStore.State
 import kotlinx.coroutines.launch
 
 interface ProfileStore : Store<Intent, State, Label> {
 
     sealed interface Intent {
+
     }
 
     sealed interface State {
@@ -33,7 +37,7 @@ interface ProfileStore : Store<Intent, State, Label> {
 
 class ProfileStoreFactory(
     private val storeFactory: StoreFactory,
-    private val profileRepo: ProfileRepo
+    private val profileRepo: ProfileRepo,
 ) {
 
     fun create(): ProfileStore =
@@ -64,9 +68,10 @@ class ProfileStoreFactory(
     }
 
     private class ExecutorImpl(
-        private val profileRepo: ProfileRepo
+        private val profileRepo: ProfileRepo,
     ) : CoroutineExecutor<Intent, Action, State, Msg, Label>() {
         override fun executeIntent(intent: Intent) {
+
         }
 
         override fun executeAction(action: Action) {

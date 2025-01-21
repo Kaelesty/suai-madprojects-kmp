@@ -4,8 +4,8 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.mvikotlin.core.instancekeeper.getStore
 import com.arkivanov.mvikotlin.extensions.coroutines.labels
 import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
-import com.kaelesty.madprojects.domain.stores.login.LoginStore
-import com.kaelesty.madprojects.domain.stores.login.LoginStoreFactory
+import com.kaelesty.madprojects.domain.stores.LoginStore
+import com.kaelesty.madprojects.domain.stores.LoginStoreFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -37,9 +37,9 @@ interface LoginComponent {
 }
 
 class DefaultLoginComponent(
-	private val componentContext: ComponentContext,
-	private val navigator: LoginComponent.Navigator,
-	private val storeFactory: LoginStoreFactory,
+    private val componentContext: ComponentContext,
+    private val navigator: LoginComponent.Navigator,
+    private val storeFactory: LoginStoreFactory,
 ): LoginComponent, ComponentContext by componentContext {
 
 	private val scope = CoroutineScope(Dispatchers.Main)

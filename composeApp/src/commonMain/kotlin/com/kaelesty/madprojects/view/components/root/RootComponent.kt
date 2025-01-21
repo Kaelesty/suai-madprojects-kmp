@@ -1,6 +1,5 @@
 package com.kaelesty.madprojects.view.components.root
 
-import com.arkivanov.decompose.Child
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
@@ -9,9 +8,9 @@ import com.arkivanov.decompose.router.stack.replaceAll
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.mvikotlin.core.instancekeeper.getStore
 import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
-import com.kaelesty.madprojects.domain.stores.root.RootStore
-import com.kaelesty.madprojects.domain.stores.root.RootStoreFactory
-import com.kaelesty.madprojects.domain.stores.root.User
+import com.kaelesty.madprojects.domain.stores.RootStore
+import com.kaelesty.madprojects.domain.stores.RootStoreFactory
+import com.kaelesty.madprojects.domain.repos.auth.User
 import com.kaelesty.madprojects.view.components.auth.AuthComponent
 import com.kaelesty.madprojects.view.components.main.MainComponent
 import kotlinx.coroutines.CoroutineScope

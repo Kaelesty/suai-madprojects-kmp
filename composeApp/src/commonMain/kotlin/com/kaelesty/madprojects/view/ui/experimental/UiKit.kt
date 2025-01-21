@@ -17,13 +17,22 @@ object Styled {
     }
 
     interface Typography {
-       @Composable fun errorText(): TextStyle
+        @Composable
+        fun errorText(): TextStyle
     }
 
     interface UiKit {
-        @Composable fun ErrorText(text: String)
+        @Composable
+        fun ErrorText(text: String)
         fun colors(): Colors
-        @Composable fun typography(): Typography
+        @Composable
+        fun typography(): Typography
+
+        @Composable
+        fun DefaultScreenScaffold(
+            topBarTitle: String,
+            content: @Composable () -> Unit
+        )
     }
 
     private val lightUiKit = @Immutable object : DefaultUiKit() {
