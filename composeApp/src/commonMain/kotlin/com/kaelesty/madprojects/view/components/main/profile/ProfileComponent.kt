@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.StateFlow
 interface ProfileComponent {
 
     val state: StateFlow<ProfileStore.State>
+
+    fun toProjectCreation()
     
     interface Navigator {
         
@@ -44,4 +46,8 @@ class DefaultProfileComponent(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override val state = store.stateFlow
+
+    override fun toProjectCreation() {
+        navigator.toProjectCreation()
+    }
 }

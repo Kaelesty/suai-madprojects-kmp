@@ -3,6 +3,7 @@ package com.kaelesty.madprojects_kmp.ui.uikit.text
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.text.KeyboardOptions
@@ -20,6 +21,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -35,8 +37,8 @@ fun StyledTextField(
 	imeAction: ImeAction? = null,
 	keyboardType: KeyboardType? = null,
 	maxLines: Int = 1,
-	height: Dp = 60.dp,
-	textSize: TextUnit = 24.sp,
+	height: Dp = 50.dp,
+	textSize: TextUnit = 20.sp,
 ) {
 	Card(
 		modifier = modifier
@@ -56,7 +58,8 @@ fun StyledTextField(
 		) {
 			TextField(
 				value = text,
-				modifier = modifier,
+				modifier = modifier
+					.fillMaxSize(),
 				onValueChange = onValueChange,
 				singleLine = singleLine,
 				colors = TextFieldDefaults.textFieldColors(
@@ -66,7 +69,8 @@ fun StyledTextField(
 					disabledIndicatorColor = Color.Transparent,
 				),
 				textStyle = MaterialTheme.typography.body2.copy(
-					fontSize = textSize
+					fontSize = textSize,
+					textAlign = TextAlign.Start,
 				),
 				visualTransformation = if (isPassword) PasswordVisualTransformation()
 				else VisualTransformation.None,
@@ -93,9 +97,9 @@ fun TitledTextField(
 	imeAction: ImeAction? = null,
 	keyboardType: KeyboardType? = null,
 	maxLines: Int = 1,
-	titleSize: TextUnit = 24.sp,
-	textSize: TextUnit = 24.sp,
-	height: Dp = 60.dp,
+	titleSize: TextUnit = 22.sp,
+	textSize: TextUnit = 20.sp,
+	height: Dp = 50.dp,
 	outerModifier: Modifier = Modifier
 ) {
 
@@ -108,7 +112,7 @@ fun TitledTextField(
 				fontSize = titleSize,
 			),
 		)
-		Spacer(modifier = Modifier.height(10.dp))
+		Spacer(modifier = Modifier.height(6.dp))
 		StyledTextField(
 			text,
 			modifier,

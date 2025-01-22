@@ -15,7 +15,11 @@ fun CommonProfileContent(
     val state by component.state.collectAsState()
 
     when (val instance = state) {
-        is ProfileStore.State.CommonProfile -> CommonProfileScreen(instance)
+        is ProfileStore.State.CommonProfile -> CommonProfileScreen(
+            instance,
+            onCreateNewProject = { component.toProjectCreation() },
+            onProjectClick = {},
+        )
         is ProfileStore.State.CuratorProfile -> CuratorProfileScreen(instance)
         ProfileStore.State.Error -> ErrorScreen()
         ProfileStore.State.Loading -> LoadingScreen()

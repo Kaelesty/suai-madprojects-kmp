@@ -40,7 +40,7 @@ fun RegisterContent(
 
 	val state by component.state.collectAsState()
 
-	val userTypes = UserType.entries.toTypedArray()
+	val userTypes = UserType.entries.toTypedArray().toList()
 
 	var secondStep by rememberSaveable { mutableStateOf(false) }
 
@@ -197,14 +197,13 @@ fun RegisterContent(
 						title = "Тип аккаунта",
 						onItemSelection = {
 							component.dropError()
-							component.setUserType(userTypes[it])
+							component.setUserType(it)
 						},
-						values = userTypes.map {
-							it.toUi()
-						}.toList(),
-						selectedIndex = userTypes.indexOf(state.userType),
+						values = userTypes,
+						selectedItem = state.userType,
 						modifier = Modifier
 							.fillMaxWidth(0.8f),
+						itemTitle = { it.toUi() },
 					)
 					Spacer(modifier = Modifier.height(4.dp))
 					if (state.errorMessage != "") {

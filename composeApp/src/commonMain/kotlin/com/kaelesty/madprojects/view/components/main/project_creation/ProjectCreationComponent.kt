@@ -3,6 +3,8 @@ package com.kaelesty.madprojects.view.components.main.project_creation
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.mvikotlin.core.instancekeeper.getStore
 import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
+import com.kaelesty.madprojects.domain.repos.curatorship.AvailableCurator
+import com.kaelesty.madprojects.domain.repos.project.ProjectGroup
 import com.kaelesty.madprojects.domain.stores.ProjectCreationStore
 import com.kaelesty.madprojects.domain.stores.ProjectCreationStoreFactory
 import com.kaelesty.madprojects.view.components.main.project.ProjectComponent
@@ -18,7 +20,21 @@ interface ProjectCreationComponent {
 
     fun updateMaxMembersCount(it: Int)
 
+    fun selectCurator(it: AvailableCurator)
+
+    fun selectProjectGroup(it: ProjectGroup)
+
+    fun submit()
+
+    fun removeRepoLink(it: String)
+
     val state: StateFlow<ProjectCreationStore.State>
+    val repoLinkState: StateFlow<RepoLinkState>
+
+    sealed interface RepoLinkState {
+        data object Finished: RepoLinkState
+        data object Error: RepoLinkState
+    }
 
     interface Navigator {
 
@@ -49,6 +65,9 @@ class DefaultProjectCreationComponent(
     @OptIn(ExperimentalCoroutinesApi::class)
     override val state = store.stateFlow
 
+    override val repoLinkState: StateFlow<ProjectCreationComponent.RepoLinkState>
+        get() = TODO("Not yet implemented")
+
     override fun updateTitle(it: String) {
         store.accept(ProjectCreationStore.Intent.UpdateTitle(it))
     }
@@ -59,5 +78,21 @@ class DefaultProjectCreationComponent(
 
     override fun updateMaxMembersCount(it: Int) {
         store.accept(ProjectCreationStore.Intent.UpdateMaxMembersCount(it))
+    }
+
+    override fun selectCurator(it: AvailableCurator) {
+        store.accept(ProjectCreationStore.Intent.UpdateCurator(it))
+    }
+
+    override fun selectProjectGroup(it: ProjectGroup) {
+        store.accept(ProjectCreationStore.Intent.UpdateProjectGroup(it))
+    }
+
+    override fun submit() {
+        store.accept(ProjectCreationStore.Intent.Create)
+    }
+
+    override fun removeRepoLink(it: String) {
+        store.accept(ProjectCreationStore.Intent.RemoveRepoLink(it))
     }
 }

@@ -43,6 +43,7 @@ val storesModule = module {
         ProjectCreationStoreFactory(
             storeFactory = get(),
             projectRepo = get(),
+            curatorshipRepo = get(),
         )
     }
 }

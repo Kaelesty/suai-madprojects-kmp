@@ -1,5 +1,7 @@
 package com.kaelesty.madprojects_kmp.ui.uikit.cards
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -17,7 +19,6 @@ fun StyledRoundedCard(
 ) {
 	Card(
 		modifier = modifier
-			.padding(4.dp)
 			.shadow(
 				shape = shape,
 				elevation = 6.dp,

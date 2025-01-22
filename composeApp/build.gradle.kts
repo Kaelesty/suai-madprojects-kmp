@@ -76,6 +76,8 @@ kotlin {
 
             implementation(libs.datastore.preferences)
             implementation(libs.atomicfu)
+
+            implementation(libs.kotlinx.datetime)
         }
     }
 }

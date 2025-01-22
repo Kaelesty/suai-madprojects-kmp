@@ -7,6 +7,9 @@ import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineBootstrapper
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.kaelesty.madprojects.domain.PROJECT_DESC_MAX_LENGTH
 import com.kaelesty.madprojects.domain.PROJECT_TITLE_MAX_LENGTH
+import com.kaelesty.madprojects.domain.repos.curatorship.AvailableCurator
+import com.kaelesty.madprojects.domain.repos.curatorship.CuratorshipRepo
+import com.kaelesty.madprojects.domain.repos.project.ProjectGroup
 import com.kaelesty.madprojects.domain.repos.project.ProjectRepo
 import com.kaelesty.madprojects.domain.stores.ProjectCreationStore.Intent
 import com.kaelesty.madprojects.domain.stores.ProjectCreationStore.Label
@@ -25,29 +28,30 @@ interface ProjectCreationStore : Store<Intent, State, Label> {
 
         data class UpdateDesc(val new: String): Intent
 
-        data class UpdateCuratorId(val new: String): Intent
+        data class UpdateCurator(val new: AvailableCurator): Intent
 
         data class UpdateRepoLink(val new: String): Intent
 
         data object ConfirmRepoLink: Intent
 
-        data class UpdateProjectGroupId(val new: String): Intent
+        data class UpdateProjectGroup(val new: ProjectGroup): Intent
 
-        data class RemoveRepoLink(val index: Int): Intent
+        data class RemoveRepoLink(val repoLink: String): Intent
     }
 
     data class State(
         val title: String = "",
         val maxMembersCount: Int = 3,
         val desc: String = "",
-        val curatorId: String? = null,
+        val curator: AvailableCurator? = null,
         val repoLinks: List<String> = listOf(),
         val repoLink: String = "",
-        val projectGroupId: String? = "",
+        val projectGroup: ProjectGroup? = null,
         val isLoading: Boolean = true,
-    ): ProfileStore.Intent {
 
-    }
+        val curators: List<AvailableCurator> = listOf(),
+        val projectGroups: List<ProjectGroup> = listOf()
+    )
 
     sealed interface Label {
 
@@ -62,6 +66,7 @@ interface ProjectCreationStore : Store<Intent, State, Label> {
 class ProjectCreationStoreFactory(
     private val storeFactory: StoreFactory,
     private val projectRepo: ProjectRepo,
+    private val curatorshipRepo: CuratorshipRepo,
 ) {
 
     fun create(): ProjectCreationStore =
@@ -69,11 +74,13 @@ class ProjectCreationStoreFactory(
             name = "ProjectCreationStore",
             initialState = State(),
             bootstrapper = BootstrapperImpl(),
-            executorFactory = { ExecutorImpl(projectRepo) },
+            executorFactory = { ExecutorImpl(projectRepo, curatorshipRepo) },
             reducer = ReducerImpl
         ) {}
 
     private sealed interface Action {
+
+        data object UpdateCuratorsList: Action
     }
 
     private sealed interface Msg {
@@ -84,32 +91,38 @@ class ProjectCreationStoreFactory(
 
         data class UpdateDesc(val new: String): Msg
 
-        data class UpdateCuratorId(val new: String): Msg
+        data class UpdateCurator(val new: AvailableCurator): Msg
 
         data class UpdateRepoLink(val new: String): Msg
 
         data object ConfirmRepoLink: Msg
 
-        data class RemoveRepoLink(val index: Int): Msg
+        data class RemoveRepoLink(val repoLink: String): Msg
 
         data class UpdateLoading(val new: Boolean): Msg
 
-        data class UpdateProjectGroupId(val new: String): Msg
+        data class UpdateProjectGroup(val new: ProjectGroup): Msg
+
+        data class UpdateProjectGroups(val new: List<ProjectGroup>): Msg
+
+        data class UpdateCuratorsList(val new: List<AvailableCurator>): Msg
     }
 
     private class BootstrapperImpl : CoroutineBootstrapper<Action>() {
         override fun invoke() {
+            dispatch(Action.UpdateCuratorsList)
         }
     }
 
     private class ExecutorImpl(
         private val projectRepo: ProjectRepo,
+        private val curatorshipRepo: CuratorshipRepo,
     ) : CoroutineExecutor<Intent, Action, State, Msg, Label>() {
 
         override fun executeIntent(intent: Intent) {
             when (intent) {
 
-                is Intent.UpdateProjectGroupId -> dispatch(Msg.UpdateProjectGroupId(intent.new))
+                is Intent.UpdateProjectGroup -> dispatch(Msg.UpdateProjectGroup(intent.new))
 
                 is Intent.ConfirmRepoLink -> {
                     // TODO verify
@@ -120,7 +133,7 @@ class ProjectCreationStoreFactory(
                     dispatch(Msg.UpdateLoading(true))
                     scope.launch {
                         with(state()) {
-                            if (curatorId == null || projectGroupId == null) {
+                            if (curator == null || projectGroup == null) {
                                 publish(Label.EmptyField)
                                 return@launch
                             }
@@ -128,9 +141,9 @@ class ProjectCreationStoreFactory(
                                 title = title.ifBlank { publish(Label.EmptyField); return@launch },
                                 maxMembersCount = maxMembersCount,
                                 desc = desc.ifBlank { publish(Label.EmptyField); return@launch },
-                                curatorId = curatorId.ifBlank { publish(Label.EmptyField); return@launch },
+                                curatorId = curator.id,
                                 repoLinks = repoLinks,
-                                projectGroupId = projectGroupId
+                                projectGroupId = projectGroup.id
                             )
 
                             res.getOrNull()?.let {
@@ -139,8 +152,11 @@ class ProjectCreationStoreFactory(
                         }
                     }
                 }
-                is Intent.RemoveRepoLink -> dispatch(Msg.RemoveRepoLink(intent.index))
-                is Intent.UpdateCuratorId -> dispatch(Msg.UpdateCuratorId(intent.new))
+                is Intent.RemoveRepoLink -> dispatch(Msg.RemoveRepoLink(intent.repoLink))
+                is Intent.UpdateCurator -> {
+                    dispatch(Msg.UpdateCurator(intent.new))
+                    updateProjectGroups(intent.new.id)
+                }
                 is Intent.UpdateDesc -> dispatch(Msg.UpdateDesc(
                     intent.new.take(PROJECT_DESC_MAX_LENGTH)
                 ))
@@ -154,6 +170,27 @@ class ProjectCreationStoreFactory(
         }
 
         override fun executeAction(action: Action) {
+            when (action) {
+                Action.UpdateCuratorsList -> {
+                    scope.launch {
+                        curatorshipRepo.getCuratorsList().let {
+                            it.getOrNull()?.let {
+                                dispatch(Msg.UpdateCuratorsList(it))
+                            } ?:
+                            it.exceptionOrNull().toString()
+                        }
+                    }
+                }
+            }
+        }
+
+        private fun updateProjectGroups(curatorId: String) {
+            scope.launch {
+                dispatch(Msg.UpdateProjectGroups(listOf()))
+                curatorshipRepo.getCuratorProjectGroups(curatorId).getOrNull()?.let {
+                    dispatch(Msg.UpdateProjectGroups(it))
+                }
+            }
         }
     }
 
@@ -173,15 +210,17 @@ class ProjectCreationStoreFactory(
                 is Msg.RemoveRepoLink -> copy(
                     repoLinks = repoLinks
                         .toMutableList()
-                        .apply { removeAt(message.index) }
+                        .apply { remove(message.repoLink) }
                         .toList()
                 )
-                is Msg.UpdateCuratorId -> copy(curatorId = message.new)
+                is Msg.UpdateCurator -> copy(curator = message.new)
                 is Msg.UpdateDesc -> copy(desc = message.new)
                 is Msg.UpdateMaxMembersCount -> copy(maxMembersCount = message.new)
                 is Msg.UpdateTitle -> copy(title = message.new)
                 is Msg.UpdateLoading -> copy(isLoading = message.new)
-                is Msg.UpdateProjectGroupId -> copy(projectGroupId = message.new)
+                is Msg.UpdateProjectGroup -> copy(projectGroup = message.new)
+                is Msg.UpdateCuratorsList -> copy(curators = message.new, curator = null)
+                is Msg.UpdateProjectGroups -> copy(projectGroups = message.new, projectGroup = null)
             }
     }
 }

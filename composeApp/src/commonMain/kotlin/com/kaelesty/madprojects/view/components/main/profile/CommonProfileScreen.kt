@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kaelesty.madprojects.domain.repos.profile.ProfileProject
@@ -33,7 +34,9 @@ import com.kaelesty.madprojects_kmp.ui.uikit.cards.TitledRoundedCard
 
 @Composable
 fun CommonProfileScreen(
-    state: ProfileStore.State.CommonProfile
+    state: ProfileStore.State.CommonProfile,
+    onCreateNewProject: () -> Unit,
+    onProjectClick: (ProfileProject) -> Unit
 ) {
     Styled.uiKit().DefaultScreenScaffold(
         topBarTitle = "Профиль"
@@ -42,8 +45,8 @@ fun CommonProfileScreen(
         Spacer(Modifier.height(18.dp))
         ProjectsList(
             state = state,
-            onProjectClick = {},
-            onCreateNewProject = {}
+            onProjectClick = onProjectClick,
+            onCreateNewProject = onCreateNewProject,
         )
     }
 }
@@ -91,9 +94,11 @@ fun MetaCard(
             Text(
                 style = MaterialTheme.typography.body2
                     .copy(
-                        fontSize = 30.sp
+                        fontSize = 30.sp,
+                        textAlign = TextAlign.Center
                     ),
-                text = "${state.profile.lastName} ${state.profile.firstName} ${state.profile.secondName}"
+                text = "${state.profile.lastName} ${state.profile.firstName} ${state.profile.secondName}",
+                maxLines = 2
             )
             Spacer(Modifier.height(12.dp))
             Column(

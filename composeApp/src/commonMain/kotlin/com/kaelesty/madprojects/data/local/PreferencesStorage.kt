@@ -29,6 +29,12 @@ class PreferencesStorage(
         }
     }
 
+    suspend fun dropAuthResponse() {
+        dataStore.edit { preferences ->
+            preferences.remove(AUTH_KEY)
+        }
+    }
+
     fun getAuthResponse(): Flow<AuthorizedResponse?> {
         return dataStore.data
             .map { preferences ->
