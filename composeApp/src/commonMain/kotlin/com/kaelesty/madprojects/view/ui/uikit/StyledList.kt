@@ -29,7 +29,7 @@ import org.jetbrains.compose.resources.vectorResource
 fun <T> StyledList(
     items: List<T>,
     itemTitle: (T) -> String,
-    onItemClick: (T) -> Unit,
+    onItemClick: ((T) -> Unit)?,
     leadingItem: String?,
     onLeadingClick: (() -> Unit)?,
     onDeleteItem: ((T) -> Unit)?,
@@ -84,8 +84,9 @@ fun <T> StyledList(
                         height = 2f
                     )
                     .clickable {
-                        onItemClick(item)
+                        onItemClick?.let { it(item) }
                     }
+                    .padding(vertical = 2.dp)
             ) {
                 Text(
                     text = itemTitle(item),
@@ -96,12 +97,14 @@ fun <T> StyledList(
                     modifier = Modifier
                         .weight(1f)
                 )
-                Icon(
-                    vectorResource(Res.drawable.right_arrow),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(30.dp)
-                )
+                onItemClick?.let {
+                    Icon(
+                        vectorResource(Res.drawable.right_arrow),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(30.dp)
+                    )
+                }
                 onDeleteItem?.let {
                     Icon(
                         vectorResource(Res.drawable.close),

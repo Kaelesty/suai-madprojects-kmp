@@ -14,7 +14,7 @@ fun StyledButton(
 	onClick: () -> Unit,
 ) {
 	Button(
-		onClick,
+		onClick = onClick,
 		modifier = modifier,
 		colors = ButtonDefaults.buttonColors(
 			backgroundColor = MaterialTheme.colors.primary

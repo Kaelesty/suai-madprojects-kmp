@@ -39,7 +39,8 @@ fun CommonProfileScreen(
     onProjectClick: (ProfileProject) -> Unit
 ) {
     Styled.uiKit().DefaultScreenScaffold(
-        topBarTitle = "Профиль"
+        topBarTitle = "Профиль",
+        isScrollable = false,
     ) {
         MetaCard(state)
         Spacer(Modifier.height(18.dp))

@@ -30,9 +30,7 @@ interface ProjectCreationStore : Store<Intent, State, Label> {
 
         data class UpdateCurator(val new: AvailableCurator): Intent
 
-        data class UpdateRepoLink(val new: String): Intent
-
-        data object ConfirmRepoLink: Intent
+        data class AddRepoLink(val new: String): Intent
 
         data class UpdateProjectGroup(val new: ProjectGroup): Intent
 
@@ -45,7 +43,6 @@ interface ProjectCreationStore : Store<Intent, State, Label> {
         val desc: String = "",
         val curator: AvailableCurator? = null,
         val repoLinks: List<String> = listOf(),
-        val repoLink: String = "",
         val projectGroup: ProjectGroup? = null,
         val isLoading: Boolean = true,
 
@@ -60,6 +57,10 @@ interface ProjectCreationStore : Store<Intent, State, Label> {
         data object CreationError: Label
 
         data object EmptyField: Label
+
+        data object RepolinkValidated: Label
+
+        data object BadRepolink: Label
     }
 }
 
@@ -93,9 +94,7 @@ class ProjectCreationStoreFactory(
 
         data class UpdateCurator(val new: AvailableCurator): Msg
 
-        data class UpdateRepoLink(val new: String): Msg
-
-        data object ConfirmRepoLink: Msg
+        data class AddRepoLink(val new: String): Msg
 
         data class RemoveRepoLink(val repoLink: String): Msg
 
@@ -123,11 +122,6 @@ class ProjectCreationStoreFactory(
             when (intent) {
 
                 is Intent.UpdateProjectGroup -> dispatch(Msg.UpdateProjectGroup(intent.new))
-
-                is Intent.ConfirmRepoLink -> {
-                    // TODO verify
-                    dispatch(Msg.ConfirmRepoLink)
-                }
 
                 Intent.Create -> {
                     dispatch(Msg.UpdateLoading(true))
@@ -165,7 +159,18 @@ class ProjectCreationStoreFactory(
                     intent.new.take(PROJECT_TITLE_MAX_LENGTH)
                 ))
 
-                is Intent.UpdateRepoLink -> dispatch(Msg.UpdateRepoLink(intent.new))
+                is Intent.AddRepoLink -> {
+                    scope.launch {
+                        if (projectRepo.validateRepolink(intent.new)) {
+                            dispatch(Msg.AddRepoLink(intent.new))
+                            publish(Label.RepolinkValidated)
+                        }
+                        else {
+                            publish(Label.BadRepolink)
+                        }
+                    }
+
+                }
             }
         }
 
@@ -197,15 +202,11 @@ class ProjectCreationStoreFactory(
     private object ReducerImpl : Reducer<State, Msg> {
         override fun State.reduce(message: Msg): State =
             when (message) {
-                is Msg.ConfirmRepoLink -> copy(
+                is Msg.AddRepoLink -> copy(
                     repoLinks = repoLinks
                         .toMutableList()
-                        .apply { add(repoLink) }
+                        .apply { add(message.new) }
                         .toList(),
-                    repoLink = ""
-                )
-                is Msg.UpdateRepoLink -> copy(
-                    repoLink = message.new
                 )
                 is Msg.RemoveRepoLink -> copy(
                     repoLinks = repoLinks

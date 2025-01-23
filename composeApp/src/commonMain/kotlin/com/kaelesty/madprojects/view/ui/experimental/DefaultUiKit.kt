@@ -1,10 +1,14 @@
 package com.kaelesty.madprojects_kmp.ui.experimental
 
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -47,16 +51,22 @@ abstract class DefaultUiKit: Styled.UiKit {
     @Composable
     override fun DefaultScreenScaffold(
         topBarTitle: String,
+        isScrollable: Boolean,
         content: @Composable () -> Unit
     ) {
+
+        val scrollState = rememberScrollState()
+
         Scaffold(
             topBar = {
                 TopBar(topBarTitle)
-            }
+            },
+            modifier = Modifier
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .verticalScroll(scrollState)
                     .padding(it)
                     .padding(4.dp),
                 horizontalAlignment = Alignment.CenterHorizontally

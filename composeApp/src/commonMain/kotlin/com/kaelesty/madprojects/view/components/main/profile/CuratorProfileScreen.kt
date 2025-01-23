@@ -36,7 +36,8 @@ fun CuratorProfileScreen(
     state: ProfileStore.State.CuratorProfile
 ) {
     Styled.uiKit().DefaultScreenScaffold(
-        topBarTitle = "Профиль"
+        topBarTitle = "Профиль",
+        isScrollable = false
     ) {
         CuratorMetaCard(state)
         Spacer(Modifier.height(18.dp))

@@ -11,6 +11,15 @@ class ProjectRepoImpl(
     private val loginManager: LoginManager,
 ): ProjectRepo {
 
+    override suspend fun validateRepolink(repolink: String): Boolean {
+        return projectApiService.validateRepolink(
+            token = loginManager.getTokenOrThrow(),
+            repolink = repolink
+        ).getOrNull()?.let {
+            it.status == HttpStatusCode.OK
+        } ?: false
+    }
+
     override suspend fun createProject(
         title: String,
         maxMembersCount: Int,

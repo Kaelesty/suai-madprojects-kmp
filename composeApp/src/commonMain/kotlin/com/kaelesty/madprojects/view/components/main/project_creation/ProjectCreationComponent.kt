@@ -2,6 +2,7 @@ package com.kaelesty.madprojects.view.components.main.project_creation
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.mvikotlin.core.instancekeeper.getStore
+import com.arkivanov.mvikotlin.extensions.coroutines.labels
 import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
 import com.kaelesty.madprojects.domain.repos.curatorship.AvailableCurator
 import com.kaelesty.madprojects.domain.repos.project.ProjectGroup
@@ -11,7 +12,10 @@ import com.kaelesty.madprojects.view.components.main.project.ProjectComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 interface ProjectCreationComponent {
     fun updateTitle(it: String)
@@ -28,8 +32,10 @@ interface ProjectCreationComponent {
 
     fun removeRepoLink(it: String)
 
+    fun addRepolink(it: String)
+
     val state: StateFlow<ProjectCreationStore.State>
-    val repoLinkState: StateFlow<RepoLinkState>
+    val repoLinkState: StateFlow<RepoLinkState?>
 
     sealed interface RepoLinkState {
         data object Finished: RepoLinkState
@@ -60,13 +66,34 @@ class DefaultProjectCreationComponent(
 
     val store = instanceKeeper.getStore {
         storeFactory.create()
+    }.apply {
+        scope.launch {
+            labels.collect {
+                when (it) {
+                    ProjectCreationStore.Label.CreationError -> TODO()
+                    ProjectCreationStore.Label.EmptyField -> TODO()
+                    is ProjectCreationStore.Label.Finished -> navigator.onFinish(it.projectId)
+                    ProjectCreationStore.Label.BadRepolink -> {
+                        _repoLinkState.emit(ProjectCreationComponent.RepoLinkState.Error)
+                    }
+                    ProjectCreationStore.Label.RepolinkValidated -> {
+                        _repoLinkState.emit(ProjectCreationComponent.RepoLinkState.Finished)
+                    }
+                }
+            }
+        }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override val state = store.stateFlow
 
-    override val repoLinkState: StateFlow<ProjectCreationComponent.RepoLinkState>
-        get() = TODO("Not yet implemented")
+    private val _repoLinkState = MutableStateFlow<ProjectCreationComponent.RepoLinkState?>(null)
+    override val repoLinkState: StateFlow<ProjectCreationComponent.RepoLinkState?>
+        get() = _repoLinkState.asStateFlow()
+
+    override fun addRepolink(it: String) {
+        store.accept(ProjectCreationStore.Intent.AddRepoLink(it))
+    }
 
     override fun updateTitle(it: String) {
         store.accept(ProjectCreationStore.Intent.UpdateTitle(it))

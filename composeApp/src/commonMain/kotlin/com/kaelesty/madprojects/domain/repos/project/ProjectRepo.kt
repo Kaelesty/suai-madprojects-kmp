@@ -10,4 +10,8 @@ interface ProjectRepo {
         repoLinks: List<String>,
         projectGroupId: String,
     ): Result<String>
+
+    suspend fun validateRepolink(
+        repolink: String
+    ): Boolean
 }

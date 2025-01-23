@@ -31,7 +31,8 @@ object Styled {
         @Composable
         fun DefaultScreenScaffold(
             topBarTitle: String,
-            content: @Composable () -> Unit
+            isScrollable: Boolean,
+            content: @Composable () -> Unit,
         )
     }
 
