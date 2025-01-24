@@ -3,6 +3,7 @@ package com.kaelesty.madprojects.view.components.main.profile
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.mvikotlin.core.instancekeeper.getStore
 import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
+import com.kaelesty.madprojects.domain.repos.profile.ProfileProject
 import com.kaelesty.madprojects.domain.stores.ProfileStore
 import com.kaelesty.madprojects.domain.stores.ProfileStoreFactory
 import kotlinx.coroutines.CoroutineScope
@@ -15,11 +16,14 @@ interface ProfileComponent {
     val state: StateFlow<ProfileStore.State>
 
     fun toProjectCreation()
-    
+
+    fun toProject(it: ProfileProject)
+
     interface Navigator {
         
         fun toProjectCreation()
 
+        fun toProject(it: ProfileProject)
     }
 
     interface Factory{
@@ -49,5 +53,9 @@ class DefaultProfileComponent(
 
     override fun toProjectCreation() {
         navigator.toProjectCreation()
+    }
+
+    override fun toProject(it: ProfileProject) {
+        navigator.toProject(it)
     }
 }

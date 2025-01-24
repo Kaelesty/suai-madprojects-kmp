@@ -18,7 +18,7 @@ fun CommonProfileContent(
         is ProfileStore.State.CommonProfile -> CommonProfileScreen(
             instance,
             onCreateNewProject = { component.toProjectCreation() },
-            onProjectClick = {},
+            onProjectClick = { component.toProject(it) },
         )
         is ProfileStore.State.CuratorProfile -> CuratorProfileScreen(instance)
         ProfileStore.State.Error -> ErrorScreen()

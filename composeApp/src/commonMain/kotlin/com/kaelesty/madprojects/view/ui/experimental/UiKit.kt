@@ -32,6 +32,7 @@ object Styled {
         fun DefaultScreenScaffold(
             topBarTitle: String,
             isScrollable: Boolean,
+            bottomBar: @Composable () -> Unit,
             content: @Composable () -> Unit,
         )
     }

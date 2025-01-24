@@ -10,6 +10,12 @@ import com.kaelesty.madprojects.view.components.main.profile.DefaultProfileCompo
 import com.kaelesty.madprojects.view.components.main.profile.ProfileComponent
 import com.kaelesty.madprojects.view.components.main.project.DefaultProjectComponent
 import com.kaelesty.madprojects.view.components.main.project.ProjectComponent
+import com.kaelesty.madprojects.view.components.main.project.activity.ActivityComponent
+import com.kaelesty.madprojects.view.components.main.project.activity.DefaultActivityComponent
+import com.kaelesty.madprojects.view.components.main.project.kanban.DefaultKanbanComponent
+import com.kaelesty.madprojects.view.components.main.project.kanban.KanbanComponent
+import com.kaelesty.madprojects.view.components.main.project.messenger.DefaultMessengerComponent
+import com.kaelesty.madprojects.view.components.main.project.messenger.MessengerComponent
 import com.kaelesty.madprojects.view.components.main.project_creation.DefaultProjectCreationComponent
 import com.kaelesty.madprojects.view.components.main.project_creation.ProjectCreationComponent
 import com.kaelesty.madprojects.view.components.root.DefaultRootComponent
@@ -20,6 +26,10 @@ import com.kaelesty.madprojects_kmp.blocs.auth.register.DefaultRegisterComponent
 import com.kaelesty.madprojects_kmp.blocs.auth.register.RegisterComponent
 import com.kaelesty.madprojects_kmp.blocs.auth.welcome.DefaultWelcomeComponent
 import com.kaelesty.madprojects_kmp.blocs.auth.welcome.WelcomeComponent
+import com.kaelesty.madprojects_kmp.blocs.project.info.DefaultInfoComponent
+import com.kaelesty.madprojects_kmp.blocs.project.info.InfoComponent
+import com.kaelesty.madprojects_kmp.blocs.project.settings.DefaultSettingsComponent
+import com.kaelesty.madprojects_kmp.blocs.project.settings.SettingsComponent
 import org.koin.dsl.module
 
 val componentsModule = module {
@@ -133,9 +143,84 @@ val componentsModule = module {
             ): ProjectComponent {
                 return DefaultProjectComponent(
                     c, n,
-                    projectId
+                    projectId,
+                    activityComponentFactory = get(),
+                    infoComponentFactory = get(),
+                    kanbanComponentFactory = get(),
+                    messengerComponentFactory = get(),
+                    settingsComponentFactory = get()
                 )
             }
         }
     }
+
+    factory<MessengerComponent.Factory> {
+            object : MessengerComponent.Factory {
+                override fun create(
+                    c: ComponentContext,
+                    n: MessengerComponent.Navigator,
+                    projectId: String,
+                ): MessengerComponent {
+                    return DefaultMessengerComponent(
+                        c, n, projectId
+                    )
+                }
+            }
+        }
+
+    factory<InfoComponent.Factory> {
+            object : InfoComponent.Factory {
+                override fun create(
+                    c: ComponentContext,
+                    n: InfoComponent.Navigator,
+                    projectId: String,
+                ): InfoComponent {
+                    return DefaultInfoComponent(
+                        c, n, projectId
+                    )
+                }
+            }
+        }
+
+    factory<SettingsComponent.Factory> {
+            object : SettingsComponent.Factory {
+                override fun create(
+                    c: ComponentContext,
+                    n: SettingsComponent.Navigator,
+                    projectId: String,
+                ): SettingsComponent {
+                    return DefaultSettingsComponent(
+                        c, n, projectId
+                    )
+                }
+            }
+        }
+
+    factory<KanbanComponent.Factory> {
+            object : KanbanComponent.Factory {
+                override fun create(
+                    c: ComponentContext,
+                    n: KanbanComponent.Navigator,
+                    projectId: String,
+                ): KanbanComponent {
+                    return DefaultKanbanComponent(
+                        c, n, projectId
+                    )
+                }
+            }
+        }
+
+    factory<ActivityComponent.Factory> {
+            object : ActivityComponent.Factory {
+                override fun create(
+                    c: ComponentContext,
+                    n: ActivityComponent.Navigator,
+                    projectId: String,
+                ): ActivityComponent {
+                    return DefaultActivityComponent(
+                        c, n, projectId
+                    )
+                }
+            }
+        }
 }

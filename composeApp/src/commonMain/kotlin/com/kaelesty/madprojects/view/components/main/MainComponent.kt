@@ -7,6 +7,7 @@ import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.value.Value
 import com.kaelesty.madprojects.domain.repos.auth.User
+import com.kaelesty.madprojects.domain.repos.profile.ProfileProject
 import com.kaelesty.madprojects.view.components.main.MainComponent.Child
 import com.kaelesty.madprojects.view.components.main.profile.ProfileComponent
 import com.kaelesty.madprojects.view.components.main.project.ProjectComponent
@@ -64,6 +65,10 @@ class DefaultMainComponent(
 
                     override fun toProjectCreation() {
                         navigation.push(Config.ProjectCreation)
+                    }
+
+                    override fun toProject(it: ProfileProject) {
+                        navigation.push(Config.Project(it.id))
                     }
                 }
             )

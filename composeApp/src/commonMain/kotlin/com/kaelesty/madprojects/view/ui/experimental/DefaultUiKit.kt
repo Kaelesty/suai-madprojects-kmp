@@ -52,6 +52,7 @@ abstract class DefaultUiKit: Styled.UiKit {
     override fun DefaultScreenScaffold(
         topBarTitle: String,
         isScrollable: Boolean,
+        bottomBar: @Composable () -> Unit,
         content: @Composable () -> Unit
     ) {
 
@@ -60,6 +61,9 @@ abstract class DefaultUiKit: Styled.UiKit {
         Scaffold(
             topBar = {
                 TopBar(topBarTitle)
+            },
+            bottomBar = {
+                bottomBar()
             },
             modifier = Modifier
         ) {

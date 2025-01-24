@@ -37,7 +37,8 @@ fun CuratorProfileScreen(
 ) {
     Styled.uiKit().DefaultScreenScaffold(
         topBarTitle = "Профиль",
-        isScrollable = false
+        isScrollable = false,
+        bottomBar = {}
     ) {
         CuratorMetaCard(state)
         Spacer(Modifier.height(18.dp))

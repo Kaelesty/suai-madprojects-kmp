@@ -72,7 +72,8 @@ fun ProjectCreationContent(
 
     Styled.uiKit().DefaultScreenScaffold(
         topBarTitle = "Создание проекта",
-        isScrollable = true
+        isScrollable = true,
+        bottomBar = {}
     ) {
         StyledRoundedCard(
             modifier = Modifier
