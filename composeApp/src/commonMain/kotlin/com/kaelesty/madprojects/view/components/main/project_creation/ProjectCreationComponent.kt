@@ -5,6 +5,7 @@ import com.arkivanov.mvikotlin.core.instancekeeper.getStore
 import com.arkivanov.mvikotlin.extensions.coroutines.labels
 import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
 import com.kaelesty.madprojects.domain.repos.curatorship.AvailableCurator
+import com.kaelesty.madprojects.domain.repos.profile.ProfileProject
 import com.kaelesty.madprojects.domain.repos.project.ProjectGroup
 import com.kaelesty.madprojects.domain.stores.ProjectCreationStore
 import com.kaelesty.madprojects.domain.stores.ProjectCreationStoreFactory
@@ -44,7 +45,7 @@ interface ProjectCreationComponent {
 
     interface Navigator {
 
-        fun onFinish(projectId: String)
+        fun onFinish(project: ProfileProject)
     }
 
     interface Factory {
@@ -72,7 +73,7 @@ class DefaultProjectCreationComponent(
                 when (it) {
                     ProjectCreationStore.Label.CreationError -> TODO()
                     ProjectCreationStore.Label.EmptyField -> TODO()
-                    is ProjectCreationStore.Label.Finished -> navigator.onFinish(it.projectId)
+                    is ProjectCreationStore.Label.Finished -> navigator.onFinish(it.project)
                     ProjectCreationStore.Label.BadRepolink -> {
                         _repoLinkState.emit(ProjectCreationComponent.RepoLinkState.Error)
                     }

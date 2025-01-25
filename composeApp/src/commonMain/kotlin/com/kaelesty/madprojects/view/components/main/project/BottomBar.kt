@@ -27,7 +27,7 @@ import org.jetbrains.compose.resources.vectorResource
 @Composable
 fun ProjectBottomBar(
     component: ProjectComponent,
-    selected: ProjectComponent.Child.NavTarget,
+    selected: ProjectComponent.Child.NavTarget?,
 
     ) {
     val children = ProjectComponent.Child.NavTarget.entries

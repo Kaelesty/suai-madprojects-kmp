@@ -37,7 +37,7 @@ class AuthRepoImpl(
             }
         }
         scope.launch {
-            checkAuthorizedOnLaunch()
+             checkAuthorizedOnLaunch()
         }
     }
 
@@ -110,10 +110,6 @@ class AuthRepoImpl(
     }
 
     private suspend fun checkAuthorizedOnLaunch() {
-        preferencesStorage.getAuthResponse().collect {
-            it?.let {
-                loginManager.authorize(it)
-            }
-        }
+        loginManager.onLaunch()
     }
 }

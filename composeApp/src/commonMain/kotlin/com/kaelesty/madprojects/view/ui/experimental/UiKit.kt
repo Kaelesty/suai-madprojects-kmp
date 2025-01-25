@@ -22,9 +22,15 @@ object Styled {
     }
 
     interface UiKit {
+
         @Composable
         fun ErrorText(text: String)
+
+        @Composable
+        fun Text(text: String)
+
         fun colors(): Colors
+
         @Composable
         fun typography(): Typography
 

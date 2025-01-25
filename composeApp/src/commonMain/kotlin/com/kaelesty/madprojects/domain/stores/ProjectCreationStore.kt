@@ -9,8 +9,10 @@ import com.kaelesty.madprojects.domain.PROJECT_DESC_MAX_LENGTH
 import com.kaelesty.madprojects.domain.PROJECT_TITLE_MAX_LENGTH
 import com.kaelesty.madprojects.domain.repos.curatorship.AvailableCurator
 import com.kaelesty.madprojects.domain.repos.curatorship.CuratorshipRepo
+import com.kaelesty.madprojects.domain.repos.profile.ProfileProject
 import com.kaelesty.madprojects.domain.repos.project.ProjectGroup
 import com.kaelesty.madprojects.domain.repos.project.ProjectRepo
+import com.kaelesty.madprojects.domain.repos.project.ProjectStatus
 import com.kaelesty.madprojects.domain.stores.ProjectCreationStore.Intent
 import com.kaelesty.madprojects.domain.stores.ProjectCreationStore.Label
 import com.kaelesty.madprojects.domain.stores.ProjectCreationStore.State
@@ -52,7 +54,7 @@ interface ProjectCreationStore : Store<Intent, State, Label> {
 
     sealed interface Label {
 
-        data class Finished(val projectId: String): Label
+        data class Finished(val project: ProfileProject): Label
 
         data object CreationError: Label
 
@@ -141,7 +143,11 @@ class ProjectCreationStoreFactory(
                             )
 
                             res.getOrNull()?.let {
-                                publish(Label.Finished(it))
+                                publish(Label.Finished(
+                                    ProfileProject(
+                                        id = it, title = state().title, mark = null, status = ProjectStatus.Pending
+                                    )
+                                ))
                             } ?: publish(Label.CreationError)
                         }
                     }

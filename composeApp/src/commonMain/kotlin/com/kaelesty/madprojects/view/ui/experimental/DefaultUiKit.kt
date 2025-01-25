@@ -30,6 +30,16 @@ import com.kaelesty.madprojects_kmp.ui.theme.robotoFlex
 abstract class DefaultUiKit: Styled.UiKit {
 
     @Composable
+    override fun Text(text: String) {
+        Text(
+            text = text,
+            style = typography().errorText().copy(
+                color = Color.Black
+            )
+        )
+    }
+
+    @Composable
     override fun typography() = object:  Styled.Typography {
         @Composable
         override fun errorText() = TextStyle(

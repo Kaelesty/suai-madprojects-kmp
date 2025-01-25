@@ -1,5 +1,9 @@
 package com.kaelesty.madprojects.view.components.main.project
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -12,6 +16,8 @@ import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import com.kaelesty.madprojects.view.components.main.project.activity.ActivityContent
 import com.kaelesty.madprojects.view.components.main.project.kanban.KanbanContent
 import com.kaelesty.madprojects.view.components.main.project.messenger.MessengerContent
+import com.kaelesty.madprojects.view.components.main.project.sprint.SprintContent
+import com.kaelesty.madprojects.view.components.main.project.sprint_creation.SprintCreationContent
 import com.kaelesty.madprojects.view.ui.experimental.Styled
 import com.kaelesty.madprojects_kmp.blocs.project.info.InfoComponent
 import com.kaelesty.madprojects_kmp.blocs.project.info.InfoContent
@@ -23,7 +29,7 @@ fun ProjectContent(
 ) {
 
     var selected by remember {
-        mutableStateOf(ProjectComponent.Child.NavTarget.Activity)
+        mutableStateOf<ProjectComponent.Child.NavTarget?>(ProjectComponent.Child.NavTarget.Activity)
     }
 
     val state by component.state.collectAsState()
@@ -31,10 +37,22 @@ fun ProjectContent(
         topBarTitle = state.projectName,
         isScrollable = true,
         bottomBar = {
-            ProjectBottomBar(
-                component = component,
-                selected = selected
-            )
+            AnimatedVisibility(
+                visible = selected != null,
+                enter = slideInVertically(
+                    animationSpec = tween(200),
+                    initialOffsetY = { it }
+                ),
+                exit = slideOutVertically(
+                    animationSpec = tween(200),
+                    targetOffsetY = { it }
+                )
+            ) {
+                ProjectBottomBar(
+                    component = component,
+                    selected = selected
+                )
+            }
         }
     ) {
         Children(
@@ -61,6 +79,15 @@ fun ProjectContent(
                 is ProjectComponent.Child.Settings -> {
                     selected = ProjectComponent.Child.NavTarget.Settings
                     SettingsContent(instance.component)
+                }
+
+                is ProjectComponent.Child.Sprint -> {
+                    selected = null
+                    SprintContent(instance.component)
+                }
+                is ProjectComponent.Child.SprintCreation -> {
+                    selected = null
+                    SprintCreationContent(instance.component)
                 }
             }
         }

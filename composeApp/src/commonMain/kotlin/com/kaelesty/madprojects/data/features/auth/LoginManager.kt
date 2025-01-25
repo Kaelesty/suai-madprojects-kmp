@@ -23,11 +23,28 @@ class LoginManager(
 
     suspend fun authorize(res: AuthorizedResponse) {
         _authorization.emit(res)
+        kotlin.runCatching { getTokenOrThrow() }
     }
 
     suspend fun unauthorize() {
         _authorization.emit(null)
-        preferencesStorage.dropAuthResponse()
+        // preferencesStorage.dropAuthResponse()
+    }
+
+    suspend fun onLaunch() {
+        kotlin.runCatching {
+            preferencesStorage.getAuthResponse().collect {
+                it?.let {
+                    if (!it.accessExpiresAt.isExpired()) {
+                        authorize(it)
+                        return@let
+                    }
+                    if (!it.refreshExpiresAt.isExpired()) {
+                        refresh(it.refreshToken)
+                    }
+                }
+            }
+        }
     }
 
     suspend fun getTokenOrThrow(): String {
@@ -45,6 +62,7 @@ class LoginManager(
     }
 
     private suspend fun refresh(token: String): String? {
+        token.toString()
         return authApiService.refresh(token)?.let {
             return if (it.status == HttpStatusCode.OK) {
                 try {

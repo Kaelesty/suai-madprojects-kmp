@@ -2,6 +2,7 @@ package com.kaelesty.madprojects.view.components
 
 import com.arkivanov.decompose.ComponentContext
 import com.kaelesty.madprojects.domain.repos.auth.User
+import com.kaelesty.madprojects.domain.repos.profile.ProfileProject
 import com.kaelesty.madprojects.view.components.auth.AuthComponent
 import com.kaelesty.madprojects.view.components.auth.DefaultAuthComponent
 import com.kaelesty.madprojects.view.components.main.DefaultMainComponent
@@ -16,6 +17,10 @@ import com.kaelesty.madprojects.view.components.main.project.kanban.DefaultKanba
 import com.kaelesty.madprojects.view.components.main.project.kanban.KanbanComponent
 import com.kaelesty.madprojects.view.components.main.project.messenger.DefaultMessengerComponent
 import com.kaelesty.madprojects.view.components.main.project.messenger.MessengerComponent
+import com.kaelesty.madprojects.view.components.main.project.sprint.DefaultSprintComponent
+import com.kaelesty.madprojects.view.components.main.project.sprint.SprintComponent
+import com.kaelesty.madprojects.view.components.main.project.sprint_creation.DefaultSprintCreationComponent
+import com.kaelesty.madprojects.view.components.main.project.sprint_creation.SprintCreationComponent
 import com.kaelesty.madprojects.view.components.main.project_creation.DefaultProjectCreationComponent
 import com.kaelesty.madprojects.view.components.main.project_creation.ProjectCreationComponent
 import com.kaelesty.madprojects.view.components.root.DefaultRootComponent
@@ -58,7 +63,7 @@ val componentsModule = module {
     }
 
     factory<LoginComponent.Factory> {
-        object: LoginComponent.Factory {
+        object : LoginComponent.Factory {
             override fun create(c: ComponentContext, n: LoginComponent.Navigator): LoginComponent {
                 return DefaultLoginComponent(
                     c, n,
@@ -69,7 +74,7 @@ val componentsModule = module {
     }
 
     factory<WelcomeComponent.Factory> {
-        object: WelcomeComponent.Factory {
+        object : WelcomeComponent.Factory {
             override fun create(
                 c: ComponentContext,
                 n: WelcomeComponent.Navigator
@@ -110,7 +115,10 @@ val componentsModule = module {
 
     factory<ProfileComponent.Factory> {
         object : ProfileComponent.Factory {
-            override fun create(c: ComponentContext, n: ProfileComponent.Navigator): ProfileComponent {
+            override fun create(
+                c: ComponentContext,
+                n: ProfileComponent.Navigator
+            ): ProfileComponent {
                 return DefaultProfileComponent(
                     c,
                     n,
@@ -139,85 +147,118 @@ val componentsModule = module {
             override fun create(
                 c: ComponentContext,
                 n: ProjectComponent.Navigator,
-                projectId: String
+                project: ProfileProject
             ): ProjectComponent {
                 return DefaultProjectComponent(
                     c, n,
-                    projectId,
+                    project,
                     activityComponentFactory = get(),
                     infoComponentFactory = get(),
                     kanbanComponentFactory = get(),
                     messengerComponentFactory = get(),
-                    settingsComponentFactory = get()
+                    settingsComponentFactory = get(),
+                    sprintCreationComponentFactory = get(),
+                    sprintComponentFactory = get(),
                 )
             }
         }
     }
 
     factory<MessengerComponent.Factory> {
-            object : MessengerComponent.Factory {
-                override fun create(
-                    c: ComponentContext,
-                    n: MessengerComponent.Navigator,
-                    projectId: String,
-                ): MessengerComponent {
-                    return DefaultMessengerComponent(
-                        c, n, projectId
-                    )
-                }
+        object : MessengerComponent.Factory {
+            override fun create(
+                c: ComponentContext,
+                n: MessengerComponent.Navigator,
+                projectId: String,
+            ): MessengerComponent {
+                return DefaultMessengerComponent(
+                    c, n, projectId
+                )
             }
         }
+    }
 
     factory<InfoComponent.Factory> {
-            object : InfoComponent.Factory {
-                override fun create(
-                    c: ComponentContext,
-                    n: InfoComponent.Navigator,
-                    projectId: String,
-                ): InfoComponent {
-                    return DefaultInfoComponent(
-                        c, n, projectId
-                    )
-                }
+        object : InfoComponent.Factory {
+            override fun create(
+                c: ComponentContext,
+                n: InfoComponent.Navigator,
+                projectId: String,
+            ): InfoComponent {
+                return DefaultInfoComponent(
+                    c, n, projectId
+                )
             }
         }
+    }
 
     factory<SettingsComponent.Factory> {
-            object : SettingsComponent.Factory {
-                override fun create(
-                    c: ComponentContext,
-                    n: SettingsComponent.Navigator,
-                    projectId: String,
-                ): SettingsComponent {
-                    return DefaultSettingsComponent(
-                        c, n, projectId
-                    )
-                }
+        object : SettingsComponent.Factory {
+            override fun create(
+                c: ComponentContext,
+                n: SettingsComponent.Navigator,
+                projectId: String,
+            ): SettingsComponent {
+                return DefaultSettingsComponent(
+                    c, n, projectId
+                )
             }
         }
+    }
 
     factory<KanbanComponent.Factory> {
-            object : KanbanComponent.Factory {
+        object : KanbanComponent.Factory {
+            override fun create(
+                c: ComponentContext,
+                n: KanbanComponent.Navigator,
+                projectId: String,
+            ): KanbanComponent {
+                return DefaultKanbanComponent(
+                    c, n, projectId
+                )
+            }
+        }
+    }
+
+    factory<ActivityComponent.Factory> {
+        object : ActivityComponent.Factory {
+            override fun create(
+                c: ComponentContext,
+                n: ActivityComponent.Navigator,
+                projectId: String,
+            ): ActivityComponent {
+                return DefaultActivityComponent(
+                    c, n, projectId,
+                    sprintsRepo = get(),
+                    githubRepo = get(),
+                )
+            }
+        }
+    }
+
+    factory<SprintComponent.Factory> {
+            object : SprintComponent.Factory {
                 override fun create(
                     c: ComponentContext,
-                    n: KanbanComponent.Navigator,
+                    n: SprintComponent.Navigator,
                     projectId: String,
-                ): KanbanComponent {
-                    return DefaultKanbanComponent(
-                        c, n, projectId
+                    sprintId: String
+                ): SprintComponent {
+                    return DefaultSprintComponent(
+                        c, n, projectId, sprintId
                     )
                 }
             }
         }
 
-    factory<ActivityComponent.Factory> {
-            object : ActivityComponent.Factory {
+    factory<SprintCreationComponent.Factory> {
+            object : SprintCreationComponent.Factory {
                 override fun create(
                     c: ComponentContext,
-                    n: ActivityComponent.Navigator,
-                    projectId: String,
-                ): ActivityComponent {
-                    return DefaultActivityComponent(
+                    n: SprintCreationComponent.Navigator,
+                    projectId: String
+                ): SprintCreationComponent {
+                    return DefaultSprintCreationComponent(
                         c, n, projectId
                     )
                 }

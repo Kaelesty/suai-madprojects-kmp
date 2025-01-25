@@ -8,11 +8,14 @@ import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.router.stack.pushToFront
 import com.arkivanov.decompose.value.Value
+import com.kaelesty.madprojects.domain.repos.profile.ProfileProject
 import com.kaelesty.madprojects.view.components.main.DefaultMainComponent.Config
 import com.kaelesty.madprojects.view.components.main.MainComponent.Child
 import com.kaelesty.madprojects.view.components.main.project.activity.ActivityComponent
 import com.kaelesty.madprojects.view.components.main.project.kanban.KanbanComponent
 import com.kaelesty.madprojects.view.components.main.project.messenger.MessengerComponent
+import com.kaelesty.madprojects.view.components.main.project.sprint.SprintComponent
+import com.kaelesty.madprojects.view.components.main.project.sprint_creation.SprintCreationComponent
 import com.kaelesty.madprojects_kmp.blocs.project.info.InfoComponent
 import com.kaelesty.madprojects_kmp.blocs.project.settings.SettingsComponent
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,6 +48,10 @@ interface ProjectComponent {
 
         data class Settings(val component: SettingsComponent): Child
 
+        data class Sprint(val component: SprintComponent): Child
+
+        data class SprintCreation(val component: SprintCreationComponent): Child
+
         enum class NavTarget(
             val title: String,
             val icon: DrawableResource,
@@ -67,7 +74,7 @@ interface ProjectComponent {
         fun create(
             c: ComponentContext,
             n: Navigator,
-            projectId: String
+            project: ProfileProject
         ): ProjectComponent
     }
 
@@ -81,12 +88,14 @@ interface ProjectComponent {
 class DefaultProjectComponent(
     private val componentContext: ComponentContext,
     private val navigator: ProjectComponent.Navigator,
-    private val projectId: String,
+    private val project: ProfileProject,
     private val activityComponentFactory: ActivityComponent.Factory,
     private val messengerComponentFactory: MessengerComponent.Factory,
     private val infoComponentFactory: InfoComponent.Factory,
     private val kanbanComponentFactory: KanbanComponent.Factory,
-    private val settingsComponentFactory: SettingsComponent.Factory
+    private val settingsComponentFactory: SettingsComponent.Factory,
+    private val sprintComponentFactory: SprintComponent.Factory,
+    private val sprintCreationComponentFactory: SprintCreationComponent.Factory,
 ): ProjectComponent, ComponentContext by componentContext {
 
     @Serializable
@@ -101,19 +110,25 @@ class DefaultProjectComponent(
         @Serializable data class Kanban(val projectId: String): Config
 
         @Serializable data class Settings(val projectId: String): Config
+
+        @Serializable data class Sprint(val projectId: String, val sprintId: String): Config
+
+        @Serializable data class SprintCreation(val projectId: String): Config
     }
 
     private val navigation = StackNavigation<Config>()
 
     override val stack: Value<ChildStack<*, ProjectComponent.Child>> = childStack(
         source = navigation,
-        initialConfiguration = Config.Activity(projectId),
+        initialConfiguration = Config.Activity(project.id),
         handleBackButton = true,
         serializer = Config.serializer(),
         childFactory = ::child
     )
 
-    private val _state = MutableStateFlow(ProjectComponent.State())
+    private val _state = MutableStateFlow(ProjectComponent.State(
+        projectName = project.title
+    ))
     override val state: StateFlow<ProjectComponent.State>
         get() = _state.asStateFlow()
 
@@ -125,37 +140,58 @@ class DefaultProjectComponent(
             activityComponentFactory.create(
                 c = componentContext,
                 n = object : ActivityComponent.Navigator {
+                    override fun toSprint(sprintId: String) {
+                        navigation.push(Config.Sprint(project.id, sprintId))
+                    }
 
+                    override fun toSprintCreation() {
+                        navigation.push(Config.SprintCreation(project.id))
+                    }
                 },
-                projectId = projectId
+                projectId = project.id
             )
         )
         is Config.Info -> ProjectComponent.Child.Info(
             component = infoComponentFactory.create(
                 componentContext, object : InfoComponent.Navigator {
 
-                }, projectId
+                }, project.id
             )
         )
         is Config.Kanban -> ProjectComponent.Child.Kanban(
             component = kanbanComponentFactory.create(
                 componentContext, object : KanbanComponent.Navigator {
 
-                }, projectId
+                }, project.id
             )
         )
         is Config.Messenger -> ProjectComponent.Child.Messenger(
             component = messengerComponentFactory.create(
                 componentContext, object : MessengerComponent.Navigator {
 
-                }, projectId
+                }, project.id
             )
         )
         is Config.Settings -> ProjectComponent.Child.Settings(
             component = settingsComponentFactory.create(
                 componentContext, object : SettingsComponent.Navigator {
 
-                }, projectId
+                }, project.id
+            )
+        )
+
+        is Config.Sprint -> ProjectComponent.Child.Sprint(
+            component = sprintComponentFactory.create(
+                componentContext, object: SprintComponent.Navigator {
+
+                }, config.projectId, config.sprintId
+            )
+        )
+        is Config.SprintCreation -> ProjectComponent.Child.SprintCreation(
+            component = sprintCreationComponentFactory.create(
+                componentContext, object: SprintCreationComponent.Navigator {
+
+                }, project.id
             )
         )
     }
@@ -163,11 +199,11 @@ class DefaultProjectComponent(
     override fun setChild(new: ProjectComponent.Child.NavTarget) {
         navigation.bringToFront(
             when (new) {
-                ProjectComponent.Child.NavTarget.Activity -> Config.Activity(projectId)
-                ProjectComponent.Child.NavTarget.Messenger -> Config.Messenger(projectId)
-                ProjectComponent.Child.NavTarget.Info -> Config.Info(projectId)
-                ProjectComponent.Child.NavTarget.Kanban -> Config.Kanban(projectId)
-                ProjectComponent.Child.NavTarget.Settings -> Config.Settings(projectId)
+                ProjectComponent.Child.NavTarget.Activity -> Config.Activity(project.id)
+                ProjectComponent.Child.NavTarget.Messenger -> Config.Messenger(project.id)
+                ProjectComponent.Child.NavTarget.Info -> Config.Info(project.id)
+                ProjectComponent.Child.NavTarget.Kanban -> Config.Kanban(project.id)
+                ProjectComponent.Child.NavTarget.Settings -> Config.Settings(project.id)
             }
         )
     }

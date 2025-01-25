@@ -5,6 +5,7 @@ import com.kaelesty.data.remote.auth.RegisterRequest
 import com.kaelesty.madprojects.data.BASE_URL
 import com.kaelesty.madprojects.domain.UserType
 import io.ktor.client.HttpClient
+import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -18,8 +19,8 @@ class AuthApiService(
 
     suspend fun refresh(token: String): HttpResponse? {
         return try {
-            httpClient.post("auth/refresh") {
-                header("Autorization", "Bearer $token")
+            httpClient.post("$BASE_URL/auth/refresh") {
+                bearerAuth(token)
             }
         }
         catch (e: Exception) {

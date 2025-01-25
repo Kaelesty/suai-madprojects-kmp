@@ -68,7 +68,7 @@ class DefaultMainComponent(
                     }
 
                     override fun toProject(it: ProfileProject) {
-                        navigation.push(Config.Project(it.id))
+                        navigation.push(Config.Project(it))
                     }
                 }
             )
@@ -78,8 +78,8 @@ class DefaultMainComponent(
             component = projectCreationComponentFactory.create(
                 componentContext,
                 object : ProjectCreationComponent.Navigator {
-                    override fun onFinish(projectId: String) {
-                        navigation.push(Config.Project(projectId))
+                    override fun onFinish(project: ProfileProject) {
+                        navigation.push(Config.Project(project))
                     }
                 }
             )
@@ -91,7 +91,7 @@ class DefaultMainComponent(
                 object : ProjectComponent.Navigator {
                     // todo
                 },
-                config.projectId,
+                config.project,
             )
         )
     }
@@ -106,6 +106,6 @@ class DefaultMainComponent(
         data object ProjectCreation: Config
 
         @Serializable
-        data class Project(val projectId: String): Config
+        data class Project(val project: ProfileProject): Config
     }
 }
