@@ -3,40 +3,40 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-@SerialName("Intent")
+@SerialName("entities.Intent")
 sealed interface Intent {
 
     @Serializable
-    @SerialName("KeepAlive")
+    @SerialName("entities.Intent.KeepAlive")
     object KeepAlive: Intent
 
     @Serializable
-    @SerialName("Authorize") class Authorize(
+    @SerialName("entities.Intent.Authorize") class Authorize(
         @SerialName("jwt") val jwt: String,
     ): Intent
 
     @Serializable
-    @SerialName("CloseSession")
+    @SerialName("entities.Intent.CloseSession")
     data object CloseSession : Intent
 
     @Serializable
-    @SerialName("Messenger")
+    @SerialName("entities.Intent.Messenger")
     sealed interface Messenger: Intent {
 
         @Serializable
-        @SerialName("Start")
+        @SerialName("entities.Intent.Messenger.Start")
         data class Start(
             @SerialName("projectId") val projectId: Int,
         ): Messenger
 
         @Serializable
-        @SerialName("Stop")
+        @SerialName("entities.Intent.Messenger.Stop")
         data class Stop(
             @SerialName("projectId") val projectId: Int,
         ): Messenger
 
         @Serializable
-        @SerialName("SendMessage")
+        @SerialName("entities.Intent.Messenger.SendMessage")
         class SendMessage(
             @SerialName("chatId") val chatId: Int,
             @SerialName("message") val message: String,
@@ -44,7 +44,7 @@ sealed interface Intent {
         ): Messenger
 
         @Serializable
-        @SerialName("CreateChat")
+        @SerialName("entities.Intent.Messenger.CreateChat")
         class CreateChat(
             @SerialName("projectId") val projectId: Int,
             @SerialName("chatTitle") val chatTitle: String,
@@ -52,20 +52,20 @@ sealed interface Intent {
         ): Messenger
 
         @Serializable
-        @SerialName("RequestChatMessages")
+        @SerialName("entities.Intent.Messenger.RequestChatMessages")
         class RequestChatMessages(
             @SerialName("chatId") val chatId: Int,
             @SerialName("projectId") val projectId: Int,
         ): Messenger
 
         @Serializable
-        @SerialName("RequestChatMessages")
+        @SerialName("entities.Intent.Messenger.RequestChatsList")
         class RequestChatsList(
             @SerialName("projectId") val projectId: Int,
         ): Messenger
 
         @Serializable
-        @SerialName("ReadMessage")
+        @SerialName("entities.Intent.Messenger.ReadMessage")
         class ReadMessage(
             @SerialName("messageId") val messageId: Int,
             @SerialName("chatId") val chatId: Int,
@@ -73,7 +73,7 @@ sealed interface Intent {
         ): Messenger
 
         @Serializable
-        @SerialName("ReadMessagesBefore")
+        @SerialName("entities.Intent.Messenger.ReadMessagesBefore")
         class ReadMessagesBefore(
             @SerialName("messageId") val messageId: Int,
             @SerialName("chatId") val chatId: Int,
@@ -82,29 +82,29 @@ sealed interface Intent {
     }
 
     @Serializable
-    @SerialName("Kanban")
+    @SerialName("entities.Intent.Kanban")
     sealed interface Kanban: Intent {
 
         @Serializable
-        @SerialName("Start")
+        @SerialName("entities.Intent.Kanban.Start")
         data class Start(
             @SerialName("ProjectId") val projectId: Int,
         ): Kanban
 
         @Serializable
-        @SerialName("Stop")
+        @SerialName("entities.Intent.Kanban.Stop")
         data class Stop(
             @SerialName("projectId") val projectId: Int,
         ): Kanban
 
         @Serializable
-        @SerialName("GetKanban")
+        @SerialName("entities.Intent.Kanban.GetKanban")
         data class GetKanban(
             @SerialName("projectId") val projectId: Int,
         ): Kanban
 
         @Serializable
-        @SerialName("CreateKard")
+        @SerialName("entities.Intent.Kanban.CreateKard")
         data class CreateKard(
             @SerialName("name") val name: String,
             @SerialName("desc") val desc: String,
@@ -113,7 +113,7 @@ sealed interface Intent {
         ): Kanban
 
         @Serializable
-        @SerialName("MoveKard")
+        @SerialName("entities.Intent.Kanban.MoveKard")
         data class MoveKard(
             @SerialName("id") val id: Int,
             @SerialName("columnId") val columnId: Int,
@@ -123,14 +123,14 @@ sealed interface Intent {
         ): Kanban
 
         @Serializable
-        @SerialName("CreateColumn")
+        @SerialName("entities.Intent.Kanban.CreateColumn")
         data class CreateColumn(
             @SerialName("name") val name: String,
             @SerialName("projectId") val projectId: Int,
         ): Kanban
 
         @Serializable
-        @SerialName("MoveColumn")
+        @SerialName("entities.Intent.Kanban.MoveColumn")
         data class MoveColumn(
             @SerialName("id") val id: Int,
             @SerialName("newPosition") val newPosition: Int,
@@ -138,7 +138,7 @@ sealed interface Intent {
         ): Kanban
 
         @Serializable
-        @SerialName("UpdateKard")
+        @SerialName("entities.Intent.Kanban.UpdateKard")
         data class UpdateKard(
             @SerialName("id") val id: Int,
             @SerialName("name") val name: String?,
@@ -147,7 +147,7 @@ sealed interface Intent {
         ): Kanban
 
         @Serializable
-        @SerialName("UpdateColumn")
+        @SerialName("entities.Intent.Kanban.UpdateColumn")
         data class UpdateColumn(
             @SerialName("id") val id: Int,
             @SerialName("name") val name: String?,
@@ -155,14 +155,14 @@ sealed interface Intent {
         ): Kanban
 
         @Serializable
-        @SerialName("DeleteKard")
+        @SerialName("entities.Intent.Kanban.DeleteKard")
         data class DeleteKard(
             @SerialName("id") val id: Int,
             @SerialName("projectId") val projectId: Int,
         ): Kanban
 
         @Serializable
-        @SerialName("DeleteColumn")
+        @SerialName("entities.Intent.Kanban.DeleteColumn")
         data class DeleteColumn(
             @SerialName("id") val id: Int,
             @SerialName("projectId") val projectId: Int,

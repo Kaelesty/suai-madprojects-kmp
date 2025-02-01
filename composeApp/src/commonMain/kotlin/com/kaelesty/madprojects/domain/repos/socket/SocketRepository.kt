@@ -8,7 +8,7 @@ interface SocketRepository {
 
     suspend fun accept(intent: Intent)
 
-    suspend fun start()
+    suspend fun start(onConnected: suspend () -> Unit)
 
     suspend fun stop()
 }

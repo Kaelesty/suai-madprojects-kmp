@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -45,15 +46,23 @@ fun ActivityContent(
         Loading()
     }
     else {
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .padding(horizontal = 4.dp)
         ) {
-            SprintsCard(state, component)
-            Spacer(Modifier.height(8.dp))
-            GithubActivityCard(state, component)
-            Spacer(Modifier.height(8.dp))
-            StoryCard(state, component)
+            item {
+                SprintsCard(state, component)
+                Spacer(Modifier.height(8.dp))
+            }
+
+            item {
+                GithubActivityCard(state, component)
+                Spacer(Modifier.height(8.dp))
+            }
+
+            item {
+                StoryCard(state, component)
+            }
         }
     }
 }

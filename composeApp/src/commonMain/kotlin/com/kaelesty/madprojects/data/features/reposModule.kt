@@ -42,7 +42,9 @@ val reposModule = module {
     }
 
     single<SocketRepository> {
-        SocketRepoImpl()
+        SocketRepoImpl(
+            loginManager = get()
+        )
     }
 
     factory<ProfileRepo> {

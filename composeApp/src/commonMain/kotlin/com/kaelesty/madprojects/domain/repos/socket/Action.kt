@@ -3,23 +3,23 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-@SerialName("Action")
+@SerialName("entities.Action")
 sealed interface Action {
 
     @Serializable
-    @SerialName("KeepAlive")
+    @SerialName("entities.Action.KeepAlive")
     object KeepAlive: Action
 
     @Serializable
-    @SerialName("Unauthorized")
+    @SerialName("entities.Action.Unauthorized")
     object Unauthorized: Action
 
     @Serializable
-    @SerialName("Messenger")
+    @SerialName("entities.Action.Messenger")
     sealed interface Messenger: Action {
 
         @Serializable
-        @SerialName("NewMessage")
+        @SerialName("entities.Action.Messenger.NewMessage")
         class NewMessage(
             @SerialName("chatId") val chatId: Int,
             @SerialName("message") val message: Message,
@@ -27,7 +27,7 @@ sealed interface Action {
         ): Messenger
 
         @Serializable
-        @SerialName("SendChatsList")
+        @SerialName("entities.Action.Messenger.SendChatsList")
         class SendChatsList(
             @SerialName("chats") val chats: List<Chat>,
             @SerialName("projectId") val projectId: Int,
@@ -35,14 +35,14 @@ sealed interface Action {
         ): Messenger
 
         @Serializable
-        @SerialName("NewChat")
+        @SerialName("entities.Action.Messenger.NewChat")
         class NewChat(
             @SerialName("chat") val chat: Chat,
             @SerialName("projectId") val projectId: Int,
         ): Messenger
 
         @Serializable
-        @SerialName("SendChatMessages")
+        @SerialName("entities.Action.Messenger.SendChatMessages")
         class SendChatMessages(
             @SerialName("chatId") val chatId: Int,
             @SerialName("readMessages") val readMessages: List<Message>,
@@ -53,7 +53,7 @@ sealed interface Action {
 
 
         @Serializable
-        @SerialName("MessageReadRecorded")
+        @SerialName("entities.Action.Messenger.MessageReadRecorded")
         class MessageReadRecorded(
             @SerialName("messageId") val messageId: Int,
             @SerialName("chatId") val chatId: Int,
@@ -61,7 +61,7 @@ sealed interface Action {
         ): Messenger
 
         @Serializable
-        @SerialName("UpdateChatUnreadCount")
+        @SerialName("entities.Action.Messenger.UpdateChatUnreadCount")
         class UpdateChatUnreadCount(
             @SerialName("chatId") val chatId: Int,
             @SerialName("count") val count: Int,
@@ -70,11 +70,11 @@ sealed interface Action {
     }
 
     @Serializable
-    @SerialName("Kanban")
+    @SerialName("entities.Action.Kanban")
     sealed interface Kanban: Action {
 
         @Serializable
-        @SerialName("SetState")
+        @SerialName("entities.Action.Kanban.SetState")
         data class SetState(
             @SerialName("kanban") val kanban: KanbanState,
             @SerialName("projectId") val projectId: Int,

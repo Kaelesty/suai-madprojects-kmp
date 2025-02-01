@@ -36,7 +36,7 @@ fun ProjectContent(
     val state by component.state.collectAsState()
     Styled.uiKit().DefaultScreenScaffold(
         topBarTitle = state.projectName,
-        isScrollable = true,
+        isScrollable = false,
         bottomBar = {
             AnimatedVisibility(
                 visible = selected != null && showBottomBar,

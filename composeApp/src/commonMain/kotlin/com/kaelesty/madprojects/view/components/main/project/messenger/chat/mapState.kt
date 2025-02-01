@@ -15,13 +15,13 @@ fun MessengerStore.State.toChatState(chatId: Int, userId: Int): ChatComponent.St
         val unreadMessageBlocks: MutableList<ChatComponent.State.MessageBlock> = mutableListOf()
 
         chatState.readMessages.forEach {
-            if (it.senderId !in sendersIds) {
-                sendersIds.add(it.senderId)
+            if (it.senderId.toInt() !in sendersIds) {
+                sendersIds.add(it.senderId.toInt())
             }
             val lastBlock = readMessageBlocks.lastOrNull()
             val diff = it.time - (lastBlock?.messages?.firstOrNull()?.time ?: -1L)
             if (
-                lastBlock?.senderId == it.senderId &&
+                lastBlock?.senderId == it.senderId.toInt() &&
                 diff < BLOCK_TIME_WINDOW_MILLIS
             ) {
                 readMessageBlocks.removeLast()
@@ -33,9 +33,9 @@ fun MessengerStore.State.toChatState(chatId: Int, userId: Int): ChatComponent.St
             } else {
                 readMessageBlocks.add(
                     ChatComponent.State.MessageBlock(
-                        senderId = it.senderId,
+                        senderId = it.senderId.toInt(),
                         messages = listOf(it),
-                        type = if (userId == it.senderId) ChatComponent.State.MessageBlock.MessageBlockType.Outcoming
+                        type = if (userId == it.senderId.toInt()) ChatComponent.State.MessageBlock.MessageBlockType.Outcoming
                         else ChatComponent.State.MessageBlock.MessageBlockType.Incoming
                     )
                 )
@@ -45,7 +45,7 @@ fun MessengerStore.State.toChatState(chatId: Int, userId: Int): ChatComponent.St
             val lastBlock = unreadMessageBlocks.lastOrNull()
             val diff = it.time - (lastBlock?.messages?.firstOrNull()?.time ?: -1L)
             if (
-                lastBlock?.senderId == it.senderId &&
+                lastBlock?.senderId == it.senderId.toInt() &&
                 diff < BLOCK_TIME_WINDOW_MILLIS
             ) {
                 unreadMessageBlocks.removeLast()
@@ -58,24 +58,22 @@ fun MessengerStore.State.toChatState(chatId: Int, userId: Int): ChatComponent.St
             } else {
                 unreadMessageBlocks.add(
                     ChatComponent.State.MessageBlock(
-                        senderId = it.senderId,
+                        senderId = it.senderId.toInt(),
                         messages = listOf(it),
-                        type = if (userId == it.senderId) ChatComponent.State.MessageBlock.MessageBlockType.Outcoming
+                        type = if (userId == it.senderId.toInt()) ChatComponent.State.MessageBlock.MessageBlockType.Outcoming
                         else ChatComponent.State.MessageBlock.MessageBlockType.Incoming
                     )
                 )
             }
         }
 
-        // Placeholder solution while there is no implementation of users on the main backend yet
-        // TODO
-        val senders = sendersIds.map {
-        ChatComponent.State.MessageSender(
-            id = it,
-            avatarUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQa-Q-sLOhtUNX_f7Fo9UvrRVs8wStydNgI4TCVFbtbcERWqtz-QhBhhQIhuPyQRoUUUp8&usqp=CAU",
-            name = "Sender $it"
-        )
-    }
+        val senders = senders.map {
+            ChatComponent.State.MessageSender(
+                id = it.id.toInt(),
+                avatarUrl = it.avatar,
+                name = "${it.firstName} ${it.lastName}"
+            )
+        }
 
         return ChatComponent.State(
             chatId = chatId,

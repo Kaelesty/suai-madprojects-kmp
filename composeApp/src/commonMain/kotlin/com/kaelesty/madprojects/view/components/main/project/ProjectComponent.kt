@@ -8,6 +8,8 @@ import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.lifecycle.Lifecycle
+import com.arkivanov.essenty.lifecycle.doOnCreate
+import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.kaelesty.madprojects.domain.repos.profile.ProfileProject
 import com.kaelesty.madprojects.domain.repos.socket.SocketRepository
 import com.kaelesty.madprojects.view.components.main.DefaultMainComponent.Config
@@ -143,37 +145,33 @@ class DefaultProjectComponent(
     private val scope = CoroutineScope(Dispatchers.IO)
 
     init {
-        lifecycle.subscribe(
-            object : Lifecycle.Callbacks {
 
-                override fun onCreate() {
-                    super.onCreate()
-                    scope.launch {
-                        socketRepository.start()
-                        socketRepository.accept(
-                            com.kaelesty.madprojects.domain.repos.socket.Intent.Messenger.Start(
-                                projectId = project.id.toInt()
-                            )
+        lifecycle.doOnCreate {
+            scope.launch {
+                socketRepository.start {
+                    socketRepository.accept(
+                        com.kaelesty.madprojects.domain.repos.socket.Intent.Messenger.Start(
+                            projectId = project.id.toInt()
                         )
-                        socketRepository.accept(
-                            com.kaelesty.madprojects.domain.repos.socket.Intent.Kanban.Start(
-                                projectId = project.id.toInt()
-                            )
+                    )
+                    socketRepository.accept(
+                        com.kaelesty.madprojects.domain.repos.socket.Intent.Kanban.Start(
+                            projectId = project.id.toInt()
                         )
-                        socketRepository.accept(
-                            com.kaelesty.madprojects.domain.repos.socket.Intent.Messenger.RequestChatsList(
-                                projectId = project.id.toInt()
-                            )
+                    )
+                    socketRepository.accept(
+                        com.kaelesty.madprojects.domain.repos.socket.Intent.Messenger.RequestChatsList(
+                            projectId = project.id.toInt()
                         )
-                    }
+                    )
                 }
 
-                override fun onDestroy() {
-                    super.onDestroy()
-                    scope.launch { socketRepository.stop() }
-                }
             }
-        )
+        }
+
+        lifecycle.doOnDestroy {
+            scope.launch { socketRepository.stop() }
+        }
     }
 
     private fun child(
@@ -211,7 +209,7 @@ class DefaultProjectComponent(
         )
         is Config.Messenger -> ProjectComponent.Child.Messenger(
             component = messengerComponentFactory.create(
-                componentContext,
+                componentContext, projectId = project.id
             )
         )
         is Config.Settings -> ProjectComponent.Child.Settings(

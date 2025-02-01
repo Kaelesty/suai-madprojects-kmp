@@ -5,7 +5,9 @@ import com.kaelesty.madprojects.data.features.curatorship.CuratorshipApiService
 import com.kaelesty.madprojects.data.features.github.GithubApiService
 import com.kaelesty.madprojects.data.features.profile.ProfileApiService
 import com.kaelesty.madprojects.data.features.project.ProjectApiService
+import com.kaelesty.madprojects.data.features.socket.SocketRepoImpl
 import com.kaelesty.madprojects.data.features.sprints.SprintsApiService
+import com.kaelesty.madprojects.domain.repos.socket.SocketRepository
 import io.ktor.client.HttpClient
 import org.koin.dsl.module
 

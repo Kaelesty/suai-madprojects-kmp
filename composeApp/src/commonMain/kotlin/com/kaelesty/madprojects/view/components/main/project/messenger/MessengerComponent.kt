@@ -116,10 +116,6 @@ class DefaultMessengerComponent(
 		}
 	}
 
-	private fun onChatSelected(chatId: Int) {
-		store.accept(MessengerStore.Intent.OnChatSelected(chatId))
-	}
-
 	@Serializable
 	sealed interface Config {
 		@Serializable

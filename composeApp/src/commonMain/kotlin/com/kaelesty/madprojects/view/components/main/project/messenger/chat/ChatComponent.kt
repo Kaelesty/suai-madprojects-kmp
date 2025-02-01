@@ -2,6 +2,8 @@ package com.kaelesty.madprojects_kmp.blocs.project.messenger.chat
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.lifecycle.Lifecycle
+import com.arkivanov.essenty.lifecycle.doOnCreate
+import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
 import com.kaelesty.madprojects.domain.repos.socket.Message
 import com.kaelesty.madprojects_kmp.blocs.project.messenger.MessengerStore
@@ -41,7 +43,7 @@ interface ChatComponent {
 		data class MessageSender(
 			val name: String,
 			val id: Int,
-			val avatarUrl: String,
+			val avatarUrl: String?,
 		)
 	}
 
@@ -71,28 +73,28 @@ class DefaultChatComponent(
 	private val messagesToRead: MutableStateFlow<MutableList<Int>?> = MutableStateFlow(null)
 
 	init {
-		lifecycle.subscribe(
-			object : Lifecycle.Callbacks {
-				override fun onCreate() {
-					super.onCreate()
-					scope.launch {
-						store.stateFlow.collect { newState ->
-							_state.emit(
-								newState.toChatState(chatId = chatId, userId = 2)
-							)
-						}
-					}
-				}
-				override fun onDestroy() {
-					super.onDestroy()
-					scope.launch {
-						sendReaded(
-							onFinish = { scope.cancel() }
-						)
-					}
+
+		scope.launch(Dispatchers.Main) {
+			store.accept(MessengerStore.Intent.OnChatSelected(chatId))
+		}
+
+		lifecycle.doOnCreate {
+			scope.launch {
+				store.stateFlow.collect { newState ->
+					_state.emit(
+						newState.toChatState(chatId = chatId, userId = 2)
+					)
 				}
 			}
-		)
+		}
+
+		lifecycle.doOnDestroy {
+			scope.launch {
+				sendReaded(
+					onFinish = { scope.cancel() }
+				)
+			}
+		}
 	}
 
 	private val _state: MutableStateFlow<ChatComponent.State> = MutableStateFlow(ChatComponent.State())

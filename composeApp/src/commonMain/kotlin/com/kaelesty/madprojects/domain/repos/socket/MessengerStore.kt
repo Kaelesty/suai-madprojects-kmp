@@ -7,6 +7,7 @@ import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineBootstrapper
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.kaelesty.madprojects.domain.repos.socket.Action
 import com.kaelesty.madprojects.domain.repos.socket.Chat
+import com.kaelesty.madprojects.domain.repos.socket.ChatSender
 import com.kaelesty.madprojects.domain.repos.socket.Intent
 import com.kaelesty.madprojects.domain.repos.socket.Message
 import com.kaelesty.madprojects.domain.repos.socket.SocketRepository
@@ -27,7 +28,8 @@ interface MessengerStore : Store<MessengerStore.Intent, State, Label> {
 	}
 
 	data class State(
-		val chats: List<ChatState>
+		val chats: List<ChatState>,
+		val senders: List<ChatSender>,
 	) {
 		data class ChatState(
 			val chat: Chat,
@@ -54,7 +56,7 @@ class MessengerStoreFactory(
 	): MessengerStore =
 		object : MessengerStore, Store<MessengerStore.Intent, State, Label> by storeFactory.create(
 			name = "MessengerStore",
-			initialState = State(listOf()),
+			initialState = State(listOf(), listOf()),
 			bootstrapper = BootstrapperImpl(socket),
 			executorFactory = { ExecutorImpl(socket, projectId) },
 			reducer = ReducerImpl(userId = userId)
@@ -68,7 +70,7 @@ class MessengerStoreFactory(
 			val unreadMessages: List<Message>,
 			val chatId: Int,
 		) : Msg
-		data class SetChatsList(val chats: List<Chat>) : Msg
+		data class SetChatsList(val chats: List<Chat>, val senders: List<ChatSender>) : Msg
 		data class ReadMessagesBefore(val messageId: Int, val chatId: Int) : Msg
 		data class UpdateUnreadCount(val chatId: Int, val count: Int): Msg
 	}
@@ -150,7 +152,7 @@ class MessengerStoreFactory(
 				)
 
 				is Action.Messenger.SendChatsList -> dispatch(
-					Msg.SetChatsList(chats = action.chats)
+					Msg.SetChatsList(chats = action.chats, senders = action.senders)
 				)
 
 				is Action.Messenger.MessageReadRecorded -> { /*TEMPORARY UNUSED*/ }
@@ -229,7 +231,8 @@ class MessengerStoreFactory(
 				is Msg.SetChatsList -> copy(
 					chats = message.chats.map {
 						State.ChatState(chat = it, readMessages = listOf(), unreadMessages = listOf())
-					}
+					},
+					senders = message.senders
 				)
 
 				is Msg.ReadMessagesBefore -> copy(

@@ -80,9 +80,15 @@ abstract class DefaultUiKit: Styled.UiKit {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(scrollState)
                     .padding(it)
-                    .padding(4.dp),
+                    .padding(4.dp)
+                    .let {
+                        if (isScrollable) {
+                            it.verticalScroll(scrollState)
+                        }
+                        else it
+                    }
+                ,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 content()

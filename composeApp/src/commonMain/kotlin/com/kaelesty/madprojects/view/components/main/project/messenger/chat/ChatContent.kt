@@ -83,9 +83,11 @@ fun ChatContent(
                     Spacer(Modifier.height(80.dp))
                 }
                 items(state.unreadBlocks.reversed()) {
-                    state.senders.firstOrNull { sender -> sender.id == it.senderId }?.let { sender ->
+                    state.senders.firstOrNull { sender -> sender.id == it.senderId }.let { sender ->
                         IncomingMessageBlock(
-                            it, sender = sender,
+                            it, sender = sender ?: ChatComponent.State.MessageSender(
+                                "Неопознанный хакер", -1, null
+                            ),
                             onShow = {
                                 component.readMessage(it)
                             }
@@ -115,7 +117,9 @@ fun ChatContent(
                         ChatComponent.State.MessageBlock.MessageBlockType.Incoming -> {
                             IncomingMessageBlock(
                                 it,
-                                sender = state.senders.first { sender -> sender.id == it.senderId },
+                                sender = state.senders.firstOrNull { sender -> sender.id == it.senderId } ?: ChatComponent.State.MessageSender(
+                                    "Неопознанный хакер", -1, null
+                                ),
                                 onShow = {}
                             )
                         }
@@ -123,7 +127,9 @@ fun ChatContent(
                         ChatComponent.State.MessageBlock.MessageBlockType.Outcoming -> {
                             OutComingMessageBlock(
                                 it,
-                                sender = state.senders.first { sender -> sender.id == it.senderId }
+                                sender = state.senders.firstOrNull { sender -> sender.id == it.senderId } ?: ChatComponent.State.MessageSender(
+                                    "Неопознанный хакер", -1, null
+                                )
                             )
                         }
                     }
@@ -181,17 +187,17 @@ fun ChatInput(
 
 @Composable
 fun Avatar(
-    url: String,
+    url: String?,
     modifier: Modifier = Modifier
 ) {
     AsyncImage(
-        model = url,
+        model = url ?: "\"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQa-Q-sLOhtUNX_f7Fo9UvrRVs8wStydNgI4TCVFbtbcERWqtz-QhBhhQIhuPyQRoUUUp8&usqp=CAU\"",
         null,
         modifier = modifier
             .padding(4.dp)
             .clip(CircleShape)
             .size(45.dp),
-        contentScale = ContentScale.FillBounds
+        contentScale = ContentScale.FillBounds,
     )
 }
 
