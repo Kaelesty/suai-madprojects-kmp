@@ -14,6 +14,11 @@ object Styled {
     interface Colors {
         val errorRed: Color
         val gradient: List<Color>
+        val github_0: Color
+        val github_25: Color
+        val github_50: Color
+        val github_75: Color
+        val github_100: Color
     }
 
     interface Typography {

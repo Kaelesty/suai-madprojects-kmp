@@ -6,12 +6,14 @@ import com.kaelesty.madprojects.data.features.curatorship.CuratorshipRepoImpl
 import com.kaelesty.madprojects.data.features.github.GithubRepoImpl
 import com.kaelesty.madprojects.data.features.profile.ProfileRepoImpl
 import com.kaelesty.madprojects.data.features.project.ProjectRepoImpl
+import com.kaelesty.madprojects.data.features.socket.SocketRepoImpl
 import com.kaelesty.madprojects.data.features.sprints.SprintsRepoImpl
 import com.kaelesty.madprojects.domain.repos.auth.AuthRepo
 import com.kaelesty.madprojects.domain.repos.curatorship.CuratorshipRepo
 import com.kaelesty.madprojects.domain.repos.github.GithubRepo
 import com.kaelesty.madprojects.domain.repos.profile.ProfileRepo
 import com.kaelesty.madprojects.domain.repos.project.ProjectRepo
+import com.kaelesty.madprojects.domain.repos.socket.SocketRepository
 import com.kaelesty.madprojects.domain.repos.sprints.SprintsRepo
 import io.ktor.client.HttpClient
 import org.koin.dsl.module
@@ -32,11 +34,15 @@ val reposModule = module {
         )
     }
 
-    factory<GithubRepo> {
+    single<GithubRepo> {
         GithubRepoImpl(
             apiService = get(),
             loginManager = get()
         )
+    }
+
+    single<SocketRepository> {
+        SocketRepoImpl()
     }
 
     factory<ProfileRepo> {

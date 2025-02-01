@@ -1,10 +1,15 @@
 package com.kaelesty.madprojects.view.components.main.project.activity
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +29,9 @@ import com.kaelesty.madprojects_kmp.ui.uikit.Loading
 import com.kaelesty.madprojects_kmp.ui.uikit.StyledList
 import com.kaelesty.madprojects_kmp.ui.uikit.buttons.StyledButton
 import com.kaelesty.madprojects_kmp.ui.uikit.cards.TitledRoundedCard
+import com.kaelesty.madprojects_kmp.ui.uikit.dropdowns.SimplifiedDropdown
+import com.kaelesty.madprojects_kmp.ui.uikit.dropdowns.StyledDropdown
+import kotlinx.datetime.Month
 
 @Composable
 fun ActivityContent(
@@ -44,6 +52,8 @@ fun ActivityContent(
             SprintsCard(state, component)
             Spacer(Modifier.height(8.dp))
             GithubActivityCard(state, component)
+            Spacer(Modifier.height(8.dp))
+            StoryCard(state, component)
         }
     }
 }
@@ -119,7 +129,7 @@ private fun GithubActivityCard(
             if (repoBranches.isEmpty()) {
                 Column(
                     modifier = Modifier
-                        .padding(horizontal = 8.dp, vertical = 32.dp),
+                        .padding(horizontal = 24.dp, vertical = 32.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
@@ -145,20 +155,111 @@ private fun GithubActivityCard(
                     modifier = Modifier
                         .padding(horizontal = 8.dp, vertical = 8.dp),
                 ) {
-                    repoBranches.forEach { repo ->
-                        repo.repoBranches.forEach {
+                    when (val commitsInstance = state.commits) {
+                        CommitsState.Error -> {
                             Text(
-                                text = "${repo.name}/${it.name}",
+                                text = "Здесь пока нет коммитов...",
                                 style = MaterialTheme.typography.body2.copy(
-                                    fontSize = 20.sp,
+                                    fontSize = 18.sp,
                                     lineHeight = 24.sp,
                                 ),
                                 modifier = Modifier
                             )
                         }
+                        CommitsState.Loading -> {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(256.dp)
+                                ,
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator()
+                            }
+                        }
+                        is CommitsState.Main -> {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                SimplifiedDropdown(
+                                    selectedItem = state.selectedYear,
+                                    values = state.years,
+                                    modifier = Modifier
+                                        .weight(0.3f),
+                                    onItemSelection = { component.setYear(it) },
+                                    closeOnSelect = true,
+                                    fontSize = 18.sp,
+                                    itemTitle = { it.toString() }
+                                )
+                                val months = ActivityComponent.State.Month.entries.toList()
+                                SimplifiedDropdown(
+                                    selectedItem = state.selectedMonth,
+                                    values = months,
+                                    modifier = Modifier
+                                        .weight(0.3f),
+                                    onItemSelection = { component.setMonth(it) },
+                                    closeOnSelect = true,
+                                    fontSize = 18.sp,
+                                    itemTitle = {
+                                        it.string
+                                    }
+                                )
+                            }
+                            CalendarView(
+                                branchCommits = commitsInstance.value.commits
+                                    .filter { it.date.contains("2024-12") },
+                                month = state.selectedMonth,
+                                year = state.selectedYear,
+                            )
+                            Row(
+                                modifier = Modifier
+                                    .padding(horizontal = 8.dp)
+                                    .fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Ветка:",
+                                    style = MaterialTheme.typography.body2.copy(
+                                        fontSize = 18.sp,
+                                        lineHeight = 24.sp,
+                                    ),
+                                    modifier = Modifier
+                                        .weight(0.4f)
+                                )
+                                SimplifiedDropdown(
+                                    selectedItem = state.selectedBranch,
+                                    values = state.repoBranches,
+                                    modifier = Modifier
+                                        .weight(0.8f),
+                                    onItemSelection = { component.selectBranch(it) },
+                                    closeOnSelect = true,
+                                    fontSize = 18.sp,
+                                    itemTitle = { it.name }
+                                )
+                            }
+                        }
+                        CommitsState.Null -> {}
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun StoryCard(
+    state: ActivityComponent.State,
+    component: ActivityComponent,
+) {
+    TitledRoundedCard(
+        title = "История",
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Spacer(Modifier.height(128.dp))
+        // TODO
     }
 }

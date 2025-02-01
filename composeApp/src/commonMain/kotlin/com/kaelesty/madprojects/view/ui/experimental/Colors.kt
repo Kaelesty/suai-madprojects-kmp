@@ -12,6 +12,16 @@ object LightColors: Styled.Colors {
             hexToColor("AB3A8D"),
             hexToColor("E4003A")
         )
+    override val github_0: Color
+        get() = hexToColor("CCE8FF")
+    override val github_25: Color
+        get() = hexToColor("CCE8FF")
+    override val github_50: Color
+        get() = hexToColor("66A3E6")
+    override val github_75: Color
+        get() = hexToColor("337BCC")
+    override val github_100: Color
+        get() = hexToColor("005AAA")
 }
 
 object DarkColors: Styled.Colors {
@@ -22,4 +32,14 @@ object DarkColors: Styled.Colors {
             hexToColor("AB3A8D"),
             hexToColor("E4003A")
         )
+    override val github_0: Color
+        get() = hexToColor("CCE8FF")
+    override val github_25: Color
+        get() = hexToColor("CCE8FF")
+    override val github_50: Color
+        get() = hexToColor("66A3E6")
+    override val github_75: Color
+        get() = hexToColor("337BCC")
+    override val github_100: Color
+        get() = hexToColor("005AAA")
 }

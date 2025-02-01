@@ -8,7 +8,10 @@ import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.router.stack.pushToFront
 import com.arkivanov.decompose.value.Value
+import com.arkivanov.essenty.lifecycle.Lifecycle
+import com.arkivanov.essenty.lifecycle.subscribe
 import com.kaelesty.madprojects.domain.repos.profile.ProfileProject
+import com.kaelesty.madprojects.domain.repos.socket.SocketRepository
 import com.kaelesty.madprojects.view.components.main.DefaultMainComponent.Config
 import com.kaelesty.madprojects.view.components.main.MainComponent.Child
 import com.kaelesty.madprojects.view.components.main.project.activity.ActivityComponent
@@ -18,9 +21,13 @@ import com.kaelesty.madprojects.view.components.main.project.sprint.SprintCompon
 import com.kaelesty.madprojects.view.components.main.project.sprint_creation.SprintCreationComponent
 import com.kaelesty.madprojects_kmp.blocs.project.info.InfoComponent
 import com.kaelesty.madprojects_kmp.blocs.project.settings.SettingsComponent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import madprojects.composeapp.generated.resources.Res
 import madprojects.composeapp.generated.resources.activity_nav
@@ -96,6 +103,8 @@ class DefaultProjectComponent(
     private val settingsComponentFactory: SettingsComponent.Factory,
     private val sprintComponentFactory: SprintComponent.Factory,
     private val sprintCreationComponentFactory: SprintCreationComponent.Factory,
+
+    private val socketRepository: SocketRepository
 ): ProjectComponent, ComponentContext by componentContext {
 
     @Serializable
@@ -129,8 +138,28 @@ class DefaultProjectComponent(
     private val _state = MutableStateFlow(ProjectComponent.State(
         projectName = project.title
     ))
+
     override val state: StateFlow<ProjectComponent.State>
         get() = _state.asStateFlow()
+
+    private val scope = CoroutineScope(Dispatchers.IO)
+
+    init {
+        lifecycle.subscribe(
+            object : Lifecycle.Callbacks {
+
+                override fun onCreate() {
+                    super.onCreate()
+                    scope.launch { socketRepository.start() }
+                }
+
+                override fun onDestroy() {
+                    super.onDestroy()
+                    scope.launch { socketRepository.stop() }
+                }
+            }
+        )
+    }
 
     private fun child(
         config: Config,

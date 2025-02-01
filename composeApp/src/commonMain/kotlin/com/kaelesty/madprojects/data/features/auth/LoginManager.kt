@@ -62,12 +62,12 @@ class LoginManager(
     }
 
     private suspend fun refresh(token: String): String? {
-        token.toString()
         return authApiService.refresh(token)?.let {
             return if (it.status == HttpStatusCode.OK) {
                 try {
                     it.body<AuthorizedResponse>().let {
                         authorize(it)
+                        preferencesStorage.saveAuthResponse(it)
                         it.accessToken
                     }
                 } catch (e: Exception) {

@@ -159,6 +159,7 @@ val componentsModule = module {
                     settingsComponentFactory = get(),
                     sprintCreationComponentFactory = get(),
                     sprintComponentFactory = get(),
+                    socketRepository = get(),
                 )
             }
         }
@@ -172,7 +173,8 @@ val componentsModule = module {
                 projectId: String,
             ): MessengerComponent {
                 return DefaultMessengerComponent(
-                    c, n, projectId
+                    c, n, projectId,
+                    sockerRepository = get()
                 )
             }
         }

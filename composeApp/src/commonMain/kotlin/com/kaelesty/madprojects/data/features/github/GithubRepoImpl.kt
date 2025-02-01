@@ -11,13 +11,19 @@ class GithubRepoImpl(
     private val loginManager: LoginManager,
 ): GithubRepo {
 
+    private val cachedContents = mutableMapOf<String, Result<BranchCommits>>()
+
     override suspend fun getRepoBranchContent(repoName: String, sha: String): Result<BranchCommits> {
-        return kotlin.runCatching {
-            apiService.getProjectRepoBranchContent(
-                token = loginManager.getTokenOrThrow(),
-                repoName, sha
-            ).getOrThrow().body<BranchCommits>()
+        return cachedContents.getOrPut("${repoName}/${sha}") {
+            kotlin.runCatching {
+                apiService.getProjectRepoBranchContent(
+                    token = loginManager.getTokenOrThrow(),
+                    repoName, sha
+                ).getOrThrow().body<BranchCommits>()
+            }
         }
+
+
     }
 
     override suspend fun getProjectRepoBranches(projectId: String): Result<List<RepoView>> {
