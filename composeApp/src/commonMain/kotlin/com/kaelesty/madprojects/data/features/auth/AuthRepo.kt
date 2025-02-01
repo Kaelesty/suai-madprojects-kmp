@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 class AuthRepoImpl(
     private val apiService: AuthApiService,
     private val preferencesStorage: PreferencesStorage,
-    private val loginManager: LoginManager
+    private val loginManager: LoginManager,
 ) : AuthRepo {
 
     private val scope = CoroutineScope(Dispatchers.Main)
@@ -31,7 +31,10 @@ class AuthRepoImpl(
             loginManager.authorization.collect {
                 _user.emit(
                     it?.let {
-                        User(it.userType)
+                        User(
+                            type = it.userType,
+                            id = it.userId
+                        )
                     }
                 )
             }

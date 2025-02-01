@@ -15,12 +15,11 @@ import com.arkivanov.decompose.extensions.compose.stack.animation.slide
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import com.kaelesty.madprojects.view.components.main.project.activity.ActivityContent
 import com.kaelesty.madprojects.view.components.main.project.kanban.KanbanContent
-import com.kaelesty.madprojects.view.components.main.project.messenger.MessengerContent
 import com.kaelesty.madprojects.view.components.main.project.sprint.SprintContent
 import com.kaelesty.madprojects.view.components.main.project.sprint_creation.SprintCreationContent
 import com.kaelesty.madprojects.view.ui.experimental.Styled
-import com.kaelesty.madprojects_kmp.blocs.project.info.InfoComponent
 import com.kaelesty.madprojects_kmp.blocs.project.info.InfoContent
+import com.kaelesty.madprojects_kmp.blocs.project.messenger.MessengerContent
 import com.kaelesty.madprojects_kmp.blocs.project.settings.SettingsContent
 
 @Composable
@@ -32,13 +31,15 @@ fun ProjectContent(
         mutableStateOf<ProjectComponent.Child.NavTarget?>(ProjectComponent.Child.NavTarget.Activity)
     }
 
+    var showBottomBar by remember { mutableStateOf(true) }
+
     val state by component.state.collectAsState()
     Styled.uiKit().DefaultScreenScaffold(
         topBarTitle = state.projectName,
         isScrollable = true,
         bottomBar = {
             AnimatedVisibility(
-                visible = selected != null,
+                visible = selected != null && showBottomBar,
                 enter = slideInVertically(
                     animationSpec = tween(200),
                     initialOffsetY = { it }
@@ -64,18 +65,27 @@ fun ProjectContent(
                     selected = ProjectComponent.Child.NavTarget.Activity
                     ActivityContent(instance.component)
                 }
+
                 is ProjectComponent.Child.Info -> {
                     selected = ProjectComponent.Child.NavTarget.Info
                     InfoContent(instance.component)
                 }
+
                 is ProjectComponent.Child.Kanban -> {
                     selected = ProjectComponent.Child.NavTarget.Kanban
                     KanbanContent(instance.component)
                 }
+
                 is ProjectComponent.Child.Messenger -> {
                     selected = ProjectComponent.Child.NavTarget.Messenger
-                    MessengerContent(instance.component)
+                    MessengerContent(
+                        instance.component,
+                        onChatShown = {
+                            showBottomBar = it
+                        }
+                    )
                 }
+
                 is ProjectComponent.Child.Settings -> {
                     selected = ProjectComponent.Child.NavTarget.Settings
                     SettingsContent(instance.component)
@@ -85,6 +95,7 @@ fun ProjectContent(
                     selected = null
                     SprintContent(instance.component)
                 }
+
                 is ProjectComponent.Child.SprintCreation -> {
                     selected = null
                     SprintCreationContent(instance.component)

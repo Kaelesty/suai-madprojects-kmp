@@ -6,20 +6,18 @@ import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.push
-import com.arkivanov.decompose.router.stack.pushToFront
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.lifecycle.Lifecycle
-import com.arkivanov.essenty.lifecycle.subscribe
 import com.kaelesty.madprojects.domain.repos.profile.ProfileProject
 import com.kaelesty.madprojects.domain.repos.socket.SocketRepository
 import com.kaelesty.madprojects.view.components.main.DefaultMainComponent.Config
 import com.kaelesty.madprojects.view.components.main.MainComponent.Child
 import com.kaelesty.madprojects.view.components.main.project.activity.ActivityComponent
 import com.kaelesty.madprojects.view.components.main.project.kanban.KanbanComponent
-import com.kaelesty.madprojects.view.components.main.project.messenger.MessengerComponent
 import com.kaelesty.madprojects.view.components.main.project.sprint.SprintComponent
 import com.kaelesty.madprojects.view.components.main.project.sprint_creation.SprintCreationComponent
 import com.kaelesty.madprojects_kmp.blocs.project.info.InfoComponent
+import com.kaelesty.madprojects_kmp.blocs.project.messenger.MessengerComponent
 import com.kaelesty.madprojects_kmp.blocs.project.settings.SettingsComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -150,7 +148,24 @@ class DefaultProjectComponent(
 
                 override fun onCreate() {
                     super.onCreate()
-                    scope.launch { socketRepository.start() }
+                    scope.launch {
+                        socketRepository.start()
+                        socketRepository.accept(
+                            com.kaelesty.madprojects.domain.repos.socket.Intent.Messenger.Start(
+                                projectId = project.id.toInt()
+                            )
+                        )
+                        socketRepository.accept(
+                            com.kaelesty.madprojects.domain.repos.socket.Intent.Kanban.Start(
+                                projectId = project.id.toInt()
+                            )
+                        )
+                        socketRepository.accept(
+                            com.kaelesty.madprojects.domain.repos.socket.Intent.Messenger.RequestChatsList(
+                                projectId = project.id.toInt()
+                            )
+                        )
+                    }
                 }
 
                 override fun onDestroy() {
@@ -196,9 +211,7 @@ class DefaultProjectComponent(
         )
         is Config.Messenger -> ProjectComponent.Child.Messenger(
             component = messengerComponentFactory.create(
-                componentContext, object : MessengerComponent.Navigator {
-
-                }, project.id
+                componentContext,
             )
         )
         is Config.Settings -> ProjectComponent.Child.Settings(

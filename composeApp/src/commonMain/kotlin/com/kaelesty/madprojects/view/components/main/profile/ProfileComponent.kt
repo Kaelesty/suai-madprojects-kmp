@@ -48,10 +48,6 @@ class DefaultProfileComponent(
         storeFactory.create()
     }
 
-    init {
-        store.la
-    }
-
     @OptIn(ExperimentalCoroutinesApi::class)
     override val state = store.stateFlow
 

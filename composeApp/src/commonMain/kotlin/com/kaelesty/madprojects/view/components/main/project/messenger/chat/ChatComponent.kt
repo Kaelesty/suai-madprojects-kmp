@@ -2,13 +2,12 @@ package com.kaelesty.madprojects_kmp.blocs.project.messenger.chat
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.lifecycle.Lifecycle
-import com.kaelesty.madprojects.domain.repos.socket.Action
-import com.kaelesty.madprojects.domain.repos.socket.Chat
+import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
 import com.kaelesty.madprojects.domain.repos.socket.Message
-import com.kaelesty.madprojects.domain.repos.socket.SocketRepository
-import com.kaelesty.madprojects.view.extensions.copyWith
+import com.kaelesty.madprojects_kmp.blocs.project.messenger.MessengerStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
@@ -46,26 +45,26 @@ interface ChatComponent {
 		)
 	}
 
+	interface Factory {
+
+		fun create(
+			c: ComponentContext,
+			store: MessengerStore,
+			chatId: Int
+		): ChatComponent
+	}
+
 	fun sendMessage(text: String)
 
 	fun readMessage(messageId: Int)
 }
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class DefaultChatComponent(
 	private val componentContext: ComponentContext,
-	private val chatId: Int,
-	private val socketRepository: SocketRepository,
+	private val store: MessengerStore,
+	private val chatId: Int
 ): ComponentContext by componentContext, ChatComponent {
-
-	data class CommonState(
-		val chats: List<ChatState>
-	) {
-		data class ChatState(
-			val chat: Chat,
-			val readMessages: List<Message>,
-			val unreadMessages: List<Message>,
-		)
-	}
 
 	private val scope = CoroutineScope(Dispatchers.IO)
 
@@ -77,10 +76,10 @@ class DefaultChatComponent(
 				override fun onCreate() {
 					super.onCreate()
 					scope.launch {
-						socketRepository.action.collect {
-							if (it is Action.Messenger) {
-								proceedAction(it)
-						}
+						store.stateFlow.collect { newState ->
+							_state.emit(
+								newState.toChatState(chatId = chatId, userId = 2)
+							)
 						}
 					}
 				}
@@ -96,14 +95,12 @@ class DefaultChatComponent(
 		)
 	}
 
-	private val commonState = MutableStateFlow<CommonState>(CommonState(listOf()))
-
 	private val _state: MutableStateFlow<ChatComponent.State> = MutableStateFlow(ChatComponent.State())
 	override val state: StateFlow<ChatComponent.State>
 		get() = _state
 
 	override fun sendMessage(text: String) {
-
+		store.accept(MessengerStore.Intent.SendMessage(text, chatId))
 	}
 
 	override fun readMessage(messageId: Int) {
@@ -113,65 +110,6 @@ class DefaultChatComponent(
 		}
 		else {
 			messagesToRead.update { it?.apply { add(messageId) } }
-		}
-	}
-
-
-	private suspend fun proceedAction(action: Action.Messenger) {
-		when (action) {
-			is Action.Messenger.MessageReadRecorded -> {  }
-			is Action.Messenger.NewChat -> {
-				with(commonState.value) {
-					commonState.emit(
-						copy(
-							chats = chats.copyWith(
-								CommonState.ChatState(
-									chat = action.chat,
-									readMessages = listOf(),
-									unreadMessages = listOf(),
-								)
-							)
-						)
-					)
-				}
-			}
-			is Action.Messenger.NewMessage -> {
-				with(commonState.value) {
-					commonState.emit(
-						copy(
-							chats = chats.map {
-								if (it.chat.id == action.chatId) {
-									it.copy(
-										unreadMessages = it.unreadMessages.copyWith(
-											action.message
-										)
-									)
-								}
-								else it
-							}
-						)
-					)
-				}
-			}
-			is Action.Messenger.SendChatMessages -> {
-				with(commonState.value) {
-					commonState.emit(
-						copy(
-							chats = chats.map {
-								if (it.chat.id == action.chatId) {
-									it.copy(
-										unreadMessages = action.unreadMessages,
-										readMessages = action.readMessages,
-									)
-								}
-								else it
-							}
-						)
-					)
-				}
-			}
-			is Action.Messenger.SendChatsList -> TODO()
-			is Action.Messenger.UpdateChatUnreadCount -> TODO()
 		}
 	}
 

@@ -15,8 +15,6 @@ import com.kaelesty.madprojects.view.components.main.project.activity.ActivityCo
 import com.kaelesty.madprojects.view.components.main.project.activity.DefaultActivityComponent
 import com.kaelesty.madprojects.view.components.main.project.kanban.DefaultKanbanComponent
 import com.kaelesty.madprojects.view.components.main.project.kanban.KanbanComponent
-import com.kaelesty.madprojects.view.components.main.project.messenger.DefaultMessengerComponent
-import com.kaelesty.madprojects.view.components.main.project.messenger.MessengerComponent
 import com.kaelesty.madprojects.view.components.main.project.sprint.DefaultSprintComponent
 import com.kaelesty.madprojects.view.components.main.project.sprint.SprintComponent
 import com.kaelesty.madprojects.view.components.main.project.sprint_creation.DefaultSprintCreationComponent
@@ -33,6 +31,13 @@ import com.kaelesty.madprojects_kmp.blocs.auth.welcome.DefaultWelcomeComponent
 import com.kaelesty.madprojects_kmp.blocs.auth.welcome.WelcomeComponent
 import com.kaelesty.madprojects_kmp.blocs.project.info.DefaultInfoComponent
 import com.kaelesty.madprojects_kmp.blocs.project.info.InfoComponent
+import com.kaelesty.madprojects_kmp.blocs.project.messenger.DefaultMessengerComponent
+import com.kaelesty.madprojects_kmp.blocs.project.messenger.MessengerComponent
+import com.kaelesty.madprojects_kmp.blocs.project.messenger.MessengerStore
+import com.kaelesty.madprojects_kmp.blocs.project.messenger.chat.ChatComponent
+import com.kaelesty.madprojects_kmp.blocs.project.messenger.chat.DefaultChatComponent
+import com.kaelesty.madprojects_kmp.blocs.project.messenger.chatslist.ChatsListComponent
+import com.kaelesty.madprojects_kmp.blocs.project.messenger.chatslist.DefaultChatListComponent
 import com.kaelesty.madprojects_kmp.blocs.project.settings.DefaultSettingsComponent
 import com.kaelesty.madprojects_kmp.blocs.project.settings.SettingsComponent
 import org.koin.dsl.module
@@ -169,12 +174,47 @@ val componentsModule = module {
         object : MessengerComponent.Factory {
             override fun create(
                 c: ComponentContext,
-                n: MessengerComponent.Navigator,
                 projectId: String,
             ): MessengerComponent {
                 return DefaultMessengerComponent(
-                    c, n, projectId,
-                    sockerRepository = get()
+                    componentContext = c,
+                    storeFactory = get(),
+                    chatComponentFactory = get(),
+                    chatListComponentFactory = get(),
+                    projectId = projectId,
+                    authRepo = get()
+                )
+            }
+        }
+    }
+
+    factory<ChatsListComponent.Factory> {
+        object: ChatsListComponent.Factory {
+            override fun create(
+                componentContext: ComponentContext,
+                navigator: ChatsListComponent.Navigator,
+                store: MessengerStore
+            ): ChatsListComponent {
+                return DefaultChatListComponent(
+                    componentContext = componentContext,
+                    store = store,
+                    navigator = navigator
+                )
+            }
+        }
+    }
+
+    factory<ChatComponent.Factory> {
+        object : ChatComponent.Factory {
+            override fun create(
+                c: ComponentContext,
+                store: MessengerStore,
+                chatId: Int
+            ): ChatComponent {
+                return DefaultChatComponent(
+                    componentContext = c,
+                    store = store,
+                    chatId = chatId
                 )
             }
         }

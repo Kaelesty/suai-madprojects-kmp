@@ -1,8 +1,9 @@
 package com.kaelesty.madprojects_kmp.blocs.project.messenger.chat
 
-import com.kaelesty.madprojects.view.components.main.project.messenger.MessengerComponent
+import com.kaelesty.madprojects.view.extensions.copyWith
+import com.kaelesty.madprojects_kmp.blocs.project.messenger.MessengerStore
 
-fun MessengerComponent.State.toChatState(chatId: String, userId: String): ChatComponent.State {
+fun MessengerStore.State.toChatState(chatId: Int, userId: Int): ChatComponent.State {
 
     val BLOCK_TIME_WINDOW_MILLIS = 1000 * 60 * 5
 
@@ -26,12 +27,7 @@ fun MessengerComponent.State.toChatState(chatId: String, userId: String): ChatCo
                 readMessageBlocks.removeLast()
                 readMessageBlocks.add(
                     lastBlock.copy(
-                        messages = lastBlock.messages
-                            .toMutableList()
-                            .apply {
-                                add(it)
-                            }
-                            .toList()
+                        messages = lastBlock.messages.copyWith(it)
                     )
                 )
             } else {
@@ -56,11 +52,7 @@ fun MessengerComponent.State.toChatState(chatId: String, userId: String): ChatCo
                 unreadMessageBlocks.add(
                     lastBlock.copy(
                         messages = lastBlock.messages
-                            .toMutableList()
-                            .apply {
-                                add(it)
-                            }
-                            .toList()
+                            .copyWith(it)
                     )
                 )
             } else {

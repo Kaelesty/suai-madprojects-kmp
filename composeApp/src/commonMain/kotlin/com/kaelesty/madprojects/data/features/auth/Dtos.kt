@@ -29,4 +29,5 @@ data class AuthorizedResponse(
     @SerialName("userType") val userType: UserType,
     @SerialName("accessExpiresAt") val accessExpiresAt: Long,
     @SerialName("refreshExpiresAt") val refreshExpiresAt: Long,
+    @SerialName("userId") val userId: String,
 )
