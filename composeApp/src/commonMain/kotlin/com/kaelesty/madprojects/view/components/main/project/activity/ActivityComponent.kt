@@ -7,6 +7,8 @@ import com.kaelesty.madprojects.domain.repos.github.RepoBranchView
 import com.kaelesty.madprojects.domain.repos.github.RepoView
 import com.kaelesty.madprojects.domain.repos.sprints.ProfileSprint
 import com.kaelesty.madprojects.domain.repos.sprints.SprintsRepo
+import com.kaelesty.madprojects.domain.repos.story.ActivityRepo
+import com.kaelesty.madprojects.domain.repos.story.ActivityResponse
 import com.kaelesty.madprojects.view.components.main.project.ProjectComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -30,7 +32,9 @@ interface ActivityComponent {
         val commits: CommitsState = CommitsState.Loading,
         val selectedMonth: Month,
         val selectedYear: Int,
-        val years: List<Int>
+        val years: List<Int>,
+        val activity: ActivityResponse? = null,
+        val isLoadingActivity: Boolean = false
     ) {
 
         enum class Month(val string: String) {
@@ -84,6 +88,8 @@ interface ActivityComponent {
     fun setMonth(month: State.Month)
 
     fun setYear(year: Int)
+
+    fun loadFullActivity()
 }
 
 class DefaultActivityComponent(
@@ -92,6 +98,7 @@ class DefaultActivityComponent(
     private val projectId: String,
     private val sprintsRepo: SprintsRepo,
     private val githubRepo: GithubRepo,
+    private val activityRepo: ActivityRepo,
 ) : ComponentContext by componentContext, ActivityComponent {
 
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -104,6 +111,28 @@ class DefaultActivityComponent(
 
     init {
         loadState()
+    }
+
+    private var isFullActivityLoad = false
+
+    override fun loadFullActivity() {
+        if (isFullActivityLoad) return
+        isFullActivityLoad = true
+        scope.launch {
+            _state.emit(
+                _state.value?.copy(
+                    isLoadingActivity = true
+                )
+            )
+            activityRepo.getProjectActivity(projectId.toInt(), null).getOrNull().let {
+                _state.emit(
+                    _state.value?.copy(
+                        isLoadingActivity = false,
+                        activity = it ?: _state.value?.activity
+                    )
+                )
+            }
+        }
     }
 
     override fun setMonth(month: ActivityComponent.State.Month) {
@@ -157,7 +186,11 @@ class DefaultActivityComponent(
                     },
                     selectedMonth = ActivityComponent.State.monthFromIndex(dateTime.monthNumber),
                     selectedYear = dateTime.year,
-                    years = years
+                    years = years,
+                    activity = activityRepo.getProjectActivity(
+                        projectId = projectId.toInt(),
+                        count = 6,
+                    ).getOrNull()
                 )
             )
         }

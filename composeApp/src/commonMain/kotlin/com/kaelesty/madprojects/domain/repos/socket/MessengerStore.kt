@@ -30,6 +30,7 @@ interface MessengerStore : Store<MessengerStore.Intent, State, Label> {
 	data class State(
 		val chats: List<ChatState>,
 		val senders: List<ChatSender>,
+		val userId: Int,
 	) {
 		data class ChatState(
 			val chat: Chat,
@@ -56,10 +57,10 @@ class MessengerStoreFactory(
 	): MessengerStore =
 		object : MessengerStore, Store<MessengerStore.Intent, State, Label> by storeFactory.create(
 			name = "MessengerStore",
-			initialState = State(listOf(), listOf()),
+			initialState = State(listOf(), listOf(), -1),
 			bootstrapper = BootstrapperImpl(socket),
 			executorFactory = { ExecutorImpl(socket, projectId) },
-			reducer = ReducerImpl(userId = userId)
+			reducer = ReducerImpl(userId_ = userId)
 		) {}
 
 	private sealed interface Msg {
@@ -69,6 +70,7 @@ class MessengerStoreFactory(
 			val readMessages: List<Message>,
 			val unreadMessages: List<Message>,
 			val chatId: Int,
+			val userId: Int,
 		) : Msg
 		data class SetChatsList(val chats: List<Chat>, val senders: List<ChatSender>) : Msg
 		data class ReadMessagesBefore(val messageId: Int, val chatId: Int) : Msg
@@ -148,6 +150,7 @@ class MessengerStoreFactory(
 						readMessages = action.readMessages,
 						unreadMessages = action.unreadMessages,
 						chatId = action.chatId,
+						userId = action.userId.toInt()
 					)
 				)
 
@@ -163,7 +166,7 @@ class MessengerStoreFactory(
 		}
 	}
 
-	private class ReducerImpl(private val userId: Int) : Reducer<State, Msg> {
+	private class ReducerImpl(private val userId_: Int) : Reducer<State, Msg> {
 		override fun State.reduce(message: Msg): State =
 			when (message) {
 
@@ -226,7 +229,8 @@ class MessengerStoreFactory(
 								)
 							}
 							else it
-						}
+						},
+					userId = userId_,
 				)
 				is Msg.SetChatsList -> copy(
 					chats = message.chats.map {

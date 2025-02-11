@@ -1,5 +1,6 @@
 package com.kaelesty.madprojects.data.features
 
+import com.kaelesty.madprojects.data.features.activity.ActivityRepoImpl
 import com.kaelesty.madprojects.data.features.auth.AuthRepoImpl
 import com.kaelesty.madprojects.data.features.auth.LoginManager
 import com.kaelesty.madprojects.data.features.curatorship.CuratorshipRepoImpl
@@ -15,6 +16,7 @@ import com.kaelesty.madprojects.domain.repos.profile.ProfileRepo
 import com.kaelesty.madprojects.domain.repos.project.ProjectRepo
 import com.kaelesty.madprojects.domain.repos.socket.SocketRepository
 import com.kaelesty.madprojects.domain.repos.sprints.SprintsRepo
+import com.kaelesty.madprojects.domain.repos.story.ActivityRepo
 import io.ktor.client.HttpClient
 import org.koin.dsl.module
 
@@ -43,6 +45,13 @@ val reposModule = module {
 
     single<SocketRepository> {
         SocketRepoImpl(
+            loginManager = get()
+        )
+    }
+
+    factory<ActivityRepo> {
+        ActivityRepoImpl(
+            apiService = get(),
             loginManager = get()
         )
     }

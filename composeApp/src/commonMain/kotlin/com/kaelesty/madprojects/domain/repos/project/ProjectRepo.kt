@@ -14,4 +14,6 @@ interface ProjectRepo {
     suspend fun validateRepolink(
         repolink: String
     ): Boolean
+
+    suspend fun getProject(id: String): Result<Project>
 }

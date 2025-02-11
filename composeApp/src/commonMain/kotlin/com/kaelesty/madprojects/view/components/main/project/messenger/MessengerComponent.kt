@@ -90,7 +90,7 @@ class DefaultMessengerComponent(
 		is Config.Chat -> MessengerComponent.Child.Chat(
 			component = chatComponentFactory.create(
 				componentContext, store,
-				chatId = config.chatId
+				chatId = config.chatId,
 			)
 		)
 		Config.ChatsList -> MessengerComponent.Child.ChatsList(

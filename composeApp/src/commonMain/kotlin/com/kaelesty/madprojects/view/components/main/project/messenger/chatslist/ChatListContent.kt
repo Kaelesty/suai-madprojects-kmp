@@ -29,6 +29,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kaelesty.madprojects.domain.repos.socket.Chat
+import com.kaelesty.madprojects.domain.repos.socket.ChatSender
 import com.kaelesty.madprojects.domain.repos.socket.ChatType
 import com.kaelesty.madprojects_kmp.extensions.toReadableTime
 import com.kaelesty.madprojects_kmp.ui.uikit.cards.StyledRoundedCard
@@ -44,14 +45,18 @@ fun ChatListContent(
 ) {
 	val state by component.state.collectAsState()
 
+
 	LazyColumn{
-		items(items = state.chats, key = { it.chat.id }) {
+		items(items = state.chats, key = { it.chat.id }) { chat ->
 			ChatCard(
-				chat = it.chat,
+				chat = chat.chat,
+				sender = state.senders.firstOrNull {
+					it.id == chat.chat.lastMessage?.senderId
+				},
 				modifier = Modifier
 					.fillMaxWidth()
 					.clickable {
-						component.onChatSelected(chatId = it.chat.id)
+						component.onChatSelected(chatId = chat.chat.id)
 					}
 			)
 		}
@@ -61,6 +66,7 @@ fun ChatListContent(
 @Composable
 fun ChatCard(
 	chat: Chat,
+	sender: ChatSender?,
 	modifier: Modifier = Modifier
 ) {
 	StyledRoundedCard(
@@ -105,7 +111,7 @@ fun ChatCard(
 									fontStyle = MaterialTheme.typography.body2.fontStyle
 								)
 							) {
-								append("${chat.lastMessage!!.senderId}:")
+								append("${sender?.firstName ?: "..."}:")
 							}
 							withStyle(
 								style = SpanStyle(

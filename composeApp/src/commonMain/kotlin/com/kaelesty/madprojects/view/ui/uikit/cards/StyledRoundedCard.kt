@@ -5,9 +5,11 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.DefaultShadowColor
 import androidx.compose.ui.unit.dp
 
@@ -15,6 +17,7 @@ import androidx.compose.ui.unit.dp
 fun StyledRoundedCard(
 	modifier: Modifier = Modifier,
 	shape: RoundedCornerShape = RoundedCornerShape(16.dp),
+	backgroundColor: Color = MaterialTheme.colors.surface,
 	content: @Composable () -> Unit,
 ) {
 	Card(
@@ -25,7 +28,8 @@ fun StyledRoundedCard(
 				spotColor = DefaultShadowColor,
 				ambientColor = DefaultShadowColor
 			),
-		shape = shape
+		shape = shape,
+		backgroundColor
 	) {
 		content()
 	}

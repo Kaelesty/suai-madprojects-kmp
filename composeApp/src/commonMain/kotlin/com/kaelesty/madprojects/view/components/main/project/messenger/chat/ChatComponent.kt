@@ -52,7 +52,7 @@ interface ChatComponent {
 		fun create(
 			c: ComponentContext,
 			store: MessengerStore,
-			chatId: Int
+			chatId: Int,
 		): ChatComponent
 	}
 
@@ -65,7 +65,7 @@ interface ChatComponent {
 class DefaultChatComponent(
 	private val componentContext: ComponentContext,
 	private val store: MessengerStore,
-	private val chatId: Int
+	private val chatId: Int,
 ): ComponentContext by componentContext, ChatComponent {
 
 	private val scope = CoroutineScope(Dispatchers.IO)
@@ -82,7 +82,7 @@ class DefaultChatComponent(
 			scope.launch {
 				store.stateFlow.collect { newState ->
 					_state.emit(
-						newState.toChatState(chatId = chatId, userId = 2)
+						newState.toChatState(chatId = chatId, userId = newState.userId)
 					)
 				}
 			}

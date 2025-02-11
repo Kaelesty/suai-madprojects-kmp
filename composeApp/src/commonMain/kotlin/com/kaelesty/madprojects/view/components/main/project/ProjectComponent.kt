@@ -196,7 +196,9 @@ class DefaultProjectComponent(
         is Config.Info -> ProjectComponent.Child.Info(
             component = infoComponentFactory.create(
                 componentContext, object : InfoComponent.Navigator {
-
+                    override fun toUserProfile(userId: Int) {
+                        TODO("Not yet implemented")
+                    }
                 }, project.id
             )
         )

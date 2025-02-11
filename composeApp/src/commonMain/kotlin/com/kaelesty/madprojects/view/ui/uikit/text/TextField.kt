@@ -37,7 +37,7 @@ fun StyledTextField(
 	imeAction: ImeAction? = null,
 	keyboardType: KeyboardType? = null,
 	maxLines: Int = 1,
-	height: Dp = 50.dp,
+	height: Dp = 55.dp,
 	textSize: TextUnit = 20.sp,
 ) {
 	Card(
@@ -99,7 +99,7 @@ fun TitledTextField(
 	maxLines: Int = 1,
 	titleSize: TextUnit = 22.sp,
 	textSize: TextUnit = 20.sp,
-	height: Dp = 50.dp,
+	height: Dp = 55.dp,
 	outerModifier: Modifier = Modifier
 ) {
 

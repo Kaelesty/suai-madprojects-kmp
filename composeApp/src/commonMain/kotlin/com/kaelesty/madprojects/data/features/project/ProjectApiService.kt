@@ -15,6 +15,16 @@ class ProjectApiService(
     private val httpClient: HttpClient
 ) {
 
+    suspend fun getProject(
+        token: String,
+        projectId: Int
+    ) = kotlin.runCatching {
+        httpClient.get("$BASE_URL/project/get") {
+            bearerAuth(token)
+            parameter("projectId", projectId)
+        }
+    }
+
     suspend fun validateRepolink(
         token: String,
         repolink: String,

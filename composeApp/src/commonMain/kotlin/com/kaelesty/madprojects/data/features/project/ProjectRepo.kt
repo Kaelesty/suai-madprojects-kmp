@@ -2,6 +2,7 @@ package com.kaelesty.madprojects.data.features.project
 
 import com.kaelesty.madprojects.data.UnauthorizedException
 import com.kaelesty.madprojects.data.features.auth.LoginManager
+import com.kaelesty.madprojects.domain.repos.project.Project
 import com.kaelesty.madprojects.domain.repos.project.ProjectRepo
 import io.ktor.client.call.body
 import io.ktor.http.HttpStatusCode
@@ -10,6 +11,15 @@ class ProjectRepoImpl(
     private val projectApiService: ProjectApiService,
     private val loginManager: LoginManager,
 ): ProjectRepo {
+
+    override suspend fun getProject(id: String): Result<Project> {
+        return kotlin.runCatching {
+            projectApiService.getProject(
+                token = loginManager.getTokenOrThrow(),
+                projectId = id.toInt()
+            ).getOrThrow().body<Project>()
+        }
+    }
 
     override suspend fun validateRepolink(repolink: String): Boolean {
         return projectApiService.validateRepolink(

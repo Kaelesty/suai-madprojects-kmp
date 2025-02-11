@@ -209,12 +209,12 @@ val componentsModule = module {
             override fun create(
                 c: ComponentContext,
                 store: MessengerStore,
-                chatId: Int
+                chatId: Int,
             ): ChatComponent {
                 return DefaultChatComponent(
                     componentContext = c,
                     store = store,
-                    chatId = chatId
+                    chatId = chatId,
                 )
             }
         }
@@ -228,7 +228,8 @@ val componentsModule = module {
                 projectId: String,
             ): InfoComponent {
                 return DefaultInfoComponent(
-                    c, n, projectId
+                    c, n, projectId,
+                    projectRepo = get()
                 )
             }
         }
@@ -273,6 +274,7 @@ val componentsModule = module {
                     c, n, projectId,
                     sprintsRepo = get(),
                     githubRepo = get(),
+                    activityRepo = get(),
                 )
             }
         }

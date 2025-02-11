@@ -39,6 +39,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import com.kaelesty.madprojects.view.ui.experimental.Styled
 import com.kaelesty.madprojects_kmp.extensions.toReadableTime
 import com.kaelesty.madprojects_kmp.ui.uikit.cards.StyledRoundedCard
 import com.kaelesty.madprojects_kmp.ui.uikit.text.TransparentTextField
@@ -118,7 +119,7 @@ fun ChatContent(
                             IncomingMessageBlock(
                                 it,
                                 sender = state.senders.firstOrNull { sender -> sender.id == it.senderId } ?: ChatComponent.State.MessageSender(
-                                    "Неопознанный хакер", -1, null
+                                    "Неопознанный хакер", -2, null
                                 ),
                                 onShow = {}
                             )
@@ -128,7 +129,7 @@ fun ChatContent(
                             OutComingMessageBlock(
                                 it,
                                 sender = state.senders.firstOrNull { sender -> sender.id == it.senderId } ?: ChatComponent.State.MessageSender(
-                                    "Неопознанный хакер", -1, null
+                                    "Неопознанный хакер", -2, null
                                 )
                             )
                         }
@@ -294,6 +295,7 @@ fun OutComingMessageBlock(
                             bottomStart = 16.dp,
                             bottomEnd = 16.dp
                         ),
+                        backgroundColor = Styled.uiKit().colors().github_25
                     ) {
                         Text(
                             text = message.text,

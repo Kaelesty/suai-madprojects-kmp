@@ -1,5 +1,6 @@
 package com.kaelesty.madprojects.data.remote
 
+import com.kaelesty.madprojects.data.features.activity.ActivityApiService
 import com.kaelesty.madprojects.data.features.auth.AuthApiService
 import com.kaelesty.madprojects.data.features.curatorship.CuratorshipApiService
 import com.kaelesty.madprojects.data.features.github.GithubApiService
@@ -19,6 +20,12 @@ val remoteModule = module {
 
     factory<SprintsApiService> {
         SprintsApiService(
+            httpClient = get()
+        )
+    }
+
+    factory<ActivityApiService> {
+        ActivityApiService(
             httpClient = get()
         )
     }

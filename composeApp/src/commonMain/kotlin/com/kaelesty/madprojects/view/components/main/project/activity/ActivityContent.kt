@@ -1,15 +1,16 @@
 package com.kaelesty.madprojects.view.components.main.project.activity
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -25,14 +26,11 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kaelesty.madprojects.view.ui.uikit.cards.CardErrorText
-import com.kaelesty.madprojects.view.ui.uikit.cards.CardText
 import com.kaelesty.madprojects_kmp.ui.uikit.Loading
 import com.kaelesty.madprojects_kmp.ui.uikit.StyledList
 import com.kaelesty.madprojects_kmp.ui.uikit.buttons.StyledButton
 import com.kaelesty.madprojects_kmp.ui.uikit.cards.TitledRoundedCard
 import com.kaelesty.madprojects_kmp.ui.uikit.dropdowns.SimplifiedDropdown
-import com.kaelesty.madprojects_kmp.ui.uikit.dropdowns.StyledDropdown
-import kotlinx.datetime.Month
 
 @Composable
 fun ActivityContent(
@@ -42,10 +40,18 @@ fun ActivityContent(
     val state_ by component.state.collectAsState()
     val state = state_
 
+    var showActivityDialog by remember { mutableStateOf(false) }
+
     if (state == null) {
         Loading()
-    }
-    else {
+    } else {
+
+        ActivityDialog(
+            isShown = showActivityDialog,
+            state = state,
+            onDismiss = { showActivityDialog = false }
+        )
+
         LazyColumn(
             modifier = Modifier
                 .padding(horizontal = 4.dp)
@@ -61,7 +67,13 @@ fun ActivityContent(
             }
 
             item {
-                StoryCard(state, component)
+                StoryCard(
+                    state = state,
+                    onShowMore = {
+                        showActivityDialog = true
+                        component.loadFullActivity()
+                    }
+                )
             }
         }
     }
@@ -158,8 +170,7 @@ private fun GithubActivityCard(
                         modifier = Modifier
                     )
                 }
-            }
-            else {
+            } else {
                 Column(
                     modifier = Modifier
                         .padding(horizontal = 8.dp, vertical = 8.dp),
@@ -175,17 +186,18 @@ private fun GithubActivityCard(
                                 modifier = Modifier
                             )
                         }
+
                         CommitsState.Loading -> {
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(256.dp)
-                                ,
+                                    .height(256.dp),
                                 contentAlignment = Alignment.Center
                             ) {
                                 CircularProgressIndicator()
                             }
                         }
+
                         is CommitsState.Main -> {
                             Row(
                                 modifier = Modifier
@@ -250,6 +262,7 @@ private fun GithubActivityCard(
                                 )
                             }
                         }
+
                         CommitsState.Null -> {}
                     }
                 }
@@ -261,14 +274,51 @@ private fun GithubActivityCard(
 @Composable
 private fun StoryCard(
     state: ActivityComponent.State,
-    component: ActivityComponent,
+    onShowMore: () -> Unit,
 ) {
     TitledRoundedCard(
         title = "История",
         modifier = Modifier
             .fillMaxWidth()
     ) {
-        Spacer(Modifier.height(128.dp))
-        // TODO
+        val activity = state.activity
+        if (activity == null) {
+            CardErrorText("Ошибка загрузки активности")
+        } else {
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 18.dp, vertical = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                activity.activities.reversed()
+                    .take(6)
+                    .forEach {
+                        activity.actors[it.actorId]?.let { actor ->
+                            ActivityView(
+                                activity = it,
+                                actor = actor
+                            )
+                            Spacer(Modifier.height(16.dp))
+                        }
+                    }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 14.dp)
+                ) {
+                    Spacer(Modifier.weight(1f))
+                    Text(
+                        text = "еще...",
+                        style = MaterialTheme.typography.body2.copy(
+                            fontSize = 18.sp,
+                            fontStyle = FontStyle.Italic,
+                            lineHeight = 24.sp,
+                        ),
+                        modifier = Modifier
+                            .clickable { onShowMore() }
+                    )
+                }
+            }
+        }
     }
 }
