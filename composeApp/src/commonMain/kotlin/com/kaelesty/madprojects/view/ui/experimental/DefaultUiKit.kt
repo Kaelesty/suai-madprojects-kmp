@@ -63,7 +63,7 @@ abstract class DefaultUiKit: Styled.UiKit {
         topBarTitle: String,
         isScrollable: Boolean,
         bottomBar: @Composable () -> Unit,
-        content: @Composable () -> Unit
+        content: @Composable () -> Unit,
     ) {
 
         val scrollState = rememberScrollState()

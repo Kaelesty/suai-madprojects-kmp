@@ -278,7 +278,8 @@ val componentsModule = module {
                 projectId: String,
             ): KanbanComponent {
                 return DefaultKanbanComponent(
-                    c, n, projectId
+                    c, n, projectId,
+                    socketRepository = get(),
                 )
             }
         }

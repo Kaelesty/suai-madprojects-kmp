@@ -53,7 +53,7 @@ fun getCustomColors(isDarkTheme: Boolean) = MaterialTheme.colors.copy(
 	onPrimary = hexToColor("00B8EE")
 )
 
-fun hexToColor(hex: String): Color {
+fun hexToColor(hex: String, alpha: Int = 255): Color {
 	val formattedHex = if (hex.startsWith("#")) hex else "#$hex"
 
 	val colorInt = when (formattedHex.length) {
@@ -61,7 +61,7 @@ fun hexToColor(hex: String): Color {
 			val r = formattedHex.substring(1, 3).toInt(16)
 			val g = formattedHex.substring(3, 5).toInt(16)
 			val b = formattedHex.substring(5, 7).toInt(16)
-			Color(r, g, b, 255)
+			Color(r, g, b, alpha)
 		}
 		9 -> {
 			val a = formattedHex.substring(1, 3).toInt(16)

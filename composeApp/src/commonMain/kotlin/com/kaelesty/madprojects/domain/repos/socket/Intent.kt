@@ -88,7 +88,7 @@ sealed interface Intent {
         @Serializable
         @SerialName("entities.Intent.Kanban.Start")
         data class Start(
-            @SerialName("ProjectId") val projectId: Int,
+            @SerialName("projectId") val projectId: Int,
         ): Kanban
 
         @Serializable
@@ -127,6 +127,7 @@ sealed interface Intent {
         data class CreateColumn(
             @SerialName("name") val name: String,
             @SerialName("projectId") val projectId: Int,
+            @SerialName("color") val color: String,
         ): Kanban
 
         @Serializable
@@ -152,6 +153,7 @@ sealed interface Intent {
             @SerialName("id") val id: Int,
             @SerialName("name") val name: String?,
             @SerialName("projectId") val projectId: Int,
+            @SerialName("color") val color: String?,
         ): Kanban
 
         @Serializable

@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.DefaultShadowColor
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.text.style.TextDecoration
@@ -45,6 +46,7 @@ fun <T> StyledDropdown(
 	closeOnSelect: Boolean = true,
 	fontSize: TextUnit = MaterialTheme.typography.body2.fontSize,
 	itemTitle: (T) -> String,
+	background: Color? = null
 ) {
 
 	var expanded by remember {
@@ -66,6 +68,7 @@ fun <T> StyledDropdown(
 		shape = MaterialTheme.shapes.medium.copy(
 			CornerSize(0), CornerSize(0), CornerSize(0), CornerSize(0),
 		),
+		backgroundColor = background ?: MaterialTheme.colors.surface
 	) {
 		Row(
 			verticalAlignment = Alignment.CenterVertically,

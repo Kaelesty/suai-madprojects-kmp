@@ -39,8 +39,7 @@ class SocketRepoImpl(
     private val outgoingFlow = MutableSharedFlow<Intent>()
 
     private val _actionsFlow = MutableSharedFlow<Action>(replay = 5)
-    override val action: SharedFlow<Action>
-        get() = _actionsFlow.asSharedFlow()
+    override val action: SharedFlow<Action> = _actionsFlow.asSharedFlow()
 
     override suspend fun accept(intent: Intent) {
         outgoingFlow.emit(intent as Intent)
@@ -65,9 +64,15 @@ class SocketRepoImpl(
                 onConnected()
                 session.incoming.consumeEach {
                     if (it is Frame.Text) {
-                        _actionsFlow.emit(
-                            Json.decodeFromString<Action>(it.readText())
-                        )
+                        try {
+                            val text = it.readText()
+                            _actionsFlow.emit(
+                                Json.decodeFromString<Action>(text)
+                            )
+                        }
+                        catch (e: Exception) {
+                            e.toString()
+                        }
                     }
                 }
             }
