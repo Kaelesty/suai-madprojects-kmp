@@ -73,7 +73,8 @@ interface ProjectComponent {
     }
 
     interface Navigator {
-        // todo
+
+        fun toOtherProfile(userId: String)
     }
 
     interface Factory {
@@ -196,8 +197,8 @@ class DefaultProjectComponent(
         is Config.Info -> ProjectComponent.Child.Info(
             component = infoComponentFactory.create(
                 componentContext, object : InfoComponent.Navigator {
-                    override fun toUserProfile(userId: Int) {
-                        TODO("Not yet implemented")
+                    override fun toUserProfile(userId: String) {
+                        navigator.toOtherProfile(userId)
                     }
                 }, project.id
             )

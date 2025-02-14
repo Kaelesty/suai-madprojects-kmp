@@ -1,18 +1,18 @@
-package com.kaelesty.madprojects.view.components.main.profile
+package com.kaelesty.madprojects.view.components.main.other_profile
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -21,76 +21,60 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kaelesty.madprojects.domain.UserType
 import com.kaelesty.madprojects.domain.repos.profile.ProfileProject
+import com.kaelesty.madprojects.domain.repos.profile.SharedProfileResponse
 import com.kaelesty.madprojects.domain.stores.ProfileStore
+import com.kaelesty.madprojects.view.components.main.profile.MetaCard
+import com.kaelesty.madprojects.view.components.main.profile.ProjectsList
 import com.kaelesty.madprojects.view.components.shared.elements.Avatar
-import com.kaelesty.madprojects.view.components.shared.elements.TopBar
 import com.kaelesty.madprojects.view.extensions.bottomBorder
 import com.kaelesty.madprojects.view.ui.experimental.Styled
-import com.kaelesty.madprojects_kmp.ui.uikit.StyledList
+import com.kaelesty.madprojects.view.ui.uikit.cards.CardErrorText
+import com.kaelesty.madprojects_kmp.ui.uikit.Loading
+import com.kaelesty.madprojects_kmp.ui.uikit.cards.StyledCard
 import com.kaelesty.madprojects_kmp.ui.uikit.cards.StyledRoundedCard
-import com.kaelesty.madprojects_kmp.ui.uikit.cards.TitledRoundedCard
-
 
 @Composable
-fun CommonProfileScreen(
-    state: ProfileStore.State.CommonProfile,
-    onCreateNewProject: () -> Unit,
-    onProjectClick: (ProfileProject) -> Unit
+fun OtherProfileContent(
+    component: OtherProfileComponent
 ) {
+
+    val state by component.state.collectAsState()
+
     Styled.uiKit().DefaultScreenScaffold(
         topBarTitle = "Профиль",
         isScrollable = false,
         bottomBar = {}
     ) {
-        MetaCard(state)
-        Spacer(Modifier.height(18.dp))
-        ProjectsList(
-            state = state,
-            onProjectClick = onProjectClick,
-            onCreateNewProject = onCreateNewProject,
-        )
+        if (state.isLoading) {
+            Loading()
+        }
+        else OtherMetaCard(state.profile)
     }
 }
 
 @Composable
-fun ProjectsList(
-    state: ProfileStore.State.CommonProfile,
-    onProjectClick: (ProfileProject) -> Unit,
-    onCreateNewProject: () -> Unit,
+fun OtherMetaCard(
+    state: SharedProfileResponse?,
 ) {
-    TitledRoundedCard(
-        title = "Мои проекты",
-        modifier = Modifier
-            .padding(horizontal = 16.dp)
-    ) {
-        StyledList(
-            items = state.profile.projects,
-            itemTitle = { it.title },
-            onItemClick = onProjectClick,
-            leadingItem = "Создать новый...",
-            onLeadingClick = onCreateNewProject,
-            onDeleteItem = null
-        )
-    }
-}
 
-@Composable
-fun MetaCard(
-    state: ProfileStore.State.CommonProfile,
-) {
-    StyledRoundedCard(
+    if (state == null) {
+        StyledRoundedCard(modifier = Modifier.height(80.dp)) {
+            CardErrorText("Ошибка загрузки")
+        }
+    }
+    else StyledRoundedCard(
         modifier = Modifier
             .padding(horizontal = 16.dp)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // TODO github
             Spacer(Modifier.height(8.dp))
             Avatar(
                 modifier = Modifier.size(128.dp),
-                url = state.profile.githubMeta?.githubAvatar,
+                url = state.avatar,
             )
             Spacer(Modifier.height(12.dp))
             Text(
@@ -99,7 +83,7 @@ fun MetaCard(
                         fontSize = 30.sp,
                         textAlign = TextAlign.Center
                     ),
-                text = "${state.profile.lastName} ${state.profile.firstName} ${state.profile.secondName}",
+                text = "${state.lastName} ${state.firstName} ${state.secondName}",
                 maxLines = 2
             )
             Spacer(Modifier.height(12.dp))
@@ -108,9 +92,13 @@ fun MetaCard(
                     .padding(horizontal = 16.dp)
                     .fillMaxWidth()
             ) {
+                val dataTitle = when (state.role) {
+                    UserType.Common -> "Группа:"
+                    UserType.Curator -> "Степень:"
+                }
                 listOf(
-                    "Группа:" to state.profile.group,
-                    "Email:" to state.profile.email
+                    dataTitle to state.data,
+                    "Email:" to state.email
                 ).forEach {
                     Row {
                         Text(
@@ -119,7 +107,7 @@ fun MetaCard(
                                 fontSize = 20.sp
                             ),
                             modifier = Modifier
-                                .width(60.dp)
+                                .width(80.dp)
                         )
                         Spacer(Modifier.width(4.dp))
                         Text(

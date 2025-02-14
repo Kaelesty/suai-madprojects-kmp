@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -37,7 +38,7 @@ import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.datetime.until
 
-fun monthDays(year: Int, month: Month): Int {
+fun monthDays(year: Int, month: Int): Int {
     val start = LocalDate(year, month, 1)
     val end = start.plus(1, DateTimeUnit.MONTH)
     return start.until(end, DateTimeUnit.DAY)
@@ -61,9 +62,6 @@ fun CalendarView(
             }
         }
         .groupBy { parseDate(it.date) }
-    val currentDate = parseDate(branchCommits.first().date)
-    val year = currentDate.year
-    val month = currentDate.month
 
     val maxCommits = if (commitsByDate.isEmpty()) 0 else {
         commitsByDate.values
@@ -71,12 +69,13 @@ fun CalendarView(
             .size
     }
 
-    val firstDayOfMonth = LocalDate(year, month, 1)
-    val lastDayOfMonth = LocalDate(year, month, monthDays(year, currentDate.month))
+    val firstDayOfMonth = LocalDate(year, month.index, 1)
+    val dayOfWeek = firstDayOfMonth.dayOfWeek.ordinal
+    val lastDayOfMonth = LocalDate(year, month.index, monthDays(year, month.index))
 
     val daysInMonth = (firstDayOfMonth.dayOfMonth..lastDayOfMonth.dayOfMonth).map { day ->
-        val date = firstDayOfMonth.plus(day, DateTimeUnit.DAY)
-        date to commitsByDate[date]?.size
+        val date = firstDayOfMonth.plus(day - 1, DateTimeUnit.DAY)
+        date to (commitsByDate[date]?.size ?: 0)
     }
 
     val colors = Styled.uiKit().colors()
@@ -85,13 +84,21 @@ fun CalendarView(
         columns = GridCells.Fixed(7),
         modifier = Modifier
             .padding(4.dp)
-            .height(256.dp)
+            .heightIn(256.dp, 400.dp)
         ,
         userScrollEnabled = false
     ) {
+        repeat(dayOfWeek) {
+            item {
+                Box(modifier = Modifier
+                    .size(50.dp)
+                    .padding(2.dp)
+                )
+            }
+        }
         itemsIndexed(daysInMonth) { index, (date, commitCount) ->
             DayBox(
-                date.dayOfMonth, commitCount ?: 0,
+                date.dayOfMonth, commitCount,
                 color = commitCount?.let {
                     if (it == 0) colors.github_0
                     else if (it > maxCommits * 0.90f) colors.github_100

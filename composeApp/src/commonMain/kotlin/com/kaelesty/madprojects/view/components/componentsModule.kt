@@ -7,6 +7,8 @@ import com.kaelesty.madprojects.view.components.auth.AuthComponent
 import com.kaelesty.madprojects.view.components.auth.DefaultAuthComponent
 import com.kaelesty.madprojects.view.components.main.DefaultMainComponent
 import com.kaelesty.madprojects.view.components.main.MainComponent
+import com.kaelesty.madprojects.view.components.main.other_profile.DefaultOtherProfileComponent
+import com.kaelesty.madprojects.view.components.main.other_profile.OtherProfileComponent
 import com.kaelesty.madprojects.view.components.main.profile.DefaultProfileComponent
 import com.kaelesty.madprojects.view.components.main.profile.ProfileComponent
 import com.kaelesty.madprojects.view.components.main.project.DefaultProjectComponent
@@ -113,6 +115,7 @@ val componentsModule = module {
                     profileComponentFactory = get(),
                     projectCreationComponentFactory = get(),
                     projectComponentFactory = get(),
+                    otherComponentFactory = get(),
                 )
             }
         }
@@ -215,6 +218,24 @@ val componentsModule = module {
                     componentContext = c,
                     store = store,
                     chatId = chatId,
+                )
+            }
+        }
+    }
+
+    factory<OtherProfileComponent.Factory> {
+        object : OtherProfileComponent.Factory {
+
+            override fun create(
+                c: ComponentContext,
+                n: OtherProfileComponent.Navigator,
+                userId: String
+            ): OtherProfileComponent {
+                return DefaultOtherProfileComponent(
+                    componentContext = c,
+                    navigator = n,
+                    userId = userId,
+                    profileRepo = get()
                 )
             }
         }

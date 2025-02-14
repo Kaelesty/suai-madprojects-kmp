@@ -37,10 +37,10 @@ interface ActivityComponent {
         val isLoadingActivity: Boolean = false
     ) {
 
-        enum class Month(val string: String) {
-            Jan("Январь"), Feb("Февраль"), Mar("Март"), Apr("Апрель"),
-            May("Май"), Jun("Июнь"), Jul("Июль"), Aug("Август"), Sep("Сентябрь"),
-            Oct("Октябрь"), Nov("Ноябрь"), Dec("Декабрь")
+        enum class Month(val string: String, val index: Int) {
+            Jan("Январь", 1), Feb("Февраль", 2), Mar("Март", 3), Apr("Апрель", 4),
+            May("Май", 5), Jun("Июнь", 6), Jul("Июль", 7), Aug("Август", 8), Sep("Сентябрь", 9),
+            Oct("Октябрь", 10), Nov("Ноябрь", 11), Dec("Декабрь", 12)
         }
 
         companion object {

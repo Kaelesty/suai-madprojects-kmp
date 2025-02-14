@@ -21,7 +21,7 @@ interface InfoComponent {
 
     interface Navigator {
 
-        fun toUserProfile(userId: Int)
+        fun toUserProfile(userId: String)
     }
 
     interface Factory {
@@ -32,7 +32,7 @@ interface InfoComponent {
         ): InfoComponent
     }
 
-    fun toUserProfile(userId: Int)
+    fun toUserProfile(userId: String)
 }
 
 class DefaultInfoComponent(
@@ -60,7 +60,7 @@ class DefaultInfoComponent(
         }
     }
 
-    override fun toUserProfile(userId: Int) {
+    override fun toUserProfile(userId: String) {
         navigator.toUserProfile(userId)
     }
 }

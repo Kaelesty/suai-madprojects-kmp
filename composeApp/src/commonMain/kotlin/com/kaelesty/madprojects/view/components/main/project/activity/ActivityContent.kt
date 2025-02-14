@@ -23,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kaelesty.madprojects.view.ui.uikit.cards.CardErrorText
@@ -230,8 +231,7 @@ private fun GithubActivityCard(
                                 )
                             }
                             CalendarView(
-                                branchCommits = commitsInstance.value.commits
-                                    .filter { it.date.contains("2024-12") },
+                                branchCommits = commitsInstance.value.commits,
                                 month = state.selectedMonth,
                                 year = state.selectedYear,
                             )
@@ -284,7 +284,20 @@ private fun StoryCard(
         val activity = state.activity
         if (activity == null) {
             CardErrorText("Ошибка загрузки активности")
-        } else {
+        }
+        else if (activity.activities.isEmpty()) {
+            Text(
+                text = "Здесь пока пусто...",
+                style = MaterialTheme.typography.body2.copy(
+                    fontSize = 20.sp,
+                    lineHeight = 24.sp,
+                    textAlign = TextAlign.Center
+                ),
+                modifier = Modifier
+                    .padding(horizontal = 24.dp, vertical = 32.dp)
+            )
+        }
+        else {
             Column(
                 modifier = Modifier
                     .padding(horizontal = 18.dp, vertical = 16.dp),
@@ -293,30 +306,30 @@ private fun StoryCard(
                 activity.activities.reversed()
                     .take(6)
                     .forEach {
-                        activity.actors[it.actorId]?.let { actor ->
-                            ActivityView(
-                                activity = it,
-                                actor = actor
-                            )
-                            Spacer(Modifier.height(16.dp))
-                        }
+                        ActivityView(
+                            activity = it,
+                            actor = activity.actors[it.actorId]
+                        )
+                        Spacer(Modifier.height(16.dp))
                     }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 14.dp)
-                ) {
-                    Spacer(Modifier.weight(1f))
-                    Text(
-                        text = "еще...",
-                        style = MaterialTheme.typography.body2.copy(
-                            fontSize = 18.sp,
-                            fontStyle = FontStyle.Italic,
-                            lineHeight = 24.sp,
-                        ),
+                if (activity.activities.size > 6) {
+                    Row(
                         modifier = Modifier
-                            .clickable { onShowMore() }
-                    )
+                            .fillMaxWidth()
+                            .padding(bottom = 14.dp)
+                    ) {
+                        Spacer(Modifier.weight(1f))
+                        Text(
+                            text = "еще...",
+                            style = MaterialTheme.typography.body2.copy(
+                                fontSize = 18.sp,
+                                fontStyle = FontStyle.Italic,
+                                lineHeight = 24.sp,
+                            ),
+                            modifier = Modifier
+                                .clickable { onShowMore() }
+                        )
+                    }
                 }
             }
         }

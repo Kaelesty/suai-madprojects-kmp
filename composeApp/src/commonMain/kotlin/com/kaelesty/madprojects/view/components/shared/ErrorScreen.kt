@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.Key.Companion.R
+import androidx.compose.ui.unit.dp
 import com.kaelesty.madprojects.view.ui.experimental.Styled
 import madprojects.composeapp.generated.resources.Res
 import madprojects.composeapp.generated.resources.error
@@ -25,7 +26,8 @@ fun ErrorScreen() {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(it),
+                .padding(it)
+                .padding(horizontal = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(

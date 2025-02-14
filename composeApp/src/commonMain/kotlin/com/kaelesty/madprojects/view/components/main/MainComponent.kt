@@ -9,6 +9,7 @@ import com.arkivanov.decompose.value.Value
 import com.kaelesty.madprojects.domain.repos.auth.User
 import com.kaelesty.madprojects.domain.repos.profile.ProfileProject
 import com.kaelesty.madprojects.view.components.main.MainComponent.Child
+import com.kaelesty.madprojects.view.components.main.other_profile.OtherProfileComponent
 import com.kaelesty.madprojects.view.components.main.profile.ProfileComponent
 import com.kaelesty.madprojects.view.components.main.project.ProjectComponent
 import com.kaelesty.madprojects.view.components.main.project_creation.ProjectCreationComponent
@@ -25,6 +26,8 @@ interface MainComponent {
         data class ProjectCreation(val component: ProjectCreationComponent): Child
 
         data class Project(val component: ProjectComponent): Child
+
+        data class OtherProfile(val component: OtherProfileComponent): Child
     }
 
     interface Factory {
@@ -42,6 +45,7 @@ class DefaultMainComponent(
     private val profileComponentFactory: ProfileComponent.Factory,
     private val projectCreationComponentFactory: ProjectCreationComponent.Factory,
     private val projectComponentFactory: ProjectComponent.Factory,
+    private val otherComponentFactory: OtherProfileComponent.Factory,
 ): MainComponent, ComponentContext by componentContext {
 
     private val navigation = StackNavigation<Config>()
@@ -58,6 +62,7 @@ class DefaultMainComponent(
         config: Config,
         componentContext: ComponentContext,
     ): Child = when(config) {
+
         Config.Profile -> Child.Profile(
             component = profileComponentFactory.create(
                 componentContext,
@@ -89,9 +94,21 @@ class DefaultMainComponent(
             component = projectComponentFactory.create(
                 componentContext,
                 object : ProjectComponent.Navigator {
-                    // todo
+                    override fun toOtherProfile(userId: String) {
+                        navigation.push(Config.OtherProfile(userId))
+                    }
                 },
                 config.project,
+            )
+        )
+
+        is Config.OtherProfile -> Child.OtherProfile(
+            component = otherComponentFactory.create(
+                c = componentContext,
+                n = object : OtherProfileComponent.Navigator {
+
+                },
+                userId = config.userId
             )
         )
     }
@@ -107,5 +124,8 @@ class DefaultMainComponent(
 
         @Serializable
         data class Project(val project: ProfileProject): Config
+
+        @Serializable
+        data class OtherProfile(val userId: String): Config
     }
 }
