@@ -43,8 +43,8 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
 
-            implementation(libs.androidx.ui.tooling.core)
-            implementation(libs.androidx.ui.tooling.preview)
+            //implementation(libs.androidx.ui.tooling.core)
+            //implementation(libs.androidx.ui.tooling.preview)
 
             implementation(libs.ui.text)
 
@@ -75,6 +75,7 @@ kotlin {
             implementation(libs.kotlinx.datetime)
 
             implementation(libs.haze)
+            implementation(libs.colorpicker)
         }
     }
 }

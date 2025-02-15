@@ -38,6 +38,20 @@ interface KanbanComponent {
     val state: StateFlow<State>
 
     fun selectColumn(id: Int)
+
+    fun editKard(kard: KanbanState.Kard, newTitle: String, newDesc: String)
+
+    fun deleteKard(kardId: Int)
+
+    fun upKard(kardId: Int)
+
+    fun downKard(kardId: Int)
+
+    fun setColumn(kardId: Int, newColumnId: Int, atStart: Boolean)
+
+    fun createKard(name: String, columnId: Int)
+
+    fun createColumn(name: String, color: String)
 }
 
 class DefaultKanbanComponent(
@@ -88,6 +102,110 @@ class DefaultKanbanComponent(
             _state.emit(
                 _state.value.copy(
                     selectedColumnId = id
+                )
+            )
+        }
+    }
+
+    override fun editKard(kard: KanbanState.Kard, newTitle: String, newDesc: String) {
+        scope.launch { 
+            socketRepository.accept(
+                Intent.Kanban.UpdateKard(
+                    id = kard.id,
+                    name = if (kard.title == newTitle) null else newTitle,
+                    desc = if (kard.desc == newDesc) null else newDesc,
+                    projectId = projectId.toInt()
+                )
+            )
+        }
+    }
+
+    override fun deleteKard(kardId: Int) {
+        scope.launch { 
+            socketRepository.accept(
+                Intent.Kanban.DeleteKard(
+                    id = kardId,
+                    projectId = projectId.toInt()
+                )
+            )
+        }
+    }
+
+    override fun upKard(kardId: Int) {
+        scope.launch {
+            val columns = _state.value.kanban.columns.map { it.id to it.kards.map { it.id } }
+            columns.firstOrNull { it.second.contains(kardId) }?.let {
+                val position = it.second.indexOf(kardId)
+                if (position == 0) return@launch
+                socketRepository.accept(
+                    Intent.Kanban.MoveKard(
+                        id = kardId,
+                        columnId = it.first,
+                        newColumnId = it.first,
+                        newPosition = position - 1,
+                        projectId = projectId.toInt()
+                    )
+                )
+            }
+        }
+    }
+
+    override fun downKard(kardId: Int) {
+        scope.launch {
+            val columns = _state.value.kanban.columns.map { it.id to it.kards.map { it.id } }
+            columns.firstOrNull { it.second.contains(kardId) }?.let {
+                val position = it.second.indexOf(kardId)
+                if (position == it.second.size - 1) return@launch
+                socketRepository.accept(
+                    Intent.Kanban.MoveKard(
+                        id = kardId,
+                        columnId = it.first,
+                        newColumnId = it.first,
+                        newPosition = position + 1,
+                        projectId = projectId.toInt()
+                    )
+                )
+            }
+        }
+    }
+
+    override fun setColumn(kardId: Int, newColumnId: Int, atStart: Boolean) {
+        scope.launch {
+            val columns = _state.value.kanban.columns.map { it.id to it.kards.map { it.id } }
+            columns.firstOrNull { it.second.contains(kardId) }?.let {
+                socketRepository.accept(
+                    Intent.Kanban.MoveKard(
+                        id = kardId,
+                        columnId = it.first,
+                        newColumnId = newColumnId,
+                        newPosition = if (atStart) 0 else (columns.firstOrNull { it.first == newColumnId }?.second?.size?.minus(
+                            1
+                        )) ?: 0,
+                        projectId = projectId.toInt()
+                    )
+                )
+            }
+        }
+    }
+
+    override fun createKard(name: String, columnId: Int) {
+        scope.launch {
+            socketRepository.accept(Intent.Kanban.CreateKard(
+                name = name,
+                desc = "",
+                columnId = columnId,
+                projectId = projectId.toInt()
+            ))
+        }
+    }
+
+    override fun createColumn(name: String, color: String) {
+        scope.launch {
+            socketRepository.accept(
+                Intent.Kanban.CreateColumn(
+                    name = name,
+                    projectId = projectId.toInt(),
+                    color = color
                 )
             )
         }
