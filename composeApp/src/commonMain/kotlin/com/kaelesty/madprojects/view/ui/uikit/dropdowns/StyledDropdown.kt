@@ -27,6 +27,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.DefaultShadowColor
 import androidx.compose.ui.graphics.TileMode
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -35,6 +37,7 @@ import com.kaelesty.madprojects.view.extensions.bottomBorder
 import com.kaelesty.madprojects.view.ui.experimental.Styled
 import madprojects.composeapp.generated.resources.Res
 import madprojects.composeapp.generated.resources.dropdown_arrow
+import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.vectorResource
 
 @Composable
@@ -46,7 +49,9 @@ fun <T> StyledDropdown(
 	closeOnSelect: Boolean = true,
 	fontSize: TextUnit = MaterialTheme.typography.body2.fontSize,
 	itemTitle: (T) -> String,
-	background: Color? = null
+	background: Color? = null,
+	leadingItemTitle: String? = null,
+	onLeadingClick: (() -> Unit)? = null,
 ) {
 
 	var expanded by remember {
@@ -88,6 +93,24 @@ fun <T> StyledDropdown(
 				onDismissRequest = { expanded = false },
 				modifier = modifier
 			) {
+				leadingItemTitle?.let {
+					DropdownMenuItem(
+						onClick = {
+							onLeadingClick?.let { it() }
+							if (closeOnSelect) expanded = false
+						}
+					) {
+						Text(
+							text = it,
+							style = MaterialTheme.typography.body2.copy(
+								fontSize = fontSize,
+								fontStyle = FontStyle.Italic,
+								fontWeight = FontWeight.Bold
+							),
+							textDecoration = if (it == selectedItem) TextDecoration.Underline else null
+						)
+					}
+				}
 				values.forEachIndexed { index, it ->
 					DropdownMenuItem(
 						onClick = {

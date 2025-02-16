@@ -142,7 +142,7 @@ fun AddDialog(
                             Box(
                                 modifier = Modifier
                                     .size(30.dp)
-                                    .background(color = color, shape = RoundedCornerShape(16.dp))
+                                    .background(color = color)
                                     .border(width = 1.dp, color = Color.Black)
                             )
                         }
@@ -164,7 +164,7 @@ fun AddDialog(
                         )
                         Spacer(Modifier.height(8.dp))
                         StyledButton(
-                            modifier = Modifier.fillMaxWidth(0.7f),
+                            modifier = Modifier.fillMaxWidth(0.9f),
                             text = "Добавить колонку",
                             onClick = { addType = AddType.Column }
                         )

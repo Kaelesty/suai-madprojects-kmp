@@ -52,6 +52,12 @@ interface KanbanComponent {
     fun createKard(name: String, columnId: Int)
 
     fun createColumn(name: String, color: String)
+
+    fun upColumn(columnId: Int)
+
+    fun downColumn(columnId: Int)
+
+    fun deleteColumn(columnId: Int)
 }
 
 class DefaultKanbanComponent(
@@ -84,12 +90,14 @@ class DefaultKanbanComponent(
 
     private suspend fun proceedAction(action: Action.Kanban) {
         when (action) {
+
             is Action.Kanban.SetState -> {
+                val oldState = state.value
                 _state.emit(
                     KanbanComponent.State(
                         isLoading = false,
                         kanban = action.kanban,
-                        selectedColumnId = if (action.kanban.columns.isEmpty()) null
+                        selectedColumnId = oldState.selectedColumnId ?: if (action.kanban.columns.isEmpty()) null
                             else action.kanban.columns.firstOrNull()?.id
                     )
                 )
@@ -207,6 +215,52 @@ class DefaultKanbanComponent(
                     projectId = projectId.toInt(),
                     color = color
                 )
+            )
+        }
+    }
+
+    override fun upColumn(columnId: Int) {
+        scope.launch {
+            val kanban = _state.value.kanban
+            val index = kanban.columns
+                .map { it.id }
+                .indexOf(columnId)
+
+            if (index == 0) return@launch
+
+            socketRepository.accept(
+                Intent.Kanban.MoveColumn(
+                    id = columnId,
+                    newPosition = index - 1,
+                    projectId = projectId.toInt()
+                )
+            )
+        }
+    }
+
+    override fun downColumn(columnId: Int) {
+        scope.launch {
+            val kanban = _state.value.kanban
+            val index = kanban.columns
+                .map { it.id }
+                .indexOf(columnId)
+
+            if (index == kanban.columns.size - 1) return@launch
+
+            socketRepository.accept(
+                Intent.Kanban.MoveColumn(
+                    id = columnId,
+                    newPosition = index + 1,
+                    projectId = projectId.toInt()
+                )
+            )
+        }
+    }
+
+    override fun deleteColumn(columnId: Int) {
+        scope.launch {
+            socketRepository.accept(
+                Intent.Kanban.DeleteColumn(columnId, projectId.toInt())
             )
         }
     }

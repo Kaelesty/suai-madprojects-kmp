@@ -48,8 +48,10 @@ import com.kaelesty.madprojects_kmp.ui.uikit.cards.StyledRoundedCard
 import com.kaelesty.madprojects_kmp.ui.uikit.dropdowns.StyledDropdown
 import com.kaelesty.madprojects_kmp.ui.uikit.text.TitledTextField
 import madprojects.composeapp.generated.resources.Res
+import madprojects.composeapp.generated.resources.add_icon_kanban
 import madprojects.composeapp.generated.resources.chevron_down
 import madprojects.composeapp.generated.resources.chevron_up
+import madprojects.composeapp.generated.resources.circle_add
 import madprojects.composeapp.generated.resources.close
 import madprojects.composeapp.generated.resources.move_dots
 import madprojects.composeapp.generated.resources.right_arrow
@@ -91,21 +93,15 @@ fun KanbanContent(
         )
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-        ,
-        contentAlignment = Alignment.BottomEnd
-    ) {
-        IconButton(
-            onClick = { showAddDialog = true }
-        ) {
-            Icon(
-                painter = painterResource(Res.drawable.right_arrow),
-                null
-            )
-        }
+    var showEditColumnsDialog by remember { mutableStateOf(false) }
+    if (showEditColumnsDialog) {
+        EditColumnsDialog(
+            kanban = state.kanban,
+            onDelete = { component.deleteColumn(it) },
+            onUp = { component.upColumn(it) },
+            onDown = { component.downColumn(it) },
+            onDismiss = { showEditColumnsDialog = false }
+        )
     }
 
     Column {
@@ -123,6 +119,10 @@ fun KanbanContent(
             itemTitle = {
                 it.second
             },
+            leadingItemTitle = "Изменить",
+            onLeadingClick = {
+                showEditColumnsDialog = true
+            }
         )
         Spacer(Modifier.height(8.dp))
         selectedColumn?.let { selectedColumn ->
@@ -150,6 +150,28 @@ fun KanbanContent(
                     )
                     Spacer(Modifier.height(8.dp))
                 }
+            }
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+        ,
+        contentAlignment = Alignment.BottomEnd
+    ) {
+        IconButton(
+            onClick = { showAddDialog = true }
+        ) {
+            StyledRoundedCard {
+                Icon(
+                    painter = painterResource(Res.drawable.add_icon_kanban),
+                    null,
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .size(32.dp)
+                )
             }
         }
     }
@@ -677,6 +699,9 @@ fun EditColumnsDialog(
     onDown: (Int) -> Unit,
     onDismiss: () -> Unit
 ) {
+
+    val scrollState = rememberScrollState()
+
     Dialog(
         onDismissRequest = onDismiss
     ) {
@@ -687,6 +712,7 @@ fun EditColumnsDialog(
         ) {
             Column(
                 modifier = Modifier.padding(12.dp)
+                    .verticalScroll(scrollState)
             ) {
                 Text(
                     text = "Редактирование колонок",
