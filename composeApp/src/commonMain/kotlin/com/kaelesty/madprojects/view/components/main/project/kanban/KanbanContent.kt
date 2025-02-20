@@ -187,6 +187,7 @@ fun Kard(
     onChangeColumn: (() -> Unit)?,
     modifier: Modifier = Modifier,
     colorHex: String,
+    showControls: Boolean = true
 ) {
 
     var showMoreDialog by remember {
@@ -295,99 +296,101 @@ fun Kard(
                     )
                 }
             }
-            Column(
-                horizontalAlignment = Alignment.End,
-                modifier = Modifier
-                    .weight(0.2f)
-            ) {
-                IconButton(
-                    onClick = { menuExpanded = true }
+            if (showControls) {
+                Column(
+                    horizontalAlignment = Alignment.End,
+                    modifier = Modifier
+                        .weight(0.2f)
                 ) {
-                    Icon(
-                        vectorResource(Res.drawable.move_dots),
-                        modifier = Modifier.size(30.dp),
-                        contentDescription = null
-                    )
-                }
-                DropdownMenu(
-                    expanded = menuExpanded,
-                    onDismissRequest = { menuExpanded = false },
-                    offset = DpOffset(x = 0.dp, y = (-160).dp)
-                ) {
-                    onChangeColumn?.let {
+                    IconButton(
+                        onClick = { menuExpanded = true }
+                    ) {
+                        Icon(
+                            vectorResource(Res.drawable.move_dots),
+                            modifier = Modifier.size(30.dp),
+                            contentDescription = null
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = menuExpanded,
+                        onDismissRequest = { menuExpanded = false },
+                        offset = DpOffset(x = 0.dp, y = (-160).dp)
+                    ) {
+                        onChangeColumn?.let {
+                            DropdownMenuItem(
+                                onClick = { it() },
+                            ) {
+                                Text("Переместить")
+                            }
+                        }
                         DropdownMenuItem(
-                            onClick = { it() },
+                            onClick = { showEditDialog = true },
                         ) {
-                            Text("Переместить")
+                            Text("Редактировать")
+                        }
+                        DropdownMenuItem(
+                            onClick = { showDeleteDialog = true },
+                        ) {
+                            Text("Удалить")
                         }
                     }
-                    DropdownMenuItem(
-                        onClick = { showEditDialog = true },
-                    ) {
-                        Text("Редактировать")
-                    }
-                    DropdownMenuItem(
-                        onClick = { showDeleteDialog = true },
-                    ) {
-                        Text("Удалить")
-                    }
-                }
 
-                if (onUp != null && onDown != null) {
+                    if (onUp != null && onDown != null) {
+                        IconButton(
+                            onClick = { onUp() }
+                        ) {
+                            Icon(
+                                vectorResource(Res.drawable.chevron_up),
+                                modifier = Modifier.size(30.dp),
+                                contentDescription = null
+                            )
+                        }
+                        IconButton(
+                            onClick = { onDown() }
+                        ) {
+                            Icon(
+                                vectorResource(Res.drawable.chevron_down),
+                                modifier = Modifier.size(30.dp),
+                                contentDescription = null
+                            )
+                        }
+                    } else if (onUp != null) {
+                        IconButton(
+                            onClick = { onUp() }
+                        ) {
+                            Icon(
+                                vectorResource(Res.drawable.chevron_up),
+                                modifier = Modifier.size(30.dp),
+                                contentDescription = null
+                            )
+                        }
+                        Spacer(Modifier.weight(1f))
+                    } else if (onDown != null) {
+                        Spacer(Modifier.weight(1f))
+                        IconButton(
+                            onClick = { onDown() }
+                        ) {
+                            Icon(
+                                vectorResource(Res.drawable.chevron_down),
+                                modifier = Modifier.size(30.dp),
+                                contentDescription = null
+                            )
+                        }
+                    }
+
+
+
+
+
                     IconButton(
-                        onClick = { onUp() }
+                        onClick = { showMoreDialog = true }
                     ) {
                         Icon(
-                            vectorResource(Res.drawable.chevron_up),
-                            modifier = Modifier.size(30.dp),
+                            vectorResource(Res.drawable.right_arrow),
+                            modifier = Modifier.size(40.dp),
                             contentDescription = null
                         )
                     }
-                    IconButton(
-                        onClick = { onDown() }
-                    ) {
-                        Icon(
-                            vectorResource(Res.drawable.chevron_down),
-                            modifier = Modifier.size(30.dp),
-                            contentDescription = null
-                        )
-                    }
-                } else if (onUp != null) {
-                    IconButton(
-                        onClick = { onUp() }
-                    ) {
-                        Icon(
-                            vectorResource(Res.drawable.chevron_up),
-                            modifier = Modifier.size(30.dp),
-                            contentDescription = null
-                        )
-                    }
-                    Spacer(Modifier.weight(1f))
-                } else if (onDown != null) {
-                    Spacer(Modifier.weight(1f))
-                    IconButton(
-                        onClick = { onDown() }
-                    ) {
-                        Icon(
-                            vectorResource(Res.drawable.chevron_down),
-                            modifier = Modifier.size(30.dp),
-                            contentDescription = null
-                        )
-                    }
-                }
-
-
-
-
-
-                IconButton(
-                    onClick = { showMoreDialog = true }
-                ) {
-                    Icon(
-                        vectorResource(Res.drawable.right_arrow),
-                        modifier = Modifier.size(40.dp),
-                        contentDescription = null
-                    )
                 }
             }
         }

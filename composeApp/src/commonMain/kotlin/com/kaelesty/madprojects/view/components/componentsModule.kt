@@ -311,7 +311,8 @@ val componentsModule = module {
                     sprintId: String
                 ): SprintComponent {
                     return DefaultSprintComponent(
-                        c, n, projectId, sprintId
+                        c, n, projectId, sprintId,
+                        sprintsRepo = get(),
                     )
                 }
             }

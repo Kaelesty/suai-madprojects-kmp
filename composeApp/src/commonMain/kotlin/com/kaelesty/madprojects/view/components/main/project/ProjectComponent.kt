@@ -5,9 +5,7 @@ import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.router.stack.childStack
-import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.value.Value
-import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.arkivanov.essenty.lifecycle.doOnCreate
 import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.kaelesty.madprojects.domain.repos.profile.ProfileProject
@@ -184,11 +182,11 @@ class DefaultProjectComponent(
                 c = componentContext,
                 n = object : ActivityComponent.Navigator {
                     override fun toSprint(sprintId: String) {
-                        navigation.push(Config.Sprint(project.id, sprintId))
+                        navigation.bringToFront(Config.Sprint(project.id, sprintId))
                     }
 
                     override fun toSprintCreation() {
-                        navigation.push(Config.SprintCreation(project.id))
+                        navigation.bringToFront(Config.SprintCreation(project.id))
                     }
                 },
                 projectId = project.id
@@ -226,7 +224,9 @@ class DefaultProjectComponent(
         is Config.Sprint -> ProjectComponent.Child.Sprint(
             component = sprintComponentFactory.create(
                 componentContext, object: SprintComponent.Navigator {
-
+                    override fun toKanban() {
+                        navigation.bringToFront(Config.Kanban(projectId = project.id))
+                    }
                 }, config.projectId, config.sprintId
             )
         )

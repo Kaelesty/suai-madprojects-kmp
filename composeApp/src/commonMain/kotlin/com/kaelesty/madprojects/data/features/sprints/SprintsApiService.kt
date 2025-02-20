@@ -10,6 +10,16 @@ class SprintsApiService(
     private val httpClient: HttpClient
 ) {
 
+    suspend fun getSprint(
+        token: String,
+        sprintId: String,
+    ) = kotlin.runCatching {
+        httpClient.get("$BASE_URL/sprint/get") {
+            parameter("sprintId", sprintId)
+            bearerAuth(token)
+        }
+    }
+
     suspend fun getProjectSprints(
         token: String,
         projectId: String

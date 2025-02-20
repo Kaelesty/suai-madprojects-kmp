@@ -30,7 +30,7 @@ fun TitledRoundedCard(
 				fontSize = 24.sp
 			),
 			modifier = Modifier
-				.offset(x = 24.dp)
+				.offset(x = 16.dp)
 		)
 		Spacer(Modifier.height(12.dp))
 		StyledRoundedCard(
