@@ -1,14 +1,19 @@
-This is a Kotlin Multiplatform project targeting Android, iOS.
+# MadProjects
+MadProjects — это приложение, разработанное для облегчения управления студенческими проектами. Оно помогает преподавателям автоматизировать процесс отслеживания и оценки студенческих активностей, предоставляя удобный интерфейс для мониторинга прогресса проектов, распределения задач и взаимодействия с учащимися.
 
-* `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - `commonMain` is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    `iosMain` would be the right folder for such calls.
+## Основные функции
+Создание и управление проектами: преподаватель может создавать группы проектов (например, по названию курса, в рамках которого выполняются проекты). После этого студенты могут создать проект и отправить его на утверждение преподавателю.
+<br>Функции в проекте:
+- Доска Kanban: для управления задачами внутри команды проекта реализована доска Kanban с поддержкой drag-and-drop, выполненная с использованием библиотеки react-beautiful-dnd.
+- Мессенджер: для коммуникации между членами команды и преподавателем реализован встроенный мессенджер. В нем, как и в Kanban-доске, используется WebSocket, что позволяет динамично обновлять данные в режиме реального времени.
+- Спринты: предусмотрены для обозначения промежуточных этапов проекта, где можно выделить задачи из Kanban-доски и установить сроки их завершения.
+- Активность: отслеживается внутренняя активность участников проекта, включая работу над спринтами и активность в привязанных к проекту репозиториях.
+- (в разработке)Оценка и анализ: для преподавателей реализована страница со статистикой по проекту, позволяющая анализировать выполнение задач и активность студентов.
 
-* `/iosApp` contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform, 
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+
+## Скриншоты
+<img src="https://github.com/user-attachments/assets/39ccf512-fecd-4d5b-b999-a00bd367617b" alt="Описание изображения" width="330" height="700">
+<img src="https://github.com/user-attachments/assets/941b25e0-8679-49d5-9756-9760f19463ed" alt="Описание изображения" width="330" height="700">
+<img src="https://github.com/user-attachments/assets/b0c9d497-5953-4a62-a98b-7c2ea8103f4f" alt="Описание изображения" width="330" height="700">
 
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
